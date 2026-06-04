@@ -4,7 +4,7 @@ import { isAuthenticated } from '../../../lib/auth'
 export const config = { api: { bodyParser: false } }
 
 export default async function handler(req, res) {
-  if (!isAuthenticated(req)) return res.status(401).json({ error: 'Unauthorized' })
+  if (!await isAuthenticated(req, res)) return res.status(401).json({ error: 'Unauthorized' })
   if (req.method !== 'POST') return res.status(405).end()
 
   const filename = req.query.filename
