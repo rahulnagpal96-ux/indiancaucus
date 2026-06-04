@@ -10,17 +10,18 @@ const CHECK = () => (
 )
 
 const DIWALI_AD = [
-  { name: 'Bronze', price: 150, perks: ['Quarter-page ad in Diwali Mela program', 'Name on event website', 'Social media thank-you post'] },
-  { name: 'Silver', price: 300, featured: false, perks: ['Half-page ad in Diwali Mela program', 'Logo on event banners', 'Dedicated social media shoutout', '2 complimentary event passes'] },
-  { name: 'Gold', price: 600, featured: true, perks: ['Full-page ad in Diwali Mela program', 'Premium logo placement on banners', 'Stage announcement at event', 'Feature in email newsletter', '4 complimentary event passes'] },
-  { name: 'Platinum', price: 1200, perks: ['Double-page spread in program', 'Title-level logo on all signage', 'Multiple stage announcements', 'Dedicated newsletter feature', '8 complimentary event passes', 'Custom package options available'] },
+  { name: 'Inside Half Page', price: 150, perks: ['Half-page ad inside the Diwali Mela program book', 'Name on event website', 'Social media thank-you post'] },
+  { name: 'Inside Full Page', price: 250, perks: ['Full-page ad inside the Diwali Mela program book', 'Logo on event website', 'Dedicated social media shoutout'] },
+  { name: 'Inside Back Cover', price: 350, perks: ['Premium inside back cover placement', 'Logo on event website', 'Dedicated social media shoutout', 'Stage mention at event'] },
+  { name: 'Gold Page', price: 500, featured: true, perks: ['Gold-tier full-page ad in program book', 'Premium logo on event website', 'Stage announcement at event', 'Feature in email newsletter'] },
+  { name: 'Back Page', price: 500, perks: ['Prime back cover placement in program book', 'Premium logo on event website', 'Stage announcement at event', 'Feature in email newsletter'] },
 ]
 
 const DIWALI_VENDORS = [
   {
     type: 'Food Vendor',
     emoji: '🍛',
-    price: 250,
+    price: 450,
     color: 'border-yellow-300',
     bg: 'bg-yellow-50',
     accent: '#b45309',
@@ -53,7 +54,7 @@ const DANDIYA_VENDORS = [
   {
     type: 'Food Vendor',
     emoji: '🍽️',
-    price: 200,
+    price: 450,
     color: 'border-purple-300',
     bg: 'bg-purple-50',
     accent: '#7e22ce',
@@ -68,7 +69,7 @@ const DANDIYA_VENDORS = [
   {
     type: 'Vendor Table',
     emoji: '💍',
-    price: 125,
+    price: 150,
     color: 'border-pink-300',
     bg: 'bg-pink-50',
     accent: '#be185d',
@@ -146,7 +147,7 @@ export default function Sponsor() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
             {DIWALI_AD.map((tier) => (
               <div
                 key={tier.name}
