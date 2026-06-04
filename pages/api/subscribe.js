@@ -98,6 +98,29 @@ async function sendWelcomeEmail(email, firstName) {
   }
 }
 
+async function syncMailchimp(email) {
+  const apiKey = process.env.MAILCHIMP_API_KEY
+  const listId = process.env.MAILCHIMP_LIST_ID
+  if (!apiKey || !listId) return
+  try {
+    const dc = apiKey.split('-').pop()
+    const resp = await fetch(`https://${dc}.api.mailchimp.com/3.0/lists/${listId}/members`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${Buffer.from(`anystring:${apiKey}`).toString('base64')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email_address: email, status: 'subscribed' }),
+    })
+    const data = await resp.json()
+    if (!resp.ok && data.title !== 'Member Exists') {
+      console.error('Mailchimp sync error:', resp.status, JSON.stringify(data))
+    }
+  } catch (err) {
+    console.error('Mailchimp sync exception:', err.message)
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
@@ -108,7 +131,10 @@ export default async function handler(req, res) {
     const result = await upsertSubscriber({ email, firstName, phone, source })
     const isNew = result.rows[0]?.inserted === true
 
-    // Fire welcome email for new subscribers (non-blocking)
+    // Always sync to Mailchimp while it's still configured (non-blocking)
+    syncMailchimp(email)
+
+    // Fire welcome email via Resend once configured (non-blocking)
     if (isNew) {
       sendWelcomeEmail(email, firstName)
     }
@@ -116,7 +142,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ status: 'subscribed' })
   } catch (err) {
     console.error('subscribe error:', err)
-    // Return success anyway so the form doesn't show an error to visitors
     return res.status(200).json({ status: 'ok' })
   }
 }
