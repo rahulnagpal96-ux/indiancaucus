@@ -157,6 +157,56 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ── PARTICIPATE ── */}
+        <section className="mt-16">
+          <div className="rounded-3xl overflow-hidden" style={{background:'linear-gradient(135deg,#78350f 0%,#b45309 50%,#d97706 100%)'}}>
+            <div className="relative px-8 py-12 md:px-14 md:py-14" style={{backgroundImage:'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize:'24px 24px'}}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-4" style={{background:'rgba(255,255,255,0.2)', color:'#fef3c7'}}>
+                    🪔 Diwali Mela 2025
+                  </span>
+                  <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
+                    Participate in<br />Diwali Mela!
+                  </h2>
+                  <p className="mt-4 text-amber-100 leading-relaxed max-w-md">
+                    Want to perform, volunteer, set up a vendor table, or get involved in our biggest event of the year? Fill out our participation form and we'll be in touch.
+                  </p>
+                  <a
+                    href="https://forms.cloud.microsoft/r/TrUMvCLMTb"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-7 inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-base transition-all"
+                    style={{background:'#fff', color:'#b45309', boxShadow:'0 4px 24px rgba(0,0,0,0.2)'}}
+                  >
+                    Fill Out Participation Form →
+                  </a>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { icon: '🎤', label: 'Performers & Artists' },
+                    { icon: '🛍️', label: 'Vendor Table' },
+                    { icon: '🍛', label: 'Food Vendor' },
+                    { icon: '🙋', label: 'Volunteers' },
+                  ].map((item) => (
+                    <a
+                      key={item.label}
+                      href="https://forms.cloud.microsoft/r/TrUMvCLMTb"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 rounded-2xl px-4 py-4 transition-all hover:scale-105"
+                      style={{background:'rgba(255,255,255,0.15)', backdropFilter:'blur(4px)'}}
+                    >
+                      <span className="text-2xl">{item.icon}</span>
+                      <span className="text-sm font-semibold text-white">{item.label}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── MISSION ── */}
         <section className="mt-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>

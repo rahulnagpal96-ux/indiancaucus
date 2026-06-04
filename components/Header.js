@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 
+const PARTICIPATE_URL = 'https://forms.cloud.microsoft/r/TrUMvCLMTb'
+
 const NAV = [
   { href: '/about', label: 'About' },
   { href: '/events', label: 'Events' },
@@ -106,6 +108,9 @@ export default function Header() {
               </a>
             )}
           </div>
+          <a href={PARTICIPATE_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary text-sm px-5 py-2.5">
+            🪔 Participate
+          </a>
           <Link href="/donate" className="btn-primary text-sm px-5 py-2.5">
             Donate Now
           </Link>
@@ -113,6 +118,9 @@ export default function Header() {
 
         {/* Mobile: donate + hamburger */}
         <div className="md:hidden flex items-center gap-2">
+          <a href={PARTICIPATE_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary text-xs px-3 py-2">
+            🪔
+          </a>
           <Link href="/donate" className="btn-primary text-xs px-3 py-2">
             Donate
           </Link>
