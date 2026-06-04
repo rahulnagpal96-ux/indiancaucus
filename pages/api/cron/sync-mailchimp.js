@@ -42,8 +42,9 @@ export default async function handler(req, res) {
     for (const m of members) {
       const email = (m.email_address || '').toLowerCase().trim()
       if (!email) continue
-      const firstName = (m.merge_fields?.FNAME || '').trim() || null
-      const phone = (m.merge_fields?.PHONE || '').trim() || null
+      const mf = m.merge_fields || {}
+      const firstName = (mf.FNAME || mf.FIRST_NAME || mf.FIRSTNAME || '').trim() || null
+      const phone = (mf.PHONE || mf.MPHONE || mf.CELL || mf.MOBILE || mf.PHONE_NUMBER || '').trim() || null
 
       try {
         await sql`
