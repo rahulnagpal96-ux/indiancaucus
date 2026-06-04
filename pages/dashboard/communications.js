@@ -56,19 +56,29 @@ function Softphone() {
       client.on('telnyx.error', (err) => { console.error('[Telnyx] Error:', err); setStatus('idle') })
 
       client.on('telnyx.notification', (notification) => {
-        console.log('[Telnyx] Notification:', notification.type, notification.call?.state)
+        console.log('[Telnyx] Notification:', notification.type, notification.call?.state, notification.call?.direction)
         const call = notification.call
         if (!call) return
         callRef.current = call
 
         if (notification.type === 'callUpdate') {
           const state = call.state
-          if (state === 'ringing' || state === 'requesting' || state === 'trying') setStatus('ringing')
-          if (state === 'active' || state === 'answering') {
+          const isInbound = call.direction === 'inbound'
+
+          // Only show incoming UI for inbound calls that are ringing
+          if (state === 'ringing' && isInbound) setStatus('ringing')
+
+          // Outbound call placed — show calling status
+          if ((state === 'trying' || state === 'requesting' || state === 'early') && !isInbound) setStatus('calling')
+
+          // Call connected
+          if (state === 'active') {
             setStatus('active')
             setCallDuration(0)
             timerRef.current = setInterval(() => setCallDuration(d => d + 1), 1000)
           }
+
+          // Call ended
           if (state === 'destroy' || state === 'hangup' || state === 'done') {
             setStatus('ready')
             setCallDuration(0)
@@ -157,8 +167,8 @@ function Softphone() {
           </div>
         ) : (
           <>
-            {/* Incoming call */}
-            {status === 'ringing' && (
+            {/* Incoming call — only shown for inbound */}
+            {status === 'ringing' && callRef.current?.direction === 'inbound' && (
               <div className="mb-4 bg-green-50 border border-green-200 rounded-2xl p-4 flex items-center justify-between">
                 <div>
                   <p className="font-semibold text-green-800 text-sm">Incoming call</p>
