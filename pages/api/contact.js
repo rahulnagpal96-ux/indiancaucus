@@ -1,5 +1,27 @@
 import { upsertSubscriber } from '../../lib/db'
 import { syncResendAudience, syncMailchimp } from '../../lib/syncSubscriber'
+import { buildWelcomeEmail } from '../../lib/welcomeEmail'
+
+async function sendWelcomeEmail(email, firstName) {
+  const resendKey = process.env.RESEND_API_KEY
+  if (!resendKey) return
+  const fromAddress = process.env.EMAIL_FROM_NEWSLETTER || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <newsletter@newsletters.indiancaucus.org>'
+  try {
+    const resp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: fromAddress,
+        to: email,
+        subject: 'Welcome to Indian Caucus of Secaucus',
+        html: buildWelcomeEmail(firstName, email),
+      }),
+    })
+    if (!resp.ok) console.error('Welcome email error (contact):', await resp.text())
+  } catch (err) {
+    console.error('Welcome email exception (contact):', err.message)
+  }
+}
 
 export default async function handler(req, res){
   if(req.method !== 'POST') return res.status(405).end()
@@ -12,6 +34,7 @@ export default async function handler(req, res){
     .then(() => {
       syncResendAudience(email, firstName)
       syncMailchimp(email)
+      sendWelcomeEmail(email, firstName)
     })
     .catch((err) => console.error('contact auto-subscribe error:', err.message))
 
