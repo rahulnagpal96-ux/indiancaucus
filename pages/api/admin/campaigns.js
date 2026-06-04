@@ -49,6 +49,7 @@ async function createAndSendBroadcast(subject, htmlContent, recipientCount) {
         segment_id: segmentId,
         from: getCampaignFromAddress(),
         subject,
+        name: subject,
         html: getBroadcastHtml(htmlContent),
         send: true,
       }),

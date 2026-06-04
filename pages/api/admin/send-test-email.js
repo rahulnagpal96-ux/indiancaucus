@@ -66,18 +66,13 @@ async function sendTestBroadcast({ email, subject, html }) {
         segment_id: segment.id,
         from: getCampaignFromAddress(),
         subject,
+        name: subject,
         html: getBroadcastHtml(html),
         send: true,
       },
     })
 
     return { broadcastId: broadcast.id, segmentId: segment.id }
-  } finally {
-    try {
-      await resendRequest(`/segments/${segment.id}`, { method: 'DELETE' })
-    } catch (err) {
-      console.error('Test broadcast cleanup error:', err.message)
-    }
   }
 }
 
