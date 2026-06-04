@@ -2,15 +2,27 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
 
-const STRIPE_DONATE_URL = 'https://donate.stripe.com/eVa29e87l0G5fV6bJ4'
-
 export default function NotFound() {
   const [amount, setAmount] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleDonate = () => {
+  const handleDonate = async () => {
     const n = parseFloat(amount)
     if (!n || n < 1) return
-    window.open(`${STRIPE_DONATE_URL}?prefilled_amount=${Math.round(n * 100)}`, '_blank', 'noopener,noreferrer')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: n }),
+      })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+    } catch {
+      // silent
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -53,11 +65,11 @@ export default function NotFound() {
 
         <button
           onClick={handleDonate}
-          disabled={!amount || parseFloat(amount) < 1}
+          disabled={!amount || parseFloat(amount) < 1 || loading}
           className="mt-3 w-full py-3.5 rounded-xl font-bold text-white text-base transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
           style={{ background: 'linear-gradient(135deg, #FF9933, #F26644)' }}
         >
-          Donate Now
+          {loading ? 'Loading…' : 'Donate Now'}
         </button>
 
         <p className="mt-3 text-xs text-gray-500">501(c)(3) · Tax-deductible · Powered by Stripe</p>
