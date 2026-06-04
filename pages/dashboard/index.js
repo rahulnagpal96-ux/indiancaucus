@@ -301,33 +301,6 @@ export default function DashboardHome() {
         </div>
       </div>
 
-      {/* Setup guide */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-        <h3 className="text-gray-800 font-bold text-sm mb-4">Setup guide</h3>
-        <div className="space-y-3">
-          {[
-            { label: 'Vercel Postgres database connected', done: !dbError },
-            { label: 'RESEND_API_KEY configured', done: false, note: 'resend.com → API Keys' },
-            { label: 'EMAIL_FROM domain verified in Resend', done: false, note: 'e.g. newsletter@indiancaucusofsecaucus.org' },
-            { label: 'NEXTAUTH_SECRET set', done: true },
-            { label: 'Microsoft O365 login configured (optional)', done: false, note: 'Azure Portal → App Registrations' },
-          ].map(({ label, done, note }) => (
-            <div key={label} className="flex items-start gap-3">
-              <div
-                className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${
-                  done ? 'text-green-600 bg-green-100' : 'text-gray-400 bg-gray-100'
-                }`}
-              >
-                {done ? '✓' : '○'}
-              </div>
-              <div>
-                <p className={`text-sm ${done ? 'text-gray-700' : 'text-gray-500'}`}>{label}</p>
-                {note && <p className="text-gray-400 text-xs">{note}</p>}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </AdminLayout>
   )
 }
