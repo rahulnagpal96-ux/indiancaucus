@@ -2,6 +2,81 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import AdminLayout from '../../components/AdminLayout'
 
+function EditModal({ sub, onClose, onSave }) {
+  const [form, setForm] = useState({
+    email: sub.email || '',
+    firstName: sub.first_name || '',
+    phone: sub.phone || '',
+    status: sub.status || 'active',
+  })
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  function change(e) {
+    setForm(f => ({ ...f, [e.target.name]: e.target.value }))
+  }
+
+  async function save(e) {
+    e.preventDefault()
+    setSaving(true)
+    setError('')
+    const r = await fetch(`/api/admin/subscribers?id=${sub.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    })
+    const d = await r.json()
+    setSaving(false)
+    if (d.error) { setError(d.error); return }
+    onSave(d.subscriber)
+  }
+
+  const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20 focus:border-[#1a2744] transition-all'
+  const labelClass = 'block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5'
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.5)' }}>
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
+          <div>
+            <h2 className="font-bold text-gray-900">Edit subscriber</h2>
+            <p className="text-gray-400 text-xs mt-0.5">{sub.email}</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors text-lg leading-none">×</button>
+        </div>
+        <form onSubmit={save} className="px-7 py-6 space-y-4">
+          <div>
+            <label className={labelClass}>Email</label>
+            <input type="email" name="email" value={form.email} onChange={change} required className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>First name</label>
+            <input type="text" name="firstName" value={form.firstName} onChange={change} placeholder="Optional" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Phone</label>
+            <input type="tel" name="phone" value={form.phone} onChange={change} placeholder="+1 (201) 555-0100" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Status</label>
+            <select name="status" value={form.status} onChange={change} className={inputClass}>
+              <option value="active">Active</option>
+              <option value="unsubscribed">Unsubscribed</option>
+            </select>
+          </div>
+          {error && <p className="text-red-500 text-xs">{error}</p>}
+          <div className="flex gap-3 pt-1">
+            <button type="button" onClick={onClose} className="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-3 rounded-2xl hover:bg-gray-50 transition-all">Cancel</button>
+            <button type="submit" disabled={saving} className="flex-1 text-white text-sm font-bold py-3 rounded-2xl shadow-md hover:opacity-90 transition-all disabled:opacity-50" style={{ background: 'linear-gradient(135deg,#1a2744,#243660)' }}>
+              {saving ? 'Saving…' : 'Save changes'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 function Badge({ children, color }) {
   const colors = {
     green: 'bg-green-100 text-green-700',
@@ -181,6 +256,7 @@ export default function SubscribersPage() {
   const [filter, setFilter] = useState('active')
   const [showImport, setShowImport] = useState(false)
   const [deleting, setDeleting] = useState(null)
+  const [editing, setEditing] = useState(null)
 
   const fetchSubs = useCallback(() => {
     setLoading(true)
@@ -229,6 +305,17 @@ export default function SubscribersPage() {
         <ImportModal
           onClose={() => { setShowImport(false); router.replace('/dashboard/subscribers', undefined, { shallow: true }) }}
           onImport={fetchSubs}
+        />
+      )}
+
+      {editing && (
+        <EditModal
+          sub={editing}
+          onClose={() => setEditing(null)}
+          onSave={(updated) => {
+            setSubscribers(subs => subs.map(s => s.id === updated.id ? { ...s, ...updated } : s))
+            setEditing(null)
+          }}
         />
       )}
 
@@ -372,19 +459,31 @@ export default function SubscribersPage() {
                     {new Date(sub.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </td>
                   <td className="px-5 py-4">
-                    <button
-                      onClick={() => handleDelete(sub.id)}
-                      disabled={deleting === sub.id}
-                      className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
-                      title="Unsubscribe"
-                    >
-                      <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <polyline points="3 6 5 6 21 6" />
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                        <path d="M10 11v6" /><path d="M14 11v6" />
-                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-                      </svg>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setEditing(sub)}
+                        className="text-gray-300 hover:text-[#1a2744] transition-colors"
+                        title="Edit"
+                      >
+                        <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(sub.id)}
+                        disabled={deleting === sub.id}
+                        className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
+                        title="Unsubscribe"
+                      >
+                        <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                          <path d="M10 11v6" /><path d="M14 11v6" />
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

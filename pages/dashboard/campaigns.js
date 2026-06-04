@@ -186,10 +186,13 @@ export default function CampaignsPage() {
   }, [])
 
   function buildHtml() {
-    const data = { ...fields, imageUrl }
-    if (template.id === 'event') return buildEventEmail(data)
-    if (template.id === 'newsletter') return buildNewsletterEmail(data)
-    if (template.id === 'donation') return buildDonationEmail(data)
+    try {
+      const data = { ...fields, imageUrl }
+      if (template?.id === 'event') return buildEventEmail(data)
+      if (template?.id === 'newsletter') return buildNewsletterEmail(data)
+      if (template?.id === 'donation') return buildDonationEmail(data)
+    } catch { return '' }
+    return ''
   }
 
   function pickTemplate(t) {
