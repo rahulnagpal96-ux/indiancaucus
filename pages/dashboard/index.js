@@ -26,6 +26,10 @@ function StatCard({ label, value, sub, gradient, icon, loading }) {
   )
 }
 
+function fmtMoney(cents) {
+  return '$' + (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+}
+
 export default function DashboardHome() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -34,6 +38,7 @@ export default function DashboardHome() {
   const [setupMsg, setSetupMsg] = useState('')
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState(null)
+  const [stripe, setStripe] = useState(null)
 
   useEffect(() => {
     fetch('/api/admin/stats')
@@ -44,6 +49,11 @@ export default function DashboardHome() {
         setLoading(false)
       })
       .catch(() => { setDbError(true); setLoading(false) })
+
+    fetch('/api/admin/stripe-stats')
+      .then(r => r.json())
+      .then(d => { if (!d.error) setStripe(d) })
+      .catch(() => {})
   }, [])
 
   async function setupDb() {
@@ -161,6 +171,28 @@ export default function DashboardHome() {
             </svg>
           }
         />
+      </div>
+
+      {/* Stripe revenue */}
+      <div className="mb-6 md:mb-8">
+        <h3 className="text-gray-700 font-bold text-sm uppercase tracking-wide mb-3">Donations</h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          {[
+            { label: 'Total raised', value: stripe ? fmtMoney(stripe.totalRaised) : null, sub: 'Last 100 donations', color: 'linear-gradient(135deg,#059669,#10b981)' },
+            { label: 'This month', value: stripe ? fmtMoney(stripe.thisMonth) : null, sub: new Date().toLocaleString('default', { month: 'long' }), color: 'linear-gradient(135deg,#e85d04,#f97316)' },
+            { label: 'Donors', value: stripe?.donorCount ?? null, sub: 'Unique donors', color: 'linear-gradient(135deg,#1a2744,#2d4a8a)' },
+            { label: 'Recurring', value: stripe?.recurring ?? null, sub: 'Monthly supporters', color: 'linear-gradient(135deg,#7c3aed,#a855f7)' },
+          ].map(({ label, value, sub, color }) => (
+            <Link key={label} href="/dashboard/donors" className="bg-white rounded-2xl border border-gray-100 p-4 md:p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-7 h-7 rounded-lg mb-3" style={{ background: color }} />
+              <p className="text-2xl font-black text-gray-900">
+                {loading || (!stripe && !dbError) ? <span className="text-gray-200 text-xl">—</span> : (value ?? '—')}
+              </p>
+              <p className="text-gray-500 text-xs font-medium mt-0.5">{label}</p>
+              <p className="text-gray-400 text-xs">{sub}</p>
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Quick actions */}
