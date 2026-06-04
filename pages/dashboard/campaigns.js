@@ -78,8 +78,6 @@ const TEMPLATES = {
   },
 }
 
-const PREVIEW_UNSUBSCRIBE_URL = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://indiancaucus.org'}/unsubscribe?e=preview`
-
 // ── Status badge ─────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }) {
@@ -170,7 +168,7 @@ function ImageUploader({ value, onChange }) {
 
 function renderPreviewHtml(html) {
   return html
-    .replace(/\{\{\{RESEND_UNSUBSCRIBE_URL\}\}\}/g, PREVIEW_UNSUBSCRIBE_URL)
+    .replace(/\{\{\{contact\.email\}\}\}/g, 'preview@example.com')
     .replace(/\{\{\{contact\.first_name\|Friend\}\}\}/g, 'Friend')
 }
 
