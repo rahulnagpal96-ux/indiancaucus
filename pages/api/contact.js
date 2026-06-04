@@ -1,7 +1,19 @@
+import { upsertSubscriber } from '../../lib/db'
+import { syncResendAudience, syncMailchimp } from '../../lib/syncSubscriber'
+
 export default async function handler(req, res){
   if(req.method !== 'POST') return res.status(405).end()
   const { name, email, subject, message } = req.body
   if(!name || !email || !message) return res.status(400).json({ error: 'Missing fields' })
+
+  // Auto-subscribe contact form submitters (non-blocking)
+  const firstName = name.split(' ')[0]
+  upsertSubscriber({ email, firstName, source: 'contact-form' })
+    .then(() => {
+      syncResendAudience(email, firstName)
+      syncMailchimp(email)
+    })
+    .catch((err) => console.error('contact auto-subscribe error:', err.message))
 
   const ticketSubject = subject
     ? `[${subject}] Message from ${name}`
