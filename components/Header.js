@@ -61,9 +61,9 @@ export default function Header() {
             <div className="w-9 h-9 rounded-md bg-brand-orange items-center justify-center text-white font-bold text-sm hidden">IC</div>
           </div>
           <div className="leading-tight">
-            <div className="hidden sm:block font-extrabold text-gray-900 text-base tracking-tight">Indian Caucus of Secaucus</div>
-            <div className="sm:hidden font-extrabold text-gray-900 text-sm tracking-tight leading-tight">
-              Indian Caucus<br /><span className="text-brand-orange">of Secaucus</span>
+            <div className="hidden sm:block font-extrabold text-gray-900 dark:text-white text-base tracking-tight">Indian Caucus of Secaucus</div>
+            <div className="sm:hidden font-extrabold text-gray-900 dark:text-white text-sm tracking-tight leading-tight">
+              Indian Caucus<br /><span className="dark:text-white text-brand-orange">of Secaucus</span>
             </div>
           </div>
         </Link>
