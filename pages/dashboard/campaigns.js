@@ -78,6 +78,8 @@ const TEMPLATES = {
   },
 }
 
+const PREVIEW_UNSUBSCRIBE_URL = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://indiancaucus.org'}/unsubscribe?e=preview`
+
 // ── Status badge ─────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }) {
@@ -164,6 +166,12 @@ function ImageUploader({ value, onChange }) {
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   )
+}
+
+function renderPreviewHtml(html) {
+  return html
+    .replace(/\{\{\{RESEND_UNSUBSCRIBE_URL\}\}\}/g, PREVIEW_UNSUBSCRIBE_URL)
+    .replace(/\{\{\{contact\.first_name\|Friend\}\}\}/g, 'Friend')
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
@@ -365,6 +373,7 @@ export default function CampaignsPage() {
 
   // ── Composer ───────────────────────────────────────────────────────────────
   const html = buildHtml()
+  const previewHtml = renderPreviewHtml(html)
 
   return (
     <AdminLayout title={template.label}>
@@ -544,7 +553,7 @@ export default function CampaignsPage() {
             </div>
             <div
               className="overflow-auto max-h-[70vh]"
-              dangerouslySetInnerHTML={{ __html: html || '<div style="padding:40px;text-align:center;color:#9ca3af;font-family:sans-serif;font-size:14px;">Fill in the fields to see a preview</div>' }}
+              dangerouslySetInnerHTML={{ __html: previewHtml || '<div style="padding:40px;text-align:center;color:#9ca3af;font-family:sans-serif;font-size:14px;">Fill in the fields to see a preview</div>' }}
             />
           </div>
         </div>
