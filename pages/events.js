@@ -17,7 +17,7 @@ const EVENTS = [
     borderClass: 'border-yellow-100',
     confirmed: true,
     description: 'The Festival of Lights celebrated in grand style. Our Diwali Mela features cultural exhibits, live performances, a vibrant marketplace, rangoli competitions, and more — a true celebration of India\'s most beloved festival.',
-    highlights: ['Live performances & shows', 'Community marketplace', 'Rangoli competition', 'Fireworks display'],
+    highlights: ['Live performances & shows', 'Community marketplace', 'Rangoli competition'],
   },
   {
     id: 'garba',
@@ -68,7 +68,7 @@ export default function Events() {
             Three festivals.<br />Infinite memories.
           </h1>
           <p className="mt-4 text-gray-300 max-w-2xl text-lg leading-relaxed">
-            Every year we host three signature events that bring the Secaucus community together. All events are free and open to everyone.
+            Every year we host three signature events that bring the Secaucus community together.
           </p>
           <div className="mt-5">
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full" style={{background:'rgba(66,185,126,0.2)', color:'#5eefaa'}}>
