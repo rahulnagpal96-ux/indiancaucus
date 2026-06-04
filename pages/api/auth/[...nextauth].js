@@ -33,7 +33,6 @@ export const authOptions = {
 
   pages: {
     signIn: '/dashboard/login',
-    error: '/dashboard/login',
   },
 
   callbacks: {
