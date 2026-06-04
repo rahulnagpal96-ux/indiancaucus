@@ -27,8 +27,6 @@ const DIWALI_VENDORS = [
     stripeUrl: 'https://donate.stripe.com/28o3dievJ2Od4co9AL',
     perks: [
       'Dedicated food vendor booth space',
-      'Listed in event program as food vendor',
-      'Logo on Diwali Mela website listing',
       'Access to power outlet (limited, first-come)',
       'Setup begins 2 hours before event',
     ],
@@ -40,8 +38,6 @@ const DIWALI_VENDORS = [
     stripeUrl: 'https://donate.stripe.com/14AdR93YUgKC9K6fiq8bS0p',
     perks: [
       '6-foot vendor table with 2 chairs',
-      'Listed in event program as vendor',
-      'Logo on Diwali Mela website listing',
       'Indoor or outdoor placement (TBD)',
       'Setup begins 2 hours before event',
     ],
@@ -54,8 +50,6 @@ const DIWALI_VENDORS = [
     perks: [
       'Special rate for registered nonprofits',
       '6-foot vendor table with 2 chairs',
-      'Valid for Dandiya Dhamaka & Diwali Mela',
-      'Listed in event program as vendor',
       'Contact us to confirm eligibility',
     ],
   },
@@ -69,8 +63,6 @@ const DANDIYA_VENDORS = [
     stripeUrl: 'https://donate.stripe.com/cN215afzN4Wl7oAaEX',
     perks: [
       'Dedicated food vendor booth space',
-      'Listed in Dandiya Dhamaka program',
-      'Logo on event website listing',
       'Access to power outlet (limited)',
       'Setup begins 2 hours before event',
     ],
@@ -82,8 +74,6 @@ const DANDIYA_VENDORS = [
     stripeUrl: 'https://donate.stripe.com/14k4hm3R53ShgZafZg',
     perks: [
       '6-foot vendor table with 2 chairs',
-      'Listed in Dandiya Dhamaka program',
-      'Logo on event website listing',
       'Great visibility during Dandiya Dhamaka night',
       'Setup begins 2 hours before event',
     ],
