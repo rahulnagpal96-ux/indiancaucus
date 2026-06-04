@@ -82,6 +82,23 @@ export default function NotFound() {
         <Link href="/sponsor" className="text-gray-400 hover:text-white transition-colors">Sponsor</Link>
         <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link>
       </div>
+
+      {/* Footer */}
+      <div className="mt-12 w-full border-t border-gray-800 pt-6 flex flex-col items-center gap-2">
+        <div className="flex gap-4">
+          <a href="http://www.instagram.com/indiancaucus" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5z"/><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/><circle cx="17.5" cy="6.5" r="0.75" fill="currentColor"/></svg>
+          </a>
+          <a href="http://www.facebook.com/indiancaucusofsecaucus" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors" aria-label="Facebook">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a4 4 0 0 0-4 4v3H8v4h3v8h4v-8h3l1-4h-4V6a1 1 0 0 1 1-1h3V2z"/></svg>
+          </a>
+        </div>
+        <p className="text-xs text-gray-600">© {new Date().getFullYear()} Indian Caucus of Secaucus · 501(c)(3) Nonprofit</p>
+        <div className="flex gap-3 text-xs text-gray-600">
+          <Link href="/privacy" className="hover:text-gray-400 transition-colors">Privacy</Link>
+          <Link href="/refund-policy" className="hover:text-gray-400 transition-colors">Refund Policy</Link>
+        </div>
+      </div>
     </div>
   )
 }
