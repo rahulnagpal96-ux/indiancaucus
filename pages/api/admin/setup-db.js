@@ -11,11 +11,16 @@ export default async function handler(req, res) {
         id          SERIAL PRIMARY KEY,
         email       VARCHAR(255) UNIQUE NOT NULL,
         first_name  VARCHAR(255),
+        last_name   VARCHAR(255),
         phone       VARCHAR(30),
         source      VARCHAR(50)  DEFAULT 'newsletter',
         status      VARCHAR(20)  DEFAULT 'active',
         created_at  TIMESTAMPTZ  DEFAULT NOW()
       )
+    `
+    await sql`
+      ALTER TABLE subscribers
+      ADD COLUMN IF NOT EXISTS last_name VARCHAR(255)
     `
 
     await sql`

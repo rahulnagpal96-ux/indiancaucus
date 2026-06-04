@@ -30,16 +30,16 @@ async function sendWelcomeEmail(email, firstName) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const { email, firstName, phone, source } = req.body
+  const { email, firstName, lastName, phone, source } = req.body
   if (!email) return res.status(400).json({ error: 'Email required' })
 
   try {
-    const result = await upsertSubscriber({ email, firstName, phone, source })
+    const result = await upsertSubscriber({ email, firstName, lastName, phone, source })
     const isNew = result.rows[0]?.inserted === true
 
     // Sync to Mailchimp and Resend audience (non-blocking)
     syncMailchimp(email)
-    syncResendAudience(email, firstName)
+    syncResendAudience(email, firstName, lastName)
 
     // Send welcome email to new subscribers OR anyone signing up via the form
     // (cron-synced contacts from Mailchimp won't have source='newsletter')

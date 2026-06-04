@@ -24,14 +24,16 @@ export default async function handler(req, res) {
       continue
     }
     const firstName = (row.first_name || row.firstName || row.name || '').trim() || null
+    const lastName = (row.last_name || row.lastName || row.surname || '').trim() || null
     const phone = (row.phone || row.mobile || row.cell || '').trim() || null
 
     try {
       await sql`
-        INSERT INTO subscribers (email, first_name, phone, source)
-        VALUES (${email}, ${firstName}, ${phone}, ${source})
+        INSERT INTO subscribers (email, first_name, last_name, phone, source)
+        VALUES (${email}, ${firstName}, ${lastName}, ${phone}, ${source})
         ON CONFLICT (email) DO UPDATE SET
           first_name = COALESCE(EXCLUDED.first_name, subscribers.first_name),
+          last_name = COALESCE(EXCLUDED.last_name, subscribers.last_name),
           phone = COALESCE(EXCLUDED.phone, subscribers.phone),
           status = 'active'
       `

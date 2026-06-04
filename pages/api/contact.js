@@ -29,10 +29,11 @@ export default async function handler(req, res){
   if(!name || !email || !message) return res.status(400).json({ error: 'Missing fields' })
 
   // Auto-subscribe contact form submitters (non-blocking)
-  const firstName = name.split(' ')[0]
-  upsertSubscriber({ email, firstName, source: 'contact-form' })
+  const [firstName, ...rest] = name.trim().split(/\s+/)
+  const lastName = rest.join(' ') || null
+  upsertSubscriber({ email, firstName, lastName, source: 'contact-form' })
     .then(() => {
-      syncResendAudience(email, firstName)
+      syncResendAudience(email, firstName, lastName)
       syncMailchimp(email)
       sendWelcomeEmail(email, firstName)
     })

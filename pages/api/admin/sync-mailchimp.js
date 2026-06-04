@@ -1,5 +1,5 @@
 import { isAuthenticated } from '../../../lib/auth'
-import { sql } from '@vercel/postgres'
+import { upsertSubscriber } from '../../../lib/db'
 
 async function fetchAllMailchimpMembers(apiKey, listId) {
   const dc = apiKey.split('-').pop()
@@ -47,17 +47,11 @@ export default async function handler(req, res) {
 
       const mf = m.merge_fields || {}
       const firstName = (mf.FNAME || mf.FIRST_NAME || mf.FIRSTNAME || '').trim() || null
+      const lastName = (mf.LNAME || mf.LAST_NAME || mf.LASTNAME || '').trim() || null
       const phone = (mf.MMERGE5 || mf.SMSPHONE || mf.PHONE || mf.MPHONE || mf.CELL || mf.MOBILE || '').trim() || null
 
       try {
-        await sql`
-          INSERT INTO subscribers (email, first_name, phone, source)
-          VALUES (${email}, ${firstName}, ${phone}, 'mailchimp')
-          ON CONFLICT (email) DO UPDATE SET
-            first_name = COALESCE(EXCLUDED.first_name, subscribers.first_name),
-            phone      = COALESCE(EXCLUDED.phone, subscribers.phone),
-            status     = 'active'
-        `
+        await upsertSubscriber({ email, firstName, lastName, phone, source: 'mailchimp' })
         imported++
       } catch {
         skipped++

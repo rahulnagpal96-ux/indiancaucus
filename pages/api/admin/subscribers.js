@@ -19,12 +19,13 @@ export default async function handler(req, res) {
   if (req.method === 'PATCH') {
     const { id } = req.query
     if (!id) return res.status(400).json({ error: 'ID required' })
-    const { email, firstName, phone, status } = req.body
+    const { email, firstName, lastName, phone, status } = req.body
     try {
       const result = await sql`
         UPDATE subscribers SET
           email      = COALESCE(${email?.trim() || null}, email),
           first_name = COALESCE(${firstName?.trim() || null}, first_name),
+          last_name  = COALESCE(${lastName?.trim() || null}, last_name),
           phone      = COALESCE(${phone?.trim() || null}, phone),
           status     = COALESCE(${status || null}, status)
         WHERE id = ${id}
