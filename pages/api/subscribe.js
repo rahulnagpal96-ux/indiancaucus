@@ -5,7 +5,7 @@ async function sendWelcomeEmail(email, firstName) {
   const resendKey = process.env.RESEND_API_KEY
   if (!resendKey) return
 
-  const fromAddress = process.env.EMAIL_FROM_NEWSLETTER || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <newsletter@newsletter.indiancaucus.org>'
+  const fromAddress = process.env.EMAIL_FROM_NEWSLETTER || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <newsletter@newsletters.indiancaucus.org>'
   const html = buildWelcomeEmail(firstName, email)
 
   try {
@@ -78,8 +78,10 @@ export default async function handler(req, res) {
     syncMailchimp(email)
     syncResendAudience(email, firstName)
 
-    // Fire welcome email via Resend once configured (non-blocking)
-    if (isNew) {
+    // Send welcome email to new subscribers OR anyone signing up via the form
+    // (cron-synced contacts from Mailchimp won't have source='newsletter')
+    const isFormSignup = !source || source === 'newsletter'
+    if (isNew || isFormSignup) {
       sendWelcomeEmail(email, firstName)
     }
 
