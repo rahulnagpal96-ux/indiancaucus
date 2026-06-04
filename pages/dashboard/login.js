@@ -49,12 +49,7 @@ export default function DashboardLogin() {
       <div className="relative w-full max-w-sm">
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           <div className="px-8 py-7 text-center" style={{ background: 'linear-gradient(135deg, #1a2744, #243660)' }}>
-            <div
-              className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"
-              style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
-            >
-              <span className="text-white font-black text-xl">IC</span>
-            </div>
+            <img src="/logo.png" alt="Indian Caucus of Secaucus" className="h-14 w-auto mx-auto mb-4" />
             <h1 className="text-white font-bold text-xl tracking-tight">Dashboard Login</h1>
             <p className="text-blue-300 text-sm mt-1">Indian Caucus of Secaucus</p>
           </div>
