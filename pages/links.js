@@ -180,6 +180,7 @@ function DonateBox() {
   }
 
   return (
+    <>
     <div className="flex gap-2">
       <div className="flex items-center flex-1 bg-gray-900 border border-gray-700 focus-within:border-orange-400 rounded-xl overflow-hidden transition-colors">
         <span className="pl-3 text-gray-400 font-semibold">$</span>
@@ -203,6 +204,7 @@ function DonateBox() {
       </button>
     </div>
     {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
+    </>
   )
 }
 
