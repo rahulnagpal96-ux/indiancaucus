@@ -84,10 +84,22 @@ function Softphone() {
 
   function dial(digit) { setDialInput(v => v + digit) }
 
+  function toE164(num) {
+    const digits = num.replace(/\D/g, '')
+    if (digits.length === 10) return `+1${digits}`
+    if (digits.length === 11 && digits[0] === '1') return `+${digits}`
+    return num.startsWith('+') ? num : `+${digits}`
+  }
+
   function makeCall() {
     if (!clientRef.current || !dialInput) return
     setStatus('calling')
-    clientRef.current.newCall({ destinationNumber: dialInput, callerName: 'Indian Caucus' })
+    const destination = toE164(dialInput)
+    clientRef.current.newCall({
+      destinationNumber: destination,
+      callerIdNumber: process.env.NEXT_PUBLIC_TELNYX_PHONE_NUMBER || '+15514009427',
+      callerIdName: 'Indian Caucus',
+    })
   }
 
   function hangup() {
