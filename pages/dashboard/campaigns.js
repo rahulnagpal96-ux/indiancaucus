@@ -228,7 +228,7 @@ export default function CampaignsPage() {
     const r = await fetch('/api/admin/send-test-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: testEmail, subject: `[TEST] ${subject}`, html: buildHtml() }),
+      body: JSON.stringify({ email: testEmail, subject: `[TEST] ${subject}`, html: buildHtml(), broadcast: true }),
     })
     const d = await r.json()
     setTestSending(false)
@@ -443,7 +443,7 @@ export default function CampaignsPage() {
           <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4 space-y-2">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Send a test first</p>
             <p className="text-[11px] text-gray-400 leading-relaxed">
-              Test emails use transactional sending. The campaign button below sends a Resend broadcast to your audience segment.
+              Test emails also use a temporary Resend broadcast segment so you see the same footer and unsubscribe flow.
             </p>
             <div className="flex gap-2">
               <input
@@ -459,7 +459,7 @@ export default function CampaignsPage() {
                 disabled={testSending || !testEmail || !subject}
                 className="border border-gray-200 bg-white text-gray-700 text-xs font-semibold px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 whitespace-nowrap"
               >
-                {testSending ? 'Sending…' : 'Send test (txn)'}
+                {testSending ? 'Sending…' : 'Send test (broadcast)'}
               </button>
             </div>
             {testResult && (
