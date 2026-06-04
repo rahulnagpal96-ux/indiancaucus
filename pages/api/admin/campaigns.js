@@ -1,36 +1,69 @@
 import { createCampaign, getCampaigns, markCampaignSent, getSubscribers } from '../../../lib/db'
 import { isAuthenticated } from '../../../lib/auth'
 
-async function sendBatchEmails(subscribers, subject, htmlContent) {
+function getBroadcastSegmentId() {
+  return process.env.RESEND_SEGMENT_ID || process.env.RESEND_AUDIENCE_ID || ''
+}
+
+function getCampaignFromAddress() {
+  return process.env.EMAIL_FROM_EVENTS || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <events@newsletters.indiancaucus.org>'
+}
+
+function getBaseUrl() {
+  return process.env.NEXT_PUBLIC_BASE_URL || 'https://indiancaucus.org'
+}
+
+function getBroadcastHtml(htmlContent) {
+  const unsubscribeLink = `${getBaseUrl()}/unsubscribe?e={{{contact.email}}}`
+  return htmlContent
+    .replace(/\{\{name\}\}/g, '{{{contact.first_name|Friend}}}')
+    .replace(
+      /<\/body>/i,
+      `<div style="margin:28px 0 0;padding-top:16px;border-top:1px solid #e5e7eb;color:#6b7280;font-size:12px;line-height:1.6;text-align:center;">
+        <a href="${unsubscribeLink}" style="color:#6b7280;text-decoration:underline;">Unsubscribe</a>
+      </div></body>`
+    )
+}
+
+function getEligibleRecipientCount(subscribers) {
+  const seen = new Set()
+  return subscribers.reduce((count, sub) => {
+    const email = sub?.email?.trim()
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || seen.has(email.toLowerCase())) return count
+    seen.add(email.toLowerCase())
+    return count + 1
+  }, 0)
+}
+
+async function createAndSendBroadcast(subject, htmlContent, recipientCount) {
   const resendKey = process.env.RESEND_API_KEY
   if (!resendKey) throw new Error('RESEND_API_KEY not configured')
+  const segmentId = getBroadcastSegmentId()
+  if (!segmentId) throw new Error('RESEND_AUDIENCE_ID not configured')
+  if (!htmlContent || typeof htmlContent !== 'string') throw new Error('Campaign HTML content is missing')
 
-  const fromAddress = process.env.EMAIL_FROM_EVENTS || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <events@newsletters.indiancaucus.org>'
-  const BATCH_SIZE = 100
-  let sent = 0
-
-  for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
-    const batch = subscribers.slice(i, i + BATCH_SIZE).map((sub) => ({
-      from: fromAddress,
-      to: sub.email,
-      subject,
-      html: htmlContent.replace(/\{\{name\}\}/g, sub.first_name || 'Friend'),
-    }))
-
-    const resp = await fetch('https://api.resend.com/emails/batch', {
+  const resp = await fetch('https://api.resend.com/broadcasts', {
       method: 'POST',
       headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(batch),
+      body: JSON.stringify({
+        segmentId,
+        from: getCampaignFromAddress(),
+        subject,
+        html: getBroadcastHtml(htmlContent),
+        send: true,
+      }),
     })
 
-    if (!resp.ok) {
-      const body = await resp.text()
-      throw new Error(`Resend batch error (${resp.status}): ${body}`)
-    }
-    sent += batch.length
+  if (!resp.ok) {
+    const body = await resp.text()
+    throw new Error(`Resend broadcast error (${resp.status}): ${body}`)
   }
 
-  return sent
+  const data = await resp.json()
+  return {
+    broadcastId: data?.id || null,
+    sent: recipientCount,
+  }
 }
 
 export default async function handler(req, res) {
@@ -56,9 +89,14 @@ export default async function handler(req, res) {
       if (send) {
         const subsResult = await getSubscribers({ status: 'active' })
         const subscribers = subsResult.rows
-        const sentCount = await sendBatchEmails(subscribers, subject, htmlContent)
+        const sentCount = getEligibleRecipientCount(subscribers)
+        if (sentCount === 0) {
+          return res.status(400).json({ error: 'No valid active recipients found in the Resend audience' })
+        }
+
+        const broadcast = await createAndSendBroadcast(subject, htmlContent, sentCount)
         await markCampaignSent(campaign.id, sentCount)
-        return res.status(200).json({ ok: true, sent: sentCount, campaignId: campaign.id })
+        return res.status(200).json({ ok: true, sent: sentCount, campaignId: campaign.id, broadcastId: broadcast.broadcastId })
       }
 
       return res.status(200).json({ ok: true, campaign })
@@ -84,10 +122,15 @@ export default async function handler(req, res) {
       const htmlContent = full.rows[0]?.html_content
 
       const subsResult = await getSubscribers({ status: 'active' })
-      const sentCount = await sendBatchEmails(subsResult.rows, campaign.subject, htmlContent)
+      const sentCount = getEligibleRecipientCount(subsResult.rows)
+      if (sentCount === 0) {
+        return res.status(400).json({ error: 'No valid active recipients found in the Resend audience' })
+      }
+
+      const broadcast = await createAndSendBroadcast(campaign.subject, htmlContent, sentCount)
       await markCampaignSent(id, sentCount)
 
-      return res.status(200).json({ ok: true, sent: sentCount })
+      return res.status(200).json({ ok: true, sent: sentCount, broadcastId: broadcast.broadcastId })
     } catch (err) {
       console.error('campaigns PATCH error:', err)
       return res.status(500).json({ error: err.message })

@@ -442,6 +442,9 @@ export default function CampaignsPage() {
           {/* Test send */}
           <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4 space-y-2">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Send a test first</p>
+            <p className="text-[11px] text-gray-400 leading-relaxed">
+              Test emails use transactional sending. The campaign button below sends a Resend broadcast to your audience segment.
+            </p>
             <div className="flex gap-2">
               <input
                 type="email"
@@ -456,7 +459,7 @@ export default function CampaignsPage() {
                 disabled={testSending || !testEmail || !subject}
                 className="border border-gray-200 bg-white text-gray-700 text-xs font-semibold px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 whitespace-nowrap"
               >
-                {testSending ? 'Sending…' : 'Send test'}
+                {testSending ? 'Sending…' : 'Send test (txn)'}
               </button>
             </div>
             {testResult && (
@@ -487,7 +490,7 @@ export default function CampaignsPage() {
               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
               </svg>
-              Send to {subCount ? subCount.toLocaleString() : 'all'} subscribers
+              Send broadcast to {subCount ? subCount.toLocaleString() : 'all'} contacts
             </button>
           </div>
 
@@ -505,7 +508,7 @@ export default function CampaignsPage() {
                   <strong>"{subject}"</strong>
                 </p>
                 <p className="text-gray-400 text-sm text-center mb-6">
-                  This will be sent to <strong>{subCount ? subCount.toLocaleString() : 'all'} active subscribers</strong>. This cannot be undone.
+                  This will send a Resend broadcast to <strong>{subCount ? subCount.toLocaleString() : 'all'} audience contacts</strong>. This cannot be undone.
                 </p>
                 <div className="flex gap-3">
                   <button

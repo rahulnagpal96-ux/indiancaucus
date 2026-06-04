@@ -102,7 +102,7 @@ See `.env.local.example` for the full reference.
 | `AZURE_AD_CLIENT_SECRET` | Microsoft O365 login | Yes |
 | `AZURE_AD_TENANT_ID` | Microsoft O365 login | Yes |
 | `RESEND_API_KEY` | Email delivery | Yes |
-| `RESEND_AUDIENCE_ID` | Resend contact list ID | Yes |
+| `RESEND_AUDIENCE_ID` | Resend audience/segment ID for broadcasts | Yes |
 | `EMAIL_FROM_NEWSLETTER` | Welcome email sender | Yes |
 | `EMAIL_FROM_EVENTS` | Campaign sender | Yes |
 | `EMAIL_FROM_DONATIONS` | Contact/donation email sender | Yes |
