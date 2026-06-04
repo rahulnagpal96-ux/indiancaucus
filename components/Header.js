@@ -62,7 +62,9 @@ export default function Header() {
           </div>
           <div className="font-bold text-gray-900 leading-tight">
             <span className="hidden sm:inline text-sm">Indian Caucus of Secaucus</span>
-            <span className="sm:hidden text-xs">Indian Caucus</span>
+            <span className="sm:hidden text-xs leading-tight">
+              Indian Caucus<br />of Secaucus
+            </span>
           </div>
         </Link>
 
