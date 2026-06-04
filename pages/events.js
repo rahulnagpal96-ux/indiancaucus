@@ -5,40 +5,49 @@ import Footer from '../components/Footer'
 
 const EVENTS = [
   {
-    id: 'holi',
-    emoji: '',
-    title: 'Holi — Festival of Colors',
-    month: 'Spring',
-    colorClass: 'from-pink-500 to-orange-400',
-    accentColor: '#F26644',
-    bgClass: 'bg-orange-50',
-    borderClass: 'border-orange-100',
-    description: 'One of India\'s most joyful celebrations, Holi marks the arrival of spring with vibrant colored powders, music, dancing, and delicious food. Our annual Holi event is family-friendly and open to all.',
-    highlights: ['Color powder play area', 'Live music & DJ', 'Traditional food & sweets', 'Games for kids'],
-  },
-  {
-    id: 'garba',
-    emoji: '',
-    title: 'Dandiya Dhamaka',
-    month: 'Fall (Oct/Nov)',
-    colorClass: 'from-purple-600 to-pink-500',
-    accentColor: '#9333ea',
-    bgClass: 'bg-purple-50',
-    borderClass: 'border-purple-100',
-    description: 'An electrifying night of Dandiya — traditional Gujarati folk dance performed during the Navratri festival. Come dressed in traditional attire, bring your dandiya sticks, and dance the night away.',
-    highlights: ['Live Dandiya Night', 'Local vendors & artisans', 'Cultural performances', 'Traditional food stalls'],
-  },
-  {
     id: 'diwali',
-    emoji: '',
     title: 'Diwali Mela',
     month: 'October',
+    date: 'October 4, 2025',
+    time: '12:00 PM – 6:00 PM',
+    location: 'Buchmuller Park, Secaucus, NJ',
     colorClass: 'from-yellow-400 to-orange-500',
     accentColor: '#F5C518',
     bgClass: 'bg-yellow-50',
     borderClass: 'border-yellow-100',
+    confirmed: true,
     description: 'The Festival of Lights celebrated in grand style. Our Diwali Mela features cultural exhibits, live performances, a vibrant marketplace, rangoli competitions, and more — a true celebration of India\'s most beloved festival.',
     highlights: ['Live performances & shows', 'Community marketplace', 'Rangoli competition', 'Fireworks display'],
+  },
+  {
+    id: 'garba',
+    title: 'Dandiya Dhamaka',
+    month: 'Fall',
+    date: null,
+    time: null,
+    location: 'Secaucus, NJ',
+    colorClass: 'from-purple-600 to-pink-500',
+    accentColor: '#9333ea',
+    bgClass: 'bg-purple-50',
+    borderClass: 'border-purple-100',
+    confirmed: false,
+    description: 'An electrifying night of Dandiya — traditional Gujarati folk dance performed during the Navratri festival. Come dressed in traditional attire, bring your dandiya sticks, and dance the night away.',
+    highlights: ['Live Dandiya Night', 'Local vendors & artisans', 'Cultural performances', 'Traditional food stalls'],
+  },
+  {
+    id: 'holi',
+    title: 'Holi — Festival of Colors',
+    month: 'Spring',
+    date: null,
+    time: null,
+    location: 'Secaucus, NJ',
+    colorClass: 'from-pink-500 to-orange-400',
+    accentColor: '#F26644',
+    bgClass: 'bg-orange-50',
+    borderClass: 'border-orange-100',
+    confirmed: false,
+    description: 'One of India\'s most joyful celebrations, Holi marks the arrival of spring with vibrant colored powders, music, dancing, and delicious food. Our annual Holi event is family-friendly and open to all.',
+    highlights: ['Color powder play area', 'Live music & DJ', 'Traditional food & sweets', 'Games for kids'],
   },
 ]
 
@@ -98,7 +107,12 @@ export default function Events() {
                     </div>
 
                     <div className="mt-6 flex flex-wrap gap-3">
-                      <Link href="/donate" className="btn-primary text-sm px-6 py-2.5">Support this event</Link>
+                      <Link
+                        href={ev.id === 'diwali' ? '/sponsor#diwali-ad' : ev.id === 'garba' ? '/sponsor#dandiya-vendor' : '/donate'}
+                        className="btn-primary text-sm px-6 py-2.5"
+                      >
+                        Support this event
+                      </Link>
                       <a href={process.env.NEXT_PUBLIC_RSVP_FORM || '/contact'} target="_blank" rel="noopener noreferrer" className="btn-outline border-gray-200 text-gray-700 hover:bg-gray-50 text-sm px-6 py-2.5">
                         RSVP / Volunteer
                       </a>
@@ -108,26 +122,33 @@ export default function Events() {
                   {/* Side info */}
                   <div className={`rounded-xl p-5 ${ev.bgClass} border ${ev.borderClass}`}>
                     <h4 className="font-bold text-gray-900 text-sm mb-3">Event details</h4>
-                    <dl className="space-y-2 text-sm">
+                    <dl className="space-y-3 text-sm">
                       <div>
-                        <dt className="text-gray-500 text-xs uppercase tracking-wide">Season</dt>
-                        <dd className="font-medium text-gray-900">{ev.month}</dd>
+                        <dt className="text-gray-500 text-xs uppercase tracking-wide">Date</dt>
+                        <dd className="font-semibold text-gray-900 mt-0.5">
+                          {ev.date ? ev.date : <span className="text-gray-400">Date coming soon</span>}
+                        </dd>
                       </div>
+                      {ev.time && (
+                        <div>
+                          <dt className="text-gray-500 text-xs uppercase tracking-wide">Time</dt>
+                          <dd className="font-medium text-gray-900 mt-0.5">{ev.time}</dd>
+                        </div>
+                      )}
                       <div>
                         <dt className="text-gray-500 text-xs uppercase tracking-wide">Location</dt>
-                        <dd className="font-medium text-gray-900">Secaucus, NJ</dd>
+                        <dd className="font-medium text-gray-900 mt-0.5">{ev.location}</dd>
                       </div>
                       <div>
                         <dt className="text-gray-500 text-xs uppercase tracking-wide">Admission</dt>
-                        <dd className="font-semibold text-brand-green">Free & Open to All</dd>
-                      </div>
-                      <div>
-                        <dt className="text-gray-500 text-xs uppercase tracking-wide">Dates</dt>
-                        <dd className="font-medium text-gray-900">2026 dates coming soon</dd>
+                        <dd className="font-semibold mt-0.5" style={{color:'#42B97E'}}>Free & Open to All</dd>
                       </div>
                     </dl>
                     <div className="mt-4 border-t border-gray-200 pt-4">
-                      <p className="text-xs text-gray-500">Follow us on social media for date announcements and event updates.</p>
+                      {ev.confirmed
+                        ? <p className="text-xs font-semibold" style={{color:'#42B97E'}}>Date confirmed — mark your calendar!</p>
+                        : <p className="text-xs text-gray-500">Follow us on social media for date announcements.</p>
+                      }
                     </div>
                   </div>
                 </div>
