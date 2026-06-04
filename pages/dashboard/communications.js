@@ -45,25 +45,31 @@ function Softphone() {
     setStatus('connecting')
 
     import('@telnyx/webrtc').then(({ TelnyxRTC }) => {
-      const client = new TelnyxRTC({ login: sipUser, password: sipPass })
+      const client = new TelnyxRTC({
+        login: sipUser,
+        password: sipPass,
+        ringtoneFile: null,
+        ringbackFile: null,
+      })
 
-      client.on('telnyx.ready', () => setStatus('ready'))
-      client.on('telnyx.error', () => setStatus('idle'))
+      client.on('telnyx.ready', () => { console.log('[Telnyx] Ready'); setStatus('ready') })
+      client.on('telnyx.error', (err) => { console.error('[Telnyx] Error:', err); setStatus('idle') })
 
       client.on('telnyx.notification', (notification) => {
+        console.log('[Telnyx] Notification:', notification.type, notification.call?.state)
         const call = notification.call
         if (!call) return
         callRef.current = call
 
         if (notification.type === 'callUpdate') {
           const state = call.state
-          if (state === 'ringing') setStatus('ringing')
-          if (state === 'active') {
+          if (state === 'ringing' || state === 'requesting' || state === 'trying') setStatus('ringing')
+          if (state === 'active' || state === 'answering') {
             setStatus('active')
             setCallDuration(0)
             timerRef.current = setInterval(() => setCallDuration(d => d + 1), 1000)
           }
-          if (state === 'destroy') {
+          if (state === 'destroy' || state === 'hangup' || state === 'done') {
             setStatus('ready')
             setCallDuration(0)
             clearInterval(timerRef.current)
@@ -74,7 +80,7 @@ function Softphone() {
 
       client.connect()
       clientRef.current = client
-    }).catch(() => setStatus('idle'))
+    }).catch(err => { console.error('[Telnyx] Import error:', err); setStatus('idle') })
 
     return () => {
       clearInterval(timerRef.current)
