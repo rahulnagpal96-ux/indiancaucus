@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 function StatCard({ label, value, sub, gradient, icon, loading }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-2xl border border-gray-100 p-4 md:p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
         <div
           className="w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-sm"
@@ -111,7 +111,7 @@ export default function DashboardHome() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
         <StatCard
           label="Active subscribers"
           value={stats?.total?.toLocaleString()}
@@ -166,7 +166,7 @@ export default function DashboardHome() {
       {/* Quick actions */}
       <div className="mb-8">
         <h3 className="text-gray-700 font-bold text-sm uppercase tracking-wide mb-3">Quick actions</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             {
               href: '/dashboard/campaigns',

@@ -233,9 +233,9 @@ export default function SubscribersPage() {
       )}
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
+      <div className="flex flex-wrap items-center gap-2 mb-5">
         {/* Search */}
-        <div className="flex-1 min-w-52 relative">
+        <div className="flex-1 min-w-0 relative">
           <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
@@ -263,28 +263,28 @@ export default function SubscribersPage() {
           ))}
         </div>
 
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-2">
           <button
             onClick={exportCSV}
             disabled={!subscribers.length}
-            className="flex items-center gap-2 border border-gray-200 bg-white text-gray-600 text-xs font-semibold px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all shadow-sm disabled:opacity-50"
+            className="flex items-center gap-1.5 border border-gray-200 bg-white text-gray-600 text-xs font-semibold px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-all shadow-sm disabled:opacity-50"
           >
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
             </svg>
-            Export CSV
+            <span className="hidden sm:inline">Export</span>
           </button>
           <button
             onClick={() => setShowImport(true)}
-            className="flex items-center gap-2 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-all hover:opacity-90"
+            className="flex items-center gap-1.5 text-white text-xs font-bold px-3 py-2.5 rounded-xl shadow-sm transition-all hover:opacity-90"
             style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
           >
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
             </svg>
-            Import CSV
+            <span className="hidden sm:inline">Import</span>
           </button>
         </div>
       </div>
@@ -304,7 +304,7 @@ export default function SubscribersPage() {
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20 text-gray-300">
             <svg className="animate-spin mr-2" width="20" height="20" fill="none" viewBox="0 0 24 24">
