@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router'
-import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 const NAV = [
@@ -36,9 +35,14 @@ const NAV = [
   },
 ]
 
+async function logout(router) {
+  await fetch('/api/auth/logout', { method: 'POST' })
+  router.push('/dashboard/login')
+}
+
 export default function AdminLayout({ children, title }) {
-  const { pathname } = useRouter()
-  const { data: session } = useSession()
+  const router = useRouter()
+  const { pathname } = router
 
   return (
     <div className="min-h-screen flex" style={{ background: '#f0f2f8' }}>
@@ -107,15 +111,15 @@ export default function AdminLayout({ children, title }) {
               className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
               style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
             >
-              {session?.user?.name?.[0] ?? 'A'}
+              A
             </div>
             <div className="min-w-0">
-              <p className="text-white text-xs font-medium truncate">{session?.user?.name ?? 'Admin'}</p>
-              <p className="text-blue-400 text-xs truncate">{session?.user?.email ?? ''}</p>
+              <p className="text-white text-xs font-medium">Admin</p>
+              <p className="text-blue-400 text-xs">Indian Caucus</p>
             </div>
           </div>
           <button
-            onClick={() => signOut({ callbackUrl: '/dashboard/login' })}
+            onClick={() => logout(router)}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-blue-300 hover:text-white hover:bg-white/10 transition-all"
           >
             <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

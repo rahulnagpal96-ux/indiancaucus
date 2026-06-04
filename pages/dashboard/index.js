@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
 import AdminLayout from '../../components/AdminLayout'
 import Link from 'next/link'
 
@@ -28,7 +27,6 @@ function StatCard({ label, value, sub, gradient, icon, loading }) {
 }
 
 export default function DashboardHome() {
-  const { data: session } = useSession()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [dbError, setDbError] = useState(false)
@@ -58,8 +56,6 @@ export default function DashboardHome() {
       setSettingUp(false)
     }
   }
-
-  const firstName = session?.user?.name?.split(' ')[0]
 
   return (
     <AdminLayout title="Overview">
@@ -92,7 +88,7 @@ export default function DashboardHome() {
       {/* Welcome */}
       <div className="mb-7">
         <h2 className="text-gray-900 font-black text-2xl">
-          {firstName ? `Hey, ${firstName} 👋` : 'Welcome back 👋'}
+          Welcome back 👋
         </h2>
         <p className="text-gray-500 text-sm mt-1">
           Here's what's happening with your community list.
