@@ -62,8 +62,8 @@ export default function Header() {
           </div>
           <div className="leading-tight">
             <div className="hidden sm:block font-extrabold text-gray-900 dark:text-white text-base tracking-tight">Indian Caucus of Secaucus</div>
-            <div className="sm:hidden font-extrabold text-gray-900 dark:text-white text-sm tracking-tight leading-tight">
-              Indian Caucus<br /><span className="text-brand-orange">of Secaucus</span>
+            <div className="sm:hidden font-extrabold text-gray-900 dark:text-white text-sm tracking-tight leading-none">
+              Indian Caucus <span className="text-brand-orange">of Secaucus</span>
             </div>
           </div>
         </Link>
@@ -104,11 +104,11 @@ export default function Header() {
         </div>
 
         {/* Mobile right side */}
-        <div className="md:hidden flex items-center gap-2">
-          <a href={PARTICIPATE_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary text-xs px-3 py-2">
+        <div className="md:hidden flex items-center gap-1.5">
+          <a href={PARTICIPATE_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary text-xs px-2.5 py-2">
             Participate
           </a>
-          <Link href="/donate" className="btn-primary text-xs px-3 py-2">
+          <Link href="/donate" className="btn-primary text-xs px-2.5 py-2">
             Donate
           </Link>
           <button
@@ -145,13 +145,15 @@ export default function Header() {
               {label}
             </Link>
           ))}
-          <div className="pt-2 border-t border-gray-100 dark:border-gray-700 flex items-center gap-3">
-            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="p-2 rounded-lg text-gray-400 dark:text-gray-300 hover:text-brand-orange transition-colors">
-              <InstagramIcon />
-            </a>
-            <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="p-2 rounded-lg text-gray-400 dark:text-gray-300 hover:text-blue-600 transition-colors">
-              <FacebookIcon />
-            </a>
+          <div className="pt-2 border-t border-gray-100 dark:border-gray-700 flex flex-col gap-2">
+            <div className="flex items-center gap-3 pt-1">
+              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="p-2 rounded-lg text-gray-400 dark:text-gray-300 hover:text-brand-orange transition-colors">
+                <InstagramIcon />
+              </a>
+              <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="p-2 rounded-lg text-gray-400 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                <FacebookIcon />
+              </a>
+            </div>
           </div>
         </div>
       )}
