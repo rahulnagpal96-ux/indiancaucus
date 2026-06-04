@@ -1,6 +1,5 @@
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '../auth/[...nextauth]'
 import { createCampaign, getCampaigns, markCampaignSent, getSubscribers } from '../../../lib/db'
+import { isAuthenticated } from '../../../lib/auth'
 
 async function sendBatchEmails(subscribers, subject, htmlContent) {
   const resendKey = process.env.RESEND_API_KEY
@@ -35,8 +34,7 @@ async function sendBatchEmails(subscribers, subject, htmlContent) {
 }
 
 export default async function handler(req, res) {
-  const session = await getServerSession(req, res, authOptions)
-  if (!session) return res.status(401).json({ error: 'Unauthorized' })
+  if (!isAuthenticated(req)) return res.status(401).json({ error: 'Unauthorized' })
 
   if (req.method === 'GET') {
     try {
