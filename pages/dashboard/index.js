@@ -110,6 +110,19 @@ export default function DashboardHome() {
         </div>
       )}
 
+      {/* Always-visible DB migration button */}
+      {!dbError && (
+        <div className="mb-5 flex justify-end">
+          <button
+            onClick={setupDb}
+            disabled={settingUp}
+            className="text-xs font-semibold border border-gray-200 bg-white px-3 py-2 rounded-xl text-gray-500 hover:bg-gray-50 transition-all disabled:opacity-50"
+          >
+            {settingUp ? 'Running…' : setupMsg || 'Run DB migrations'}
+          </button>
+        </div>
+      )}
+
       {/* Welcome */}
       <div className="mb-7">
         <h2 className="text-gray-900 font-black text-2xl">
