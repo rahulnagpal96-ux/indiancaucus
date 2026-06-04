@@ -51,29 +51,27 @@ async function sendTestBroadcast({ email, subject, html }) {
     body: { name: `Campaign test ${new Date().toISOString()}` },
   })
 
-  try {
-    await resendRequest('/contacts', {
-      method: 'POST',
-      body: {
-        email,
-        segments: [{ id: segment.id }],
-      },
-    })
+  await resendRequest('/contacts', {
+    method: 'POST',
+    body: {
+      email,
+      segments: [{ id: segment.id }],
+    },
+  })
 
-    const broadcast = await resendRequest('/broadcasts', {
-      method: 'POST',
-      body: {
-        segment_id: segment.id,
-        from: getCampaignFromAddress(),
-        subject,
-        name: subject,
-        html: getBroadcastHtml(html),
-        send: true,
-      },
-    })
+  const broadcast = await resendRequest('/broadcasts', {
+    method: 'POST',
+    body: {
+      segment_id: segment.id,
+      from: getCampaignFromAddress(),
+      subject,
+      name: subject,
+      html: getBroadcastHtml(html),
+      send: true,
+    },
+  })
 
-    return { broadcastId: broadcast.id, segmentId: segment.id }
-  }
+  return { broadcastId: broadcast.id, segmentId: segment.id }
 }
 
 export default async function handler(req, res) {
