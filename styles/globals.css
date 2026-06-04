@@ -152,13 +152,13 @@ body {
   .border-yellow-100 { border-color: #2d2200 !important; }
   .border-purple-100 { border-color: #1e0d3d !important; }
 
-  /* Only override dark text on light-background content — not hero/colored sections */
+  /* Text — scoped to avoid overriding hero/colored sections */
   main .text-gray-900, footer .text-gray-900 { color: #e6edf3 !important; }
   main .text-gray-800, footer .text-gray-800 { color: #c9d1d9 !important; }
   main .text-gray-700, footer .text-gray-700 { color: #c9d1d9 !important; }
   main .text-gray-600, footer .text-gray-600 { color: #8d96a0 !important; }
   main .text-gray-500, footer .text-gray-500 { color: #6e7681 !important; }
-  /* Do NOT override gray-300/400 — those are used as readable light text on dark hero backgrounds */
+  /* Do NOT override gray-300/400 — used as readable light text on dark hero backgrounds */
 
   .divide-gray-100 > * + * { border-color: #21262d !important; }
 
@@ -169,4 +169,14 @@ body {
 
   /* Select inputs */
   select.input-field, select.bg-white { background-color: #161b22 !important; color: #e6edf3 !important; }
+
+  /* Privacy & refund policy pages */
+  .prose .text-gray-700, article .text-gray-700 { color: #c9d1d9 !important; }
+
+  /* Links in dark mode */
+  main a.text-brand-orange { color: #FF9933 !important; }
+  main a.text-brand-green { color: #42B97E !important; }
+
+  /* Donate sidebar dark card */
+  .bg-brand-navy { background-color: #0F2044 !important; }
 }

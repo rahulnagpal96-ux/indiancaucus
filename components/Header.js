@@ -113,7 +113,7 @@ export default function Header() {
           </Link>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             aria-label="Toggle menu"
           >
             {mobileOpen ? (
@@ -131,25 +131,25 @@ export default function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1">
+        <div className="md:hidden border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 space-y-1">
           {NAV.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
               className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 router.pathname === href
-                  ? 'text-brand-orange bg-orange-50'
-                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-brand-orange bg-orange-50 dark:bg-orange-950'
+                  : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}
             >
               {label}
             </Link>
           ))}
-          <div className="pt-2 border-t border-gray-100 flex items-center gap-3">
-            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="p-2 rounded-lg text-gray-500 hover:text-brand-orange transition-colors">
+          <div className="pt-2 border-t border-gray-100 dark:border-gray-700 flex items-center gap-3">
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="p-2 rounded-lg text-gray-400 dark:text-gray-300 hover:text-brand-orange transition-colors">
               <InstagramIcon />
             </a>
-            <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="p-2 rounded-lg text-gray-500 hover:text-blue-600 transition-colors">
+            <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="p-2 rounded-lg text-gray-400 dark:text-gray-300 hover:text-blue-600 transition-colors">
               <FacebookIcon />
             </a>
           </div>

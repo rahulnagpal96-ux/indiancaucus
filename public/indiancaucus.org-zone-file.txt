@@ -1,0 +1,61 @@
+$ORIGIN indiancaucus.org.
+
+; SOA Record
+@	IN	SOA	ns-542.awsdns-03.net.	awsdns-hostmaster.amazon.com.	(
+	2	;serial
+	7200	;refresh
+	900	;retry
+	1209600	;expire
+	86400	;minimum ttl
+)
+
+; NS Records
+@	IN	NS	ns-542.awsdns-03.net.
+@	IN	NS	ns-1328.awsdns-38.org.
+@	IN	NS	ns-1959.awsdns-52.co.uk.
+@	IN	NS	ns-134.awsdns-16.com.
+
+; MX Records
+@	IN	MX	0 indiancaucus-org.mail.protection.outlook.com.
+
+; A Records
+@	IN	A	76.76.21.21
+*.indiancaucus.org.	IN	A	162.159.134.42
+gsuite.indiancaucus.org.	IN	A	162.159.134.42
+
+; CNAME Records
+_acme-challenge.indiancaucus.org.	IN	CNAME	indiancaucus.org.kinstavalidation.app.
+1s3._domainkey.indiancaucus.org.	IN	CNAME	wl670541s3.domainkey.freshemail.io.
+4njfqvfmv5hoio6pstosbtqdzbfy27ql._domainkey.indiancaucus.org.	IN	CNAME	4njfqvfmv5hoio6pstosbtqdzbfy27ql.dkim.custom-email-domain.stripe.com.
+avsf4gbyohapkyckkqf5snz64k55ewoc._domainkey.indiancaucus.org.	IN	CNAME	avsf4gbyohapkyckkqf5snz64k55ewoc.dkim.custom-email-domain.stripe.com.
+b27dvyiqxxbu7ez4qbl33sgfahxhgojk._domainkey.indiancaucus.org.	IN	CNAME	b27dvyiqxxbu7ez4qbl33sgfahxhgojk.dkim.custom-email-domain.stripe.com.
+d5hhn6dqnduop4q3tonume6il5yx34id._domainkey.indiancaucus.org.	IN	CNAME	d5hhn6dqnduop4q3tonume6il5yx34id.dkim.custom-email-domain.stripe.com.
+g7k4clxai5fswl7fweg6ydlb3j6str73._domainkey.indiancaucus.org.	IN	CNAME	g7k4clxai5fswl7fweg6ydlb3j6str73.dkim.custom-email-domain.stripe.com.
+indiancaucus._domainkey.indiancaucus.org.	IN	CNAME	indiancaucus.63sklo.custdkim.salesforce.com.
+indiancaucusalternate._domainkey.indiancaucus.org.	IN	CNAME	indiancaucusalternate.b6rczk.custdkim.salesforce.com.
+k1._domainkey.indiancaucus.org.	IN	CNAME	dkim.mcsv.net.
+k2._domainkey.indiancaucus.org.	IN	CNAME	dkim2.mcsv.net.
+k3._domainkey.indiancaucus.org.	IN	CNAME	dkim3.mcsv.net.
+oar6e._domainkey.indiancaucus.org.	IN	CNAME	wl670541s1.domainkey.freshemail.io.
+qxzs3n25eutpj7g4flqagavg7gmozs7d._domainkey.indiancaucus.org.	IN	CNAME	qxzs3n25eutpj7g4flqagavg7gmozs7d.dkim.custom-email-domain.stripe.com.
+selector1._domainkey.indiancaucus.org.	IN	CNAME	selector1-indiancaucus-org._domainkey.Indiancaucus.onmicrosoft.com.
+selector2._domainkey.indiancaucus.org.	IN	CNAME	selector2-indiancaucus-org._domainkey.Indiancaucus.onmicrosoft.com.
+slx2e._domainkey.indiancaucus.org.	IN	CNAME	wl670541s2.domainkey.freshemail.io.
+www.apps.indiancaucus.org.	IN	CNAME	apps.indiancaucus.org.
+_acme-challenge.www.apps.indiancaucus.org.	IN	CNAME	www.apps.indiancaucus.org.kinstavalidation.app.
+autodiscover.indiancaucus.org.	IN	CNAME	autodiscover.outlook.com.
+bounce.indiancaucus.org.	IN	CNAME	custom-email-domain.stripe.com.
+fwdkim1.indiancaucus.org.	IN	CNAME	spfmx1.domainkey.freshemail.io.
+support.indiancaucus.org.	IN	CNAME	faf83d72bb9928879043fb3091e2d36c.freshdesk.com.
+www.indiancaucus.org.	IN	CNAME	576579bfb771dc7a.vercel-dns-016.com.
+
+; TXT Records
+@	IN	TXT	"stripe-verification=d741473c72972a8d259f4fd72e0d71d489f2a7c5c0847a00700ece6b9daa7c30"
+@	IN	TXT	"ca3-7c1a797afd744a279c8e54a6dca3b4e8"
+@	IN	TXT	"v=spf1 include:spf.protection.outlook.com include:_spf.salesforce.com -all"
+@	IN	TXT	"apple-domain-verification=bqevZoMcSD7IXQOs"
+_dmarc.indiancaucus.org.	IN	TXT	"v=DMARC1; p=quarantine; pct=100"
+google._domainkey.indiancaucus.org.	IN	TXT	"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2xgS4YGpupnIiIDwocejWbP4icwmUCGSbNsIf0AhLEXU8r9x5hRx/CxvpUHGYS+2DhvrNTWtEBWip0sJ5G3wwYhlNcA4jzS35z9nVkKQ0m8t5hkNM3ldf1w17c0o/A/Eslm8LW1kVhCqUAsYmMWC0nmaTbNGj26OIjBMTkqzGIKB7MZdsNS/oCb1Rb57b5Fx4BqXeXa6wHQRG7FHXFm8LtrFT0T3jgtDtC2zSV/KFaLrDG7rn8rDFR2FhP0P2wBuRr85lDMw06DHoWBfZSPOe3P8gAmjotZ3Jz5uyR8vvh5gRA0qcqtAWwJc7PFunF7+0Ft2btYF6ruvfvV3OLIlpQIDAQAB"
+_acme-challenge.apps.indiancaucus.org.	IN	TXT	"uJykJxaDgtc88DC8kUV5jImbrH8XpLb4BNF5f_vNpSE"
+_cf-custom-hostname.www.apps.indiancaucus.org.	IN	TXT	"429b84cf-2f64-4ea8-9d66-7abdfaf5a002"
+kinsta-verification-efca69.indiancaucus.org.	IN	TXT	"8bb02544-5107-4841-bac2-40a1f31c59e5"
