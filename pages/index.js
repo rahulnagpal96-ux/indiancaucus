@@ -17,11 +17,11 @@ const EVENTS = [
   {
     id: 'garba',
     emoji: '💃',
-    title: 'Garba & Dandiya Dhamaka',
+    title: 'Dandiya Dhamaka',
     month: 'Fall',
     color: 'from-purple-600 to-pink-500',
     accent: '#9333ea',
-    description: 'Traditional Garba and Dandiya nights filled with community performances, local vendors, and vibrant folk dance.',
+    description: 'An electrifying night of Dandiya — traditional Gujarati folk dance, local vendors, cultural performances, and non-stop energy.',
   },
   {
     id: 'diwali',
@@ -58,10 +58,11 @@ export default function Home() {
       <Header />
 
       {/* ── HERO ── */}
-      <section className="hero-bg dot-pattern relative overflow-hidden">
+      <section className="relative overflow-hidden" style={{background:'linear-gradient(135deg, #0F2044 0%, #1a3a6e 45%, #1e5c40 100%)'}}>
+        <div className="absolute inset-0 pointer-events-none" style={{backgroundImage:'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize:'24px 24px'}} />
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 right-1/4 w-64 h-64 rounded-full bg-brand-orange/10 blur-3xl" />
-          <div className="absolute bottom-10 left-1/3 w-80 h-80 rounded-full bg-brand-green/10 blur-3xl" />
+          <div className="absolute top-20 right-1/4 w-64 h-64 rounded-full blur-3xl" style={{background:'rgba(242,102,68,0.12)'}} />
+          <div className="absolute bottom-10 left-1/3 w-80 h-80 rounded-full blur-3xl" style={{background:'rgba(66,185,126,0.12)'}} />
         </div>
 
         <div className="container-max px-4 md:px-6 py-20 md:py-28 relative">
@@ -78,7 +79,7 @@ export default function Home() {
                 <span className="gradient-text">Build Community.</span>
               </h1>
               <p className="mt-5 text-lg text-gray-300 leading-relaxed max-w-xl">
-                We bring thousands together each year for Holi, Garba & Dandiya, and Diwali Mela — free, joyful celebrations of India's rich heritage in the heart of New Jersey.
+                We bring thousands together each year for Holi, Dandiya Dhamaka, and Diwali Mela — free, joyful celebrations of India's rich heritage in the heart of New Jersey.
               </p>
               <p className="mt-3 text-sm text-gray-400">
                 Your generosity funds every lantern, every performance, every smile.

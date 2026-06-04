@@ -19,14 +19,14 @@ const EVENTS = [
   {
     id: 'garba',
     emoji: '💃',
-    title: 'Garba & Dandiya Dhamaka',
+    title: 'Dandiya Dhamaka',
     month: 'Fall (Oct/Nov)',
     colorClass: 'from-purple-600 to-pink-500',
     accentColor: '#9333ea',
     bgClass: 'bg-purple-50',
     borderClass: 'border-purple-100',
-    description: 'Two electrifying nights of Garba and Dandiya — traditional Gujarati folk dances performed during the Navratri festival. Come dressed in traditional attire, bring your dandiya sticks, and dance till midnight.',
-    highlights: ['Live Garba & Dandiya', 'Local vendors & artisans', 'Cultural performances', 'Traditional food stalls'],
+    description: 'An electrifying night of Dandiya — traditional Gujarati folk dance performed during the Navratri festival. Come dressed in traditional attire, bring your dandiya sticks, and dance the night away.',
+    highlights: ['Live Dandiya Night', 'Local vendors & artisans', 'Cultural performances', 'Traditional food stalls'],
   },
   {
     id: 'diwali',
@@ -47,12 +47,12 @@ export default function Events() {
     <div className="min-h-screen">
       <Head>
         <title>Events — Indian Caucus of Secaucus</title>
-        <meta name="description" content="Join Indian Caucus of Secaucus for Holi, Garba & Dandiya, and Diwali Mela — free community festivals celebrating Indian culture in NJ." />
+        <meta name="description" content="Join Indian Caucus of Secaucus for Holi, Dandiya Dhamaka, and Diwali Mela — free community festivals celebrating Indian culture in NJ." />
       </Head>
       <Header />
 
       {/* Hero */}
-      <section className="hero-bg dot-pattern">
+      <section style={{background:'linear-gradient(135deg, #0F2044 0%, #1a3a6e 45%, #1e5c40 100%)'}}>
         <div className="container-max px-4 md:px-6 py-16 md:py-20">
           <span className="section-label" style={{background:'rgba(242,102,68,0.2)', color:'#FF9933'}}>Events Calendar</span>
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mt-3 leading-tight">

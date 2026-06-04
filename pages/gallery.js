@@ -21,12 +21,12 @@ export default function Gallery({ images }) {
     <div className="min-h-screen">
       <Head>
         <title>Gallery — Indian Caucus of Secaucus</title>
-        <meta name="description" content="Photos from Indian Caucus events — Holi, Garba & Dandiya, and Diwali Mela in Secaucus, NJ." />
+        <meta name="description" content="Photos from Indian Caucus events — Holi, Dandiya Dhamaka, and Diwali Mela in Secaucus, NJ." />
       </Head>
       <Header />
 
       {/* Hero */}
-      <section className="hero-bg dot-pattern">
+      <section style={{background:'linear-gradient(135deg, #0F2044 0%, #1a3a6e 45%, #1e5c40 100%)'}}>
         <div className="container-max px-4 md:px-6 py-16 md:py-20">
           <span className="section-label" style={{background:'rgba(242,102,68,0.2)', color:'#FF9933'}}>Photo Gallery</span>
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mt-3 leading-tight">

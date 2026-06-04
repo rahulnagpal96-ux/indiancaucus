@@ -65,7 +65,7 @@ const DANDIYA_VENDORS = [
       '6-foot vendor table with 2 chairs',
       'Listed in Dandiya Dhamaka program',
       'Logo on event website listing',
-      'Great visibility during Garba nights',
+      'Great visibility during Dandiya Dhamaka night',
       'Setup begins 2 hours before event',
     ],
   },
@@ -241,7 +241,7 @@ export default function Sponsor() {
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-1">Dandiya Dhamaka Vendor Spots</h2>
           <p className="mt-3 text-gray-600 max-w-2xl">
-            Reach a vibrant, festive crowd during our Garba & Dandiya nights. Perfect for food vendors, jewelry, clothing, and cultural goods.
+            Reach a vibrant, festive crowd during our Dandiya Dhamaka night. Perfect for food vendors, jewelry, clothing, and cultural goods.
           </p>
 
           <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">

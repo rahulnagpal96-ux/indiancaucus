@@ -22,7 +22,7 @@ export default function About() {
       <Header />
 
       {/* Page hero */}
-      <section className="hero-bg dot-pattern">
+      <section style={{background:'linear-gradient(135deg, #0F2044 0%, #1a3a6e 45%, #1e5c40 100%)'}}>
         <div className="container-max px-4 md:px-6 py-16 md:py-20">
           <span className="section-label" style={{background:'rgba(242,102,68,0.2)', color:'#FF9933'}}>Our Story</span>
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mt-3 leading-tight">
@@ -78,7 +78,7 @@ export default function About() {
                 <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-xl flex-shrink-0">🎉</div>
                 <div>
                   <h3 className="font-bold text-gray-900">3 Annual Festivals</h3>
-                  <p className="text-sm text-gray-600 mt-1">Holi, Garba & Dandiya Dhamaka, and Diwali Mela — all free and open to the full community.</p>
+                  <p className="text-sm text-gray-600 mt-1">Holi, Dandiya Dhamaka, and Diwali Mela — all free and open to the full community.</p>
                 </div>
               </div>
             </div>

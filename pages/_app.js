@@ -15,7 +15,7 @@ export default function MyApp({ Component, pageProps }) {
         <meta property="og:site_name" content="Indian Caucus of Secaucus" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Indian Caucus of Secaucus — Celebrating Indian Culture in NJ" />
-        <meta property="og:description" content="A 501(c)(3) nonprofit hosting Holi, Garba & Dandiya, and Diwali Mela for the Secaucus, NJ community. Donate today." />
+        <meta property="og:description" content="A 501(c)(3) nonprofit hosting Holi, Dandiya Dhamaka, and Diwali Mela for the Secaucus, NJ community. Donate today." />
         <meta property="og:image" content="/social-card.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Indian Caucus of Secaucus" />
