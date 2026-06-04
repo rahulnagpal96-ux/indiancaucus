@@ -248,6 +248,66 @@ function ImportModal({ onClose, onImport }) {
   )
 }
 
+function AddModal({ onClose, onAdd }) {
+  const [form, setForm] = useState({ email: '', firstName: '', phone: '' })
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  function change(e) { setForm(f => ({ ...f, [e.target.name]: e.target.value })) }
+
+  async function save(e) {
+    e.preventDefault()
+    setSaving(true)
+    setError('')
+    const r = await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: form.email, firstName: form.firstName, phone: form.phone, source: 'manual' }),
+    })
+    setSaving(false)
+    if (r.ok) { onAdd(); onClose() }
+    else setError('Could not add subscriber. Check the email address.')
+  }
+
+  const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20 focus:border-[#1a2744] transition-all'
+  const labelClass = 'block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5'
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.5)' }}>
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
+          <div>
+            <h2 className="font-bold text-gray-900">Add subscriber</h2>
+            <p className="text-gray-400 text-xs mt-0.5">They will also receive a welcome email</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors text-lg leading-none">×</button>
+        </div>
+        <form onSubmit={save} className="px-7 py-6 space-y-4">
+          <div>
+            <label className={labelClass}>Email <span className="text-red-400">*</span></label>
+            <input type="email" name="email" value={form.email} onChange={change} required autoFocus className={inputClass} placeholder="jane@example.com" />
+          </div>
+          <div>
+            <label className={labelClass}>First name</label>
+            <input type="text" name="firstName" value={form.firstName} onChange={change} placeholder="Jane" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Phone</label>
+            <input type="tel" name="phone" value={form.phone} onChange={change} placeholder="+1 (201) 555-0100" className={inputClass} />
+          </div>
+          {error && <p className="text-red-500 text-xs">{error}</p>}
+          <div className="flex gap-3 pt-1">
+            <button type="button" onClick={onClose} className="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-3 rounded-2xl hover:bg-gray-50 transition-all">Cancel</button>
+            <button type="submit" disabled={saving} className="flex-1 text-white text-sm font-bold py-3 rounded-2xl shadow-md hover:opacity-90 transition-all disabled:opacity-50" style={{ background: 'linear-gradient(135deg,#1a2744,#243660)' }}>
+              {saving ? 'Adding…' : 'Add subscriber'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 export default function SubscribersPage() {
   const router = useRouter()
   const [subscribers, setSubscribers] = useState([])
@@ -257,6 +317,7 @@ export default function SubscribersPage() {
   const [showImport, setShowImport] = useState(false)
   const [deleting, setDeleting] = useState(null)
   const [editing, setEditing] = useState(null)
+  const [adding, setAdding] = useState(false)
 
   const fetchSubs = useCallback(() => {
     setLoading(true)
@@ -308,6 +369,13 @@ export default function SubscribersPage() {
         />
       )}
 
+      {adding && (
+        <AddModal
+          onClose={() => setAdding(false)}
+          onAdd={fetchSubs}
+        />
+      )}
+
       {editing && (
         <EditModal
           sub={editing}
@@ -351,6 +419,16 @@ export default function SubscribersPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setAdding(true)}
+            className="flex items-center gap-1.5 text-white text-xs font-bold px-3 py-2.5 rounded-xl shadow-sm transition-all hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg,#1a2744,#243660)' }}
+          >
+            <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span className="hidden sm:inline">Add</span>
+          </button>
           <button
             onClick={exportCSV}
             disabled={!subscribers.length}
