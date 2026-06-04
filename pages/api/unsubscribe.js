@@ -1,22 +1,6 @@
 import { sql } from '@vercel/postgres'
 import { createHash } from 'crypto'
-
-async function unsubscribeFromResend(email) {
-  const resendKey = process.env.RESEND_API_KEY
-  const audienceId = process.env.RESEND_AUDIENCE_ID
-  if (!resendKey || !audienceId) return
-
-  try {
-    // Resend upserts by email — setting unsubscribed:true removes them from sends
-    await fetch(`https://api.resend.com/audiences/${audienceId}/contacts`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, unsubscribed: true }),
-    })
-  } catch (err) {
-    console.error('Resend unsubscribe error:', err.message)
-  }
-}
+import { syncResendAudience } from '../../lib/syncSubscriber'
 
 async function unsubscribeFromMailchimp(email) {
   const apiKey = process.env.MAILCHIMP_API_KEY
@@ -52,7 +36,7 @@ export default async function handler(req, res) {
     await sql`UPDATE subscribers SET status = 'unsubscribed' WHERE email = ${clean}`
 
     // Sync unsubscribe to Resend and Mailchimp (non-blocking)
-    unsubscribeFromResend(clean)
+    syncResendAudience(clean, '', '', true)
     unsubscribeFromMailchimp(clean)
 
     return res.status(200).json({ ok: true })
