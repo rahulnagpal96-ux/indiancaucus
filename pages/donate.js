@@ -96,10 +96,10 @@ export default function Donate() {
               <h3 className="font-bold text-white mb-4">Your impact</h3>
               <div className="space-y-3">
                 {[
-                  { a: '$25', l: 'Refreshments for 10 families' },
-                  { a: '$50', l: 'Cultural workshop supplies' },
-                  { a: '$100', l: 'Event logistics & safety' },
-                  { a: '$250', l: 'Full cultural performance' },
+                  { a: '$25', l: 'Participant token of appreciation' },
+                  { a: '$100', l: 'Flyers and marketing' },
+                  { a: '$100', l: 'Event logistics' },
+                  { a: '$250', l: 'Kids activities' },
                 ].map((i) => (
                   <div key={i.a} className="flex items-center gap-3">
                     <span className="font-extrabold w-12 flex-shrink-0" style={{background:'linear-gradient(135deg,#FF9933,#F26644)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text'}}>{i.a}</span>

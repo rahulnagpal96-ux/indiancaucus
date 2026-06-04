@@ -60,7 +60,10 @@ export default function Header() {
             />
             <div className="w-9 h-9 rounded-md bg-brand-orange items-center justify-center text-white font-bold text-sm hidden">IC</div>
           </div>
-          <div className="font-bold text-gray-900 leading-tight text-sm">Indian Caucus of Secaucus</div>
+          <div className="font-bold text-gray-900 leading-tight">
+            <span className="hidden sm:inline text-sm">Indian Caucus of Secaucus</span>
+            <span className="sm:hidden text-xs">Indian Caucus</span>
+          </div>
         </Link>
 
         {/* Desktop nav */}

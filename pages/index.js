@@ -42,10 +42,10 @@ const STATS = [
 ]
 
 const IMPACT = [
-  { amount: '$25', label: 'Covers refreshments for 10 families at an event' },
-  { amount: '$50', label: 'Funds art supplies for our youth cultural workshops' },
-  { amount: '$100', label: 'Sponsors event safety & logistics for our community' },
-  { amount: '$250', label: 'Underwrites a full cultural performance or exhibit' },
+  { amount: '$25', label: 'Participant token of appreciation' },
+  { amount: '$100', label: 'Flyers and marketing' },
+  { amount: '$100', label: 'Event logistics' },
+  { amount: '$250', label: 'Kids activities' },
 ]
 
 export default function Home() {
