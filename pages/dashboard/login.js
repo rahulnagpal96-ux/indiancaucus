@@ -1,35 +1,8 @@
-import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 
-const hasMicrosoft = !!process.env.NEXT_PUBLIC_HAS_AZURE
-
 export default function DashboardLogin() {
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
-
-  async function handlePassword(e) {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
-      })
-      if (res.ok) {
-        router.push('/dashboard')
-      } else {
-        setError('Incorrect password. Try again.')
-      }
-    } catch {
-      setError('Something went wrong. Try again.')
-    }
-    setLoading(false)
-  }
 
   async function handleMicrosoft() {
     setLoading(true)
@@ -55,7 +28,6 @@ export default function DashboardLogin() {
           </div>
 
           <div className="px-8 py-7 space-y-4">
-            {/* Microsoft button — always shown, disabled if not configured */}
             <button
               onClick={handleMicrosoft}
               disabled={loading}
@@ -67,53 +39,8 @@ export default function DashboardLogin() {
                 <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
                 <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
               </svg>
-              Sign in with Microsoft O365
+              {loading ? 'Signing in…' : 'Sign in with Microsoft O365'}
             </button>
-
-            <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-gray-100" />
-              <span className="text-xs text-gray-400 font-medium">or</span>
-              <div className="flex-1 h-px bg-gray-100" />
-            </div>
-
-            {/* Password fallback */}
-            <form onSubmit={handlePassword} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                  Admin password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  required
-                  autoFocus
-                  autoComplete="current-password"
-                  className="w-full border border-gray-200 rounded-2xl px-4 py-3.5 text-sm focus:outline-none transition-all shadow-sm"
-                  onFocus={(e) => { e.target.style.borderColor = '#1a2744'; e.target.style.boxShadow = '0 0 0 3px rgba(26,39,68,0.1)' }}
-                  onBlur={(e) => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none' }}
-                />
-              </div>
-
-              {error && (
-                <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-xl px-3 py-2.5">
-                  <svg width="14" height="14" className="text-red-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-                  </svg>
-                  <p className="text-red-600 text-xs font-medium">{error}</p>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full text-white rounded-2xl px-4 py-3.5 text-sm font-bold transition-all disabled:opacity-50 shadow-md hover:shadow-lg"
-                style={{ background: loading ? '#374151' : 'linear-gradient(135deg, #1a2744, #243660)' }}
-              >
-                {loading ? 'Signing in…' : 'Sign in →'}
-              </button>
-            </form>
           </div>
         </div>
 
