@@ -94,3 +94,77 @@ body {
   background: rgba(66,185,126,0.12);
   color: #2e9664;
 }
+
+/* ── DARK MODE ── */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0d1117;
+    color: #e6edf3;
+  }
+
+  .card {
+    background-color: #161b22;
+    border-color: #30363d;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.4), 0 4px 16px 0 rgba(0,0,0,0.3);
+  }
+
+  .card-hover:hover {
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  .input-field {
+    background-color: #161b22;
+    border-color: #30363d;
+    color: #e6edf3;
+  }
+
+  .input-field::placeholder { color: #6e7681; }
+
+  .btn-outline {
+    border-color: #30363d;
+    color: #c9d1d9;
+  }
+  .btn-outline:hover {
+    background-color: #21262d;
+  }
+
+  .section-label {
+    background: rgba(242,102,68,0.15);
+    color: #FF9933;
+  }
+
+  /* Tailwind utility overrides */
+  .bg-white { background-color: #161b22 !important; }
+  .bg-gray-50 { background-color: #0d1117 !important; }
+  .bg-gray-100 { background-color: #21262d !important; }
+  .bg-orange-50 { background-color: #1f1409 !important; }
+  .bg-green-50 { background-color: #0d1f17 !important; }
+  .bg-blue-50 { background-color: #0d1526 !important; }
+  .bg-yellow-50 { background-color: #1c1700 !important; }
+  .bg-purple-50 { background-color: #160d26 !important; }
+  .bg-pink-50 { background-color: #1f0d16 !important; }
+
+  .border-gray-100 { border-color: #21262d !important; }
+  .border-gray-200 { border-color: #30363d !important; }
+  .border-orange-100 { border-color: #2d1a00 !important; }
+  .border-green-100 { border-color: #0d2d1a !important; }
+  .border-blue-50, .border-blue-100 { border-color: #0d1f3d !important; }
+  .border-yellow-100 { border-color: #2d2200 !important; }
+  .border-purple-100 { border-color: #1e0d3d !important; }
+
+  .text-gray-900 { color: #e6edf3 !important; }
+  .text-gray-800 { color: #c9d1d9 !important; }
+  .text-gray-700 { color: #c9d1d9 !important; }
+  .text-gray-600 { color: #8d96a0 !important; }
+  .text-gray-500 { color: #6e7681 !important; }
+  .text-gray-400 { color: #484f58 !important; }
+
+  .divide-gray-100 > * + * { border-color: #21262d !important; }
+
+  /* Header */
+  header { background-color: rgba(13,17,23,0.95) !important; }
+  header.bg-white\/90, header.bg-white\/95 { background-color: rgba(13,17,23,0.95) !important; }
+
+  /* Select inputs */
+  select.input-field, select.bg-white { background-color: #161b22 !important; color: #e6edf3 !important; }
+}
