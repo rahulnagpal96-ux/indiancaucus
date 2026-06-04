@@ -47,7 +47,7 @@ export default async function handler(req, res) {
 
       const mf = m.merge_fields || {}
       const firstName = (mf.FNAME || mf.FIRST_NAME || mf.FIRSTNAME || '').trim() || null
-      const phone = (mf.PHONE || mf.MPHONE || mf.CELL || mf.MOBILE || mf.PHONE_NUMBER || '').trim() || null
+      const phone = (mf.MMERGE5 || mf.SMSPHONE || mf.PHONE || mf.MPHONE || mf.CELL || mf.MOBILE || '').trim() || null
 
       try {
         await sql`
