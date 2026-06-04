@@ -156,11 +156,13 @@ function ContactModal({ onClose }) {
 function DonateBox() {
   const [amount, setAmount] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleDonate = async () => {
     const n = parseFloat(amount)
     if (!n || n < 1) return
     setLoading(true)
+    setError('')
     try {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
@@ -169,8 +171,9 @@ function DonateBox() {
       })
       const data = await res.json()
       if (data.url) window.location.href = data.url
+      else setError('Could not start checkout. Please try again.')
     } catch {
-      // silent
+      setError('Could not start checkout. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -199,6 +202,7 @@ function DonateBox() {
         {loading ? '…' : 'Donate'}
       </button>
     </div>
+    {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
   )
 }
 
