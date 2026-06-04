@@ -106,7 +106,7 @@ export default function Header() {
         {/* Mobile right side */}
         <div className="md:hidden flex items-center gap-1.5">
           <a href={PARTICIPATE_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary text-xs px-2.5 py-1.5">
-            Join
+            Participate
           </a>
           <Link href="/donate" className="btn-primary text-xs px-2.5 py-1.5">
             Donate
