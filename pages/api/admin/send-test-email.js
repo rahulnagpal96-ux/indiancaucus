@@ -4,17 +4,13 @@ function getCampaignFromAddress() {
   return process.env.EMAIL_FROM_EVENTS || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <events@newsletters.indiancaucus.org>'
 }
 
-function getBaseUrl() {
-  return process.env.NEXT_PUBLIC_BASE_URL || 'https://indiancaucus.org'
-}
-
 function getBroadcastHtml(html) {
   return html
     .replace(/\{\{name\}\}/g, '{{{contact.first_name|Friend}}}')
     .replace(
       /<\/body>/i,
       `<div style="margin:28px 0 0;padding-top:16px;border-top:1px solid #e5e7eb;color:#6b7280;font-size:12px;line-height:1.6;text-align:center;">
-        <a href="${getBaseUrl()}/unsubscribe?e={{{contact.email}}}" style="color:#6b7280;text-decoration:underline;">Unsubscribe</a>
+        <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:#6b7280;text-decoration:underline;">Unsubscribe</a>
       </div></body>`
     )
 }
