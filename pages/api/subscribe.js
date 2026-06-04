@@ -98,6 +98,22 @@ async function sendWelcomeEmail(email, firstName) {
   }
 }
 
+async function syncResendAudience(email, firstName) {
+  const resendKey = process.env.RESEND_API_KEY
+  const audienceId = process.env.RESEND_AUDIENCE_ID
+  if (!resendKey || !audienceId) return
+  try {
+    const resp = await fetch(`https://api.resend.com/audiences/${audienceId}/contacts`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, first_name: firstName || '', unsubscribed: false }),
+    })
+    if (!resp.ok) console.error('Resend audience sync error:', await resp.text())
+  } catch (err) {
+    console.error('Resend audience sync exception:', err.message)
+  }
+}
+
 async function syncMailchimp(email) {
   const apiKey = process.env.MAILCHIMP_API_KEY
   const listId = process.env.MAILCHIMP_LIST_ID
@@ -131,8 +147,9 @@ export default async function handler(req, res) {
     const result = await upsertSubscriber({ email, firstName, phone, source })
     const isNew = result.rows[0]?.inserted === true
 
-    // Always sync to Mailchimp while it's still configured (non-blocking)
+    // Sync to Mailchimp and Resend audience (non-blocking)
     syncMailchimp(email)
+    syncResendAudience(email, firstName)
 
     // Fire welcome email via Resend once configured (non-blocking)
     if (isNew) {
