@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://indiancaucus.vercel.app/sitemap.xml
+Sitemap: https://indiancaucus.org/sitemap.xml
