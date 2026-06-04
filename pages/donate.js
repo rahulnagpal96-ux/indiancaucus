@@ -2,8 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-
-const STRIPE_DONATE_URL = 'https://donate.stripe.com/eVa29e87l0G5fV6bJ4'
+import { useState } from 'react'
 
 const TRUST = [
   { icon: '✓', title: '501(c)(3) Certified', desc: 'Your donation is fully tax-deductible.' },
@@ -12,7 +11,34 @@ const TRUST = [
   { icon: '✓', title: '100% to Programs', desc: 'Every dollar goes to community events.' },
 ]
 
+const PRESETS = [25, 50, 100, 250]
+
 export default function Donate() {
+  const [amount, setAmount] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleDonate = async () => {
+    const n = parseFloat(amount)
+    if (!n || n < 1) return
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: n }),
+      })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+      else setError('Could not start checkout. Please try again.')
+    } catch {
+      setError('Could not start checkout. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen">
       <Head>
@@ -52,14 +78,46 @@ export default function Donate() {
                 Choose your own amount. Every dollar goes directly to community programming — Holi, Dandiya Dhamaka, Diwali Mela, and youth outreach.
               </p>
 
-              <a
-                href={STRIPE_DONATE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full btn-primary text-base py-4 text-center block"
+              {/* Preset amounts */}
+              <div className="grid grid-cols-4 gap-3 mb-4">
+                {PRESETS.map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setAmount(String(p))}
+                    className={`py-3 rounded-xl text-sm font-bold border-2 transition-all ${
+                      amount === String(p)
+                        ? 'border-brand-orange bg-orange-50 text-brand-orange'
+                        : 'border-gray-200 text-gray-700 hover:border-brand-orange hover:text-brand-orange'
+                    }`}
+                  >
+                    ${p}
+                  </button>
+                ))}
+              </div>
+
+              {/* Custom amount */}
+              <div className="flex items-center border-2 border-gray-200 focus-within:border-brand-orange rounded-xl overflow-hidden transition-colors mb-4">
+                <span className="pl-4 text-gray-400 font-bold text-lg">$</span>
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="Custom amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleDonate()}
+                  className="flex-1 px-2 py-4 text-lg font-semibold text-gray-900 placeholder-gray-300 outline-none bg-transparent"
+                />
+              </div>
+
+              <button
+                onClick={handleDonate}
+                disabled={!amount || parseFloat(amount) < 1 || loading}
+                className="w-full btn-primary text-base py-4 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Donate Now
-              </a>
+                {loading ? 'Loading…' : `Donate${amount && parseFloat(amount) >= 1 ? ` $${parseFloat(amount).toLocaleString()}` : ''} Now`}
+              </button>
+
+              {error && <p className="mt-2 text-sm text-red-600 text-center">{error}</p>}
 
               <p className="mt-3 text-center text-xs text-gray-400">
                 Secure checkout via Stripe. You will receive an email receipt immediately.
