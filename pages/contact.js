@@ -159,17 +159,25 @@ export default function Contact() {
                   </div>
                 </div>
 
-                {process.env.NEXT_PUBLIC_FACEBOOK && (
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M18 2h-3a4 4 0 0 0-4 4v3H8v4h3v8h4v-8h3l1-4h-4V6a1 1 0 0 1 1-1h3V2z"/></svg>
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Facebook</div>
-                      <a href={process.env.NEXT_PUBLIC_FACEBOOK} target="_blank" rel="noopener noreferrer" className="text-sm text-brand-green hover:text-brand-green-dark mt-0.5 block">@IndianCaucusSEC →</a>
-                    </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M18 2h-3a4 4 0 0 0-4 4v3H8v4h3v8h4v-8h3l1-4h-4V6a1 1 0 0 1 1-1h3V2z"/></svg>
                   </div>
-                )}
+                  <div>
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Facebook</div>
+                    <a href="http://www.facebook.com/indiancaucusofsecaucus" target="_blank" rel="noopener noreferrer" className="text-sm text-brand-green hover:text-brand-green-dark mt-0.5 block">@IndianCaucusofSecaucus →</a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F26644" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Instagram</div>
+                    <a href="http://www.instagram.com/indiancaucus" target="_blank" rel="noopener noreferrer" className="text-sm text-brand-green hover:text-brand-green-dark mt-0.5 block">@indiancaucus →</a>
+                  </div>
+                </div>
               </div>
             </div>
 

@@ -3,34 +3,59 @@ export default async function handler(req, res){
   const { name, email, subject, message } = req.body
   if(!name || !email || !message) return res.status(400).json({ error: 'Missing fields' })
 
-  const apiKey = process.env.FRESHDESK_API_KEY
-  const domain = process.env.FRESHDESK_DOMAIN
-  if(!apiKey || !domain){
-    console.warn('Freshdesk not configured; logging message:', {name, email, subject, message})
-    return res.status(200).json({ status: 'logged' })
-  }
-
   const ticketSubject = subject
     ? `[${subject}] Message from ${name}`
     : `Website message from ${name}`
 
-  try{
-    const auth = Buffer.from(`${apiKey}:X`).toString('base64')
-    const resp = await fetch(`https://${domain}/api/v2/tickets`, {
-      method: 'POST',
-      headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        subject: ticketSubject,
-        description: `From: ${email}\n\n${message}`,
-        email: email,
-        priority: 1,
-        status: 2
+  // Try Freshdesk if configured
+  const apiKey = process.env.FRESHDESK_API_KEY
+  const domain = process.env.FRESHDESK_DOMAIN
+  if(apiKey && domain){
+    try{
+      const auth = Buffer.from(`${apiKey}:X`).toString('base64')
+      const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '')
+      const resp = await fetch(`https://${cleanDomain}/api/v2/tickets`, {
+        method: 'POST',
+        headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: ticketSubject,
+          description: `From: ${email}\n\nSubject: ${subject || 'General'}\n\n${message}`,
+          email,
+          priority: 1,
+          status: 2
+        })
       })
-    })
-    if(resp.status >= 400) return res.status(500).json({ error: 'Freshdesk error' })
-    return res.status(200).json({ status: 'created' })
-  }catch(err){
-    console.error(err)
-    return res.status(500).json({ error: 'Server error' })
+      if(resp.ok) return res.status(200).json({ status: 'created' })
+      console.error('Freshdesk error:', resp.status, await resp.text())
+    }catch(err){
+      console.error('Freshdesk exception:', err.message)
+    }
   }
+
+  // Try Resend if configured
+  const resendKey = process.env.RESEND_API_KEY
+  const notifyEmail = process.env.CONTACT_NOTIFY_EMAIL || 'indiancaucusofsecaucus@gmail.com'
+  if(resendKey){
+    try{
+      const resp = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: 'Contact Form <noreply@indiancaucus.vercel.app>',
+          to: notifyEmail,
+          reply_to: email,
+          subject: ticketSubject,
+          text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject || 'General'}\n\n${message}`
+        })
+      })
+      if(resp.ok) return res.status(200).json({ status: 'sent' })
+      console.error('Resend error:', await resp.text())
+    }catch(err){
+      console.error('Resend exception:', err.message)
+    }
+  }
+
+  // Fallback — log and return success so form doesn't show error to visitor
+  console.log('Contact form submission (no delivery service configured):', { name, email, subject, message })
+  return res.status(200).json({ status: 'logged' })
 }

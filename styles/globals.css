@@ -152,18 +152,20 @@ body {
   .border-yellow-100 { border-color: #2d2200 !important; }
   .border-purple-100 { border-color: #1e0d3d !important; }
 
-  .text-gray-900 { color: #e6edf3 !important; }
-  .text-gray-800 { color: #c9d1d9 !important; }
-  .text-gray-700 { color: #c9d1d9 !important; }
-  .text-gray-600 { color: #8d96a0 !important; }
-  .text-gray-500 { color: #6e7681 !important; }
-  .text-gray-400 { color: #484f58 !important; }
+  /* Only override dark text on light-background content — not hero/colored sections */
+  main .text-gray-900, footer .text-gray-900 { color: #e6edf3 !important; }
+  main .text-gray-800, footer .text-gray-800 { color: #c9d1d9 !important; }
+  main .text-gray-700, footer .text-gray-700 { color: #c9d1d9 !important; }
+  main .text-gray-600, footer .text-gray-600 { color: #8d96a0 !important; }
+  main .text-gray-500, footer .text-gray-500 { color: #6e7681 !important; }
+  /* Do NOT override gray-300/400 — those are used as readable light text on dark hero backgrounds */
 
   .divide-gray-100 > * + * { border-color: #21262d !important; }
 
   /* Header */
   header { background-color: rgba(13,17,23,0.95) !important; }
-  header.bg-white\/90, header.bg-white\/95 { background-color: rgba(13,17,23,0.95) !important; }
+  header nav .text-gray-600 { color: #8d96a0 !important; }
+  header nav .text-gray-900 { color: #e6edf3 !important; }
 
   /* Select inputs */
   select.input-field, select.bg-white { background-color: #161b22 !important; color: #e6edf3 !important; }
