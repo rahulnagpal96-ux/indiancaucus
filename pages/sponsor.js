@@ -10,12 +10,12 @@ const CHECK = ({ color = '#42B97E' }) => (
 )
 
 const DIWALI_AD = [
-  { name: 'Inside Half Page', price: 150, stripeUrl: 'https://donate.stripe.com/5kAbJO4V9bkJ9wIeV0', soldOut: false, perks: ['Half-page ad in Diwali Mela online program book', 'Name listed on event website', 'Social media thank-you post'] },
-  { name: 'Inside Full Page', price: 250, stripeUrl: 'https://donate.stripe.com/3cs15a87lfAZ5gs6ot', soldOut: false, perks: ['Full-page ad in Diwali Mela online program book', 'Logo on event website', 'Dedicated social media shoutout'] },
-  { name: 'Inside Back Cover', price: 350, stripeUrl: 'https://donate.stripe.com/fZe29eevJagFbEQ148', soldOut: false, perks: ['Premium inside back cover placement', 'Logo on event website', 'Dedicated social media shoutout', 'Stage mention at event'] },
-  { name: 'Silver Page', price: 300, stripeUrl: 'https://donate.stripe.com/8wMcNSevJ88xeR26or', soldOut: false, perks: ['Silver-tier full-page ad in program', 'Logo on event website', 'Dedicated social media shoutout', 'Stage mention at event'] },
-  { name: 'Gold Page', price: 500, stripeUrl: 'https://donate.stripe.com/14kaFKevJ4WlbEQ8wy', soldOut: false, featured: true, perks: ['Gold-tier full-page ad in program', 'Premium logo on event website', 'Stage announcement at event', 'Feature in email newsletter'] },
-  { name: 'Back Page', price: 500, stripeUrl: null, soldOut: true, perks: ['Prime back cover of online program book', 'Premium logo on event website', 'Stage announcement at event', 'Feature in email newsletter'] },
+  { name: 'Inside Half Page', price: 150, stripeUrl: 'https://donate.stripe.com/5kAbJO4V9bkJ9wIeV0', soldOut: false, perks: ['Half-page ad in Diwali Mela online program book'] },
+  { name: 'Inside Full Page', price: 250, stripeUrl: 'https://donate.stripe.com/3cs15a87lfAZ5gs6ot', soldOut: false, perks: ['Full-page ad in Diwali Mela online program book'] },
+  { name: 'Inside Back Cover', price: 350, stripeUrl: 'https://donate.stripe.com/fZe29eevJagFbEQ148', soldOut: false, perks: ['Premium inside back cover placement'] },
+  { name: 'Silver Page', price: 300, stripeUrl: 'https://donate.stripe.com/8wMcNSevJ88xeR26or', soldOut: false, perks: ['Silver-tier full-page ad in program'] },
+  { name: 'Gold Page', price: 500, stripeUrl: 'https://donate.stripe.com/14kaFKevJ4WlbEQ8wy', soldOut: false, featured: true, perks: ['Gold-tier full-page ad in program'] },
+  { name: 'Back Page', price: 500, stripeUrl: null, soldOut: true, perks: ['Prime back cover of online program book'] },
   { name: 'Logo in Diwali Flyer', price: null, displayPrice: 'Donation', stripeUrl: 'https://buy.stripe.com/5kQ4gzfHC3XQaOa3zI8bS0n', soldOut: false, perks: ['Your logo featured on the official Diwali Mela event flyer', 'Distributed digitally and in print', 'Community-wide visibility before the event', 'Tax-deductible donation'] },
 ]
 
