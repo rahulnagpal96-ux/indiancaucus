@@ -36,6 +36,7 @@ function Softphone() {
   const clientRef = useRef(null)
   const callRef = useRef(null)
   const timerRef = useRef(null)
+  const audioRef = useRef(null)
 
   const sipUser = process.env.NEXT_PUBLIC_TELNYX_SIP_USERNAME
   const sipPass = process.env.NEXT_PUBLIC_TELNYX_SIP_PASSWORD
@@ -50,6 +51,7 @@ function Softphone() {
         password: sipPass,
         ringtoneFile: null,
         ringbackFile: null,
+        remoteElement: audioRef.current,
       })
 
       client.on('telnyx.ready', () => { console.log('[Telnyx] Ready'); setStatus('ready') })
@@ -115,6 +117,9 @@ function Softphone() {
       destinationNumber: destination,
       callerIdNumber: process.env.NEXT_PUBLIC_TELNYX_PHONE_NUMBER || '+15514009427',
       callerIdName: 'Indian Caucus',
+      audio: true,
+      video: false,
+      remoteElement: audioRef.current,
     })
   }
 
@@ -137,6 +142,9 @@ function Softphone() {
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      {/* Hidden audio element for remote stream */}
+      <audio ref={audioRef} autoPlay playsInline style={{ display: 'none' }} />
+
       {/* Header */}
       <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
         <div className="flex items-center gap-2">
