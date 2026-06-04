@@ -1,5 +1,6 @@
 import { isAuthenticated } from '../../../lib/auth'
 import { upsertSubscriber } from '../../../lib/db'
+import { syncResendAudience } from '../../../lib/syncSubscriber'
 
 async function fetchAllMailchimpMembers(apiKey, listId) {
   const dc = apiKey.split('-').pop()
@@ -52,6 +53,7 @@ export default async function handler(req, res) {
 
       try {
         await upsertSubscriber({ email, firstName, lastName, phone, source: 'mailchimp' })
+        await syncResendAudience(email, firstName, lastName)
         imported++
       } catch {
         skipped++

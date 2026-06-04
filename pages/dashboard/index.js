@@ -38,6 +38,8 @@ export default function DashboardHome() {
   const [setupMsg, setSetupMsg] = useState('')
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState(null)
+  const [syncingResend, setSyncingResend] = useState(false)
+  const [resendResult, setResendResult] = useState(null)
   const [stripe, setStripe] = useState(null)
 
   useEffect(() => {
@@ -80,6 +82,15 @@ export default function DashboardHome() {
       // Refresh stats after sync
       fetch('/api/admin/stats').then(r => r.json()).then(d => { if (!d.error) setStats(d) })
     }
+  }
+
+  async function syncResend() {
+    setSyncingResend(true)
+    setResendResult(null)
+    const r = await fetch('/api/admin/sync-resend', { method: 'POST' })
+    const d = await r.json()
+    setSyncingResend(false)
+    setResendResult(d)
   }
 
   return (
@@ -308,6 +319,48 @@ export default function DashboardHome() {
                   <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
                 </svg>
                 Sync Mailchimp
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-8">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-gray-800 font-bold text-sm">Sync database to Resend</h3>
+            <p className="text-gray-400 text-xs mt-1">
+              Push every subscriber in your database into Resend so broadcasts reach newly imported contacts too.
+            </p>
+            {resendResult && (
+              <div className={`mt-3 text-xs font-medium ${resendResult.ok ? 'text-green-600' : 'text-red-600'}`}>
+                {resendResult.ok
+                  ? `✓ ${resendResult.synced} synced, ${resendResult.skipped} skipped (${resendResult.total} total in database)`
+                  : `Error: ${resendResult.error}`}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={syncResend}
+            disabled={syncingResend || dbError}
+            className="shrink-0 flex items-center gap-2 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all disabled:opacity-50 hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}
+          >
+            {syncingResend ? (
+              <>
+                <svg className="animate-spin" width="13" height="13" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Syncing…
+              </>
+            ) : (
+              <>
+                <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                </svg>
+                Sync Resend
               </>
             )}
           </button>
