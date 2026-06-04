@@ -99,7 +99,7 @@ export default function DonorsPage() {
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
           </svg>
-          Export CSV
+          <span className="hidden sm:inline">Export CSV</span>
         </button>
         <a
           href="https://dashboard.stripe.com/payments"
@@ -121,7 +121,7 @@ export default function DonorsPage() {
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden overflow-x-auto">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center gap-2 text-gray-300 py-16">
             <svg className="animate-spin" width="18" height="18" fill="none" viewBox="0 0 24 24">
@@ -135,7 +135,7 @@ export default function DonorsPage() {
             <p className="text-gray-400 text-sm font-medium">No donations found</p>
           </div>
         ) : (
-          <table className="w-full">
+          <table className="w-full min-w-[500px]">
             <thead>
               <tr className="border-b border-gray-100">
                 {['Donor', 'Amount', 'Type', 'Date', ''].map(h => (

@@ -365,9 +365,19 @@ export default function CampaignsPage() {
         <span className="text-gray-700 font-semibold text-sm">{template.label}</span>
       </div>
 
+      {/* Mobile preview toggle */}
+      <div className="lg:hidden flex justify-end mb-3">
+        <button
+          onClick={() => setShowPreview(v => !v)}
+          className="text-xs font-semibold border border-gray-200 bg-white px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-50 transition-all"
+        >
+          {showPreview ? 'Hide preview' : 'Show preview'}
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* ── Left: form ── */}
-        <div className="space-y-5">
+        <div className={`space-y-5 ${showPreview ? 'hidden lg:block' : ''}`}>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
             {/* Subject */}
             <div>
@@ -501,7 +511,7 @@ export default function CampaignsPage() {
         </div>
 
         {/* ── Right: live preview ── */}
-        <div className="lg:sticky lg:top-24 lg:self-start">
+        <div className={`lg:sticky lg:top-24 lg:self-start ${!showPreview ? 'hidden lg:block' : ''}`}>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="bg-gray-50 border-b border-gray-100 px-4 py-3 flex items-center gap-2">
               <div className="flex gap-1.5">
