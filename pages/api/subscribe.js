@@ -6,7 +6,7 @@ async function sendWelcomeEmail(email, firstName) {
   if (!resendKey) return
 
   const fromAddress = process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <newsletter@indiancaucusofsecaucus.org>'
-  const html = buildWelcomeEmail(firstName)
+  const html = buildWelcomeEmail(firstName, email)
 
   try {
     const resp = await fetch('https://api.resend.com/emails', {

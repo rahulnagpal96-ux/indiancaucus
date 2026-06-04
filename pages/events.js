@@ -57,7 +57,7 @@ export default function Events() {
     <div className="min-h-screen">
       <Head>
         <title>Events — Indian Caucus of Secaucus</title>
-        <meta name="description" content="Join Indian Caucus of Secaucus for Holi, Dandiya Dhamaka, and Diwali Mela — free community festivals celebrating Indian culture in NJ." />
+        <meta name="description" content="Join Indian Caucus of Secaucus for Holi, Dandiya Dhamaka, and Diwali Mela — community festivals celebrating Indian culture in NJ." />
       </Head>
       <Header />
 
@@ -143,7 +143,7 @@ export default function Events() {
                       <div>
                         <dt className="text-gray-500 text-xs uppercase tracking-wide">Admission</dt>
                         <dd className="font-semibold mt-0.5" style={{color: ev.admission ? '#e85d04' : '#42B97E'}}>
-                          {ev.admission ?? 'Free & Open to All'}
+                          {ev.admission ?? 'Open to All'}
                         </dd>
                       </div>
                     </dl>
