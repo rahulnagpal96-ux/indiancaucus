@@ -42,13 +42,33 @@ function Softphone() {
   const sipPass = process.env.NEXT_PUBLIC_TELNYX_SIP_PASSWORD
 
   useEffect(() => {
-    if (!sipUser || !sipPass) return
+    if (!sipUser && !process.env.NEXT_PUBLIC_TELNYX_WEBRTC_CREDENTIAL_ID) return
     setStatus('connecting')
 
-    import('@telnyx/webrtc').then(({ TelnyxRTC }) => {
+    async function init() {
+      let loginConfig = {}
+
+      if (process.env.NEXT_PUBLIC_TELNYX_WEBRTC_CREDENTIAL_ID) {
+        // Token-based auth (Telephony Credential)
+        try {
+          const r = await fetch('/api/admin/telnyx-token', { method: 'POST' })
+          const d = await r.json()
+          if (d.token) loginConfig = { login_token: d.token }
+        } catch {}
+      }
+
+      if (!loginConfig.login_token && sipUser && sipPass) {
+        // Fallback to SIP credentials
+        loginConfig = { login: sipUser, password: sipPass }
+      }
+
+      if (!loginConfig.login_token && !loginConfig.login) {
+        setStatus('idle'); return
+      }
+
+      const { TelnyxRTC } = await import('@telnyx/webrtc')
       const client = new TelnyxRTC({
-        login: sipUser,
-        password: sipPass,
+        ...loginConfig,
         ringtoneFile: null,
         ringbackFile: null,
         remoteElement: audioRef.current,
@@ -92,13 +112,15 @@ function Softphone() {
 
       client.connect()
       clientRef.current = client
-    }).catch(err => { console.error('[Telnyx] Import error:', err); setStatus('idle') })
+    }
+
+    init().catch(err => { console.error('[Telnyx] Init error:', err); setStatus('idle') })
 
     return () => {
       clearInterval(timerRef.current)
       clientRef.current?.disconnect()
     }
-  }, [sipUser, sipPass])
+  }, [])
 
   function dial(digit) { setDialInput(v => v + digit) }
 
