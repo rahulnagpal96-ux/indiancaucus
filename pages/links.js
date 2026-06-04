@@ -259,7 +259,7 @@ export default function Links() {
 
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center px-5 py-12">
-      {contactOpen && <ContactModal onClose={() => setContactOpen(false)} />
+      {contactOpen && <ContactModal onClose={() => setContactOpen(false)} />}
       <Head>
         <title>Indian Caucus of Secaucus — Links</title>
         <meta name="description" content="Connect with Indian Caucus of Secaucus — participate, sponsor, subscribe, or contact us." />
