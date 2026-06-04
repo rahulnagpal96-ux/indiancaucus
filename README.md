@@ -75,7 +75,7 @@ Mailchimp → Postgres sync runs automatically **every 5 minutes** via Vercel Cr
 | Variable | From address | Used for |
 |---|---|---|
 | `EMAIL_FROM_NEWSLETTER` | `noreply@newsletters.indiancaucus.org` | Welcome emails |
-| `EMAIL_FROM_EVENTS` | `events@newsletters.indiancaucus.org` | Event campaigns |
+| `EMAIL_FROM_EVENTS` | `noreply@newsletters.indiancaucus.org` | Event campaigns |
 | `EMAIL_FROM_DONATIONS` | `donate@newsletters.indiancaucus.org` | Donation / contact emails |
 
 Domain `newsletters.indiancaucus.org` must be verified in Resend → Domains.

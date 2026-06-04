@@ -1,7 +1,7 @@
 import { isAuthenticated } from '../../../lib/auth'
 
 function getCampaignFromAddress() {
-  return process.env.EMAIL_FROM_EVENTS || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <events@newsletters.indiancaucus.org>'
+  return process.env.EMAIL_FROM_EVENTS || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <noreply@newsletters.indiancaucus.org>'
 }
 
 function getBroadcastHtml(html) {
