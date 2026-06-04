@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+// eslint-disable-next-line no-unused-vars
 const InstagramIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
     <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -42,26 +43,12 @@ export default function Footer() {
               Preserving and celebrating Indian culture in Secaucus, NJ since 2010. 501(c)(3) nonprofit — donations are tax-deductible.
             </p>
             <div className="flex items-center gap-2">
-              {process.env.NEXT_PUBLIC_INSTAGRAM && (
-                <a href={process.env.NEXT_PUBLIC_INSTAGRAM} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-gray-300 hover:bg-brand-orange hover:text-white transition-all">
-                  <InstagramIcon />
-                </a>
-              )}
-              {process.env.NEXT_PUBLIC_FACEBOOK && (
-                <a href={process.env.NEXT_PUBLIC_FACEBOOK} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-gray-300 hover:bg-blue-600 hover:text-white transition-all">
-                  <FacebookIcon />
-                </a>
-              )}
-              {process.env.NEXT_PUBLIC_YOUTUBE && (
-                <a href={process.env.NEXT_PUBLIC_YOUTUBE} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-gray-300 hover:bg-red-600 hover:text-white transition-all">
-                  <YouTubeIcon />
-                </a>
-              )}
-              {process.env.NEXT_PUBLIC_TIKTOK && (
-                <a href={process.env.NEXT_PUBLIC_TIKTOK} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-gray-300 hover:bg-black hover:text-white transition-all">
-                  <TikTokIcon />
-                </a>
-              )}
+              <a href="http://www.instagram.com/indiancaucus" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-gray-300 hover:bg-brand-orange hover:text-white transition-all">
+                <InstagramIcon />
+              </a>
+              <a href="http://www.facebook.com/indiancaucusofsecaucus" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-gray-300 hover:bg-blue-600 hover:text-white transition-all">
+                <FacebookIcon />
+              </a>
             </div>
           </div>
 
@@ -131,7 +118,7 @@ export default function Footer() {
 
         <div className="border-t border-white/10 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
           <span>© {year} Indian Caucus of Secaucus. All rights reserved.</span>
-          <span>Built with ❤️ for the community</span>
+          <span>Indian Caucus of Secaucus — Secaucus, NJ</span>
         </div>
       </div>
     </footer>

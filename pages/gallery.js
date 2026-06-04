@@ -41,7 +41,7 @@ export default function Gallery({ images }) {
       <main className="container-max px-4 md:px-6 mt-12">
         {images.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-6xl mb-5">📸</div>
+            <div className="text-6xl mb-5"></div>
             <h2 className="text-2xl font-bold text-gray-900">Photos coming soon</h2>
             <p className="text-gray-500 mt-3 max-w-md mx-auto">
               We're adding event photos — check back soon. In the meantime, see our past events on Facebook.
@@ -81,7 +81,7 @@ export default function Gallery({ images }) {
         {/* Facebook CTA */}
         {images.length > 0 && (
           <div className="mt-12 mb-8 rounded-2xl bg-gray-50 border border-gray-100 p-8 text-center">
-            <div className="text-3xl mb-3">📷</div>
+            <div className="text-3xl mb-3"></div>
             <h3 className="font-bold text-gray-900 text-lg">More photos on Facebook</h3>
             <p className="text-gray-500 text-sm mt-2">See full albums from all our past events on our Facebook page.</p>
             {process.env.NEXT_PUBLIC_FACEBOOK && (

@@ -7,7 +7,7 @@ import SubscribeForm from '../components/SubscribeForm'
 const EVENTS = [
   {
     id: 'holi',
-    emoji: '🎨',
+    emoji: '',
     title: 'Holi — Festival of Colors',
     month: 'Spring',
     color: 'from-pink-500 to-orange-400',
@@ -16,7 +16,7 @@ const EVENTS = [
   },
   {
     id: 'garba',
-    emoji: '💃',
+    emoji: '',
     title: 'Dandiya Dhamaka',
     month: 'Fall',
     color: 'from-purple-600 to-pink-500',
@@ -25,7 +25,7 @@ const EVENTS = [
   },
   {
     id: 'diwali',
-    emoji: '🪔',
+    emoji: '',
     title: 'Diwali Mela',
     month: 'October',
     color: 'from-yellow-500 to-orange-500',
@@ -72,7 +72,7 @@ export default function Home() {
                 Indian Caucus of Secaucus
               </p>
               <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-5" style={{background:'rgba(242,102,68,0.2)', color:'#FF9933'}}>
-                🎉 501(c)(3) Nonprofit · Secaucus, NJ · Est. 2010
+                 501(c)(3) Nonprofit · Secaucus, NJ · Est. 2010
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
                 Celebrate Culture.<br />
@@ -103,7 +103,7 @@ export default function Home() {
             {/* Subscribe card */}
             <div className="card bg-white/10 backdrop-blur-md border border-white/20 text-white">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg">✉️</span>
+                <span className="text-lg">️</span>
                 <h3 className="font-semibold text-white">Stay in the loop</h3>
               </div>
               <p className="text-sm text-gray-300 mt-1 mb-4">
@@ -165,7 +165,7 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div>
                   <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-4" style={{background:'rgba(255,255,255,0.2)', color:'#fef3c7'}}>
-                    🪔 Diwali Mela 2025
+                     Diwali Mela 2025
                   </span>
                   <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
                     Perform at<br />Diwali Mela!
@@ -185,10 +185,10 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col gap-4">
                   {[
-                    { icon: '🎤', label: 'Singers & Vocalists' },
-                    { icon: '💃', label: 'Dancers & Dance Groups' },
-                    { icon: '🎶', label: 'Musicians & Bands' },
-                    { icon: '🎭', label: 'Cultural Performers' },
+                    { icon: '', label: 'Singers & Vocalists' },
+                    { icon: '', label: 'Dancers & Dance Groups' },
+                    { icon: '', label: 'Musicians & Bands' },
+                    { icon: '', label: 'Cultural Performers' },
                   ].map((item) => (
                     <div
                       key={item.label}
@@ -225,10 +225,10 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             {[
-              { icon: '🌏', title: 'Cultural Heritage', desc: 'Honoring the languages, dress, and ceremonies of India across all regions.' },
-              { icon: '👨‍👩‍👧', title: 'Family-Centered', desc: 'Events designed to connect generations and create lasting memories.' },
-              { icon: '🤝', title: 'Inclusive Community', desc: 'All backgrounds welcome — our festivals belong to all of Secaucus.' },
-              { icon: '🎓', title: 'Youth Outreach', desc: 'Investing in the next generation through cultural education and programs.' },
+              { icon: '', title: 'Cultural Heritage', desc: 'Honoring the languages, dress, and ceremonies of India across all regions.' },
+              { icon: '‍‍', title: 'Family-Centered', desc: 'Events designed to connect generations and create lasting memories.' },
+              { icon: '', title: 'Inclusive Community', desc: 'All backgrounds welcome — our festivals belong to all of Secaucus.' },
+              { icon: '', title: 'Youth Outreach', desc: 'Investing in the next generation through cultural education and programs.' },
             ].map((v) => (
               <div key={v.title} className="card card-hover">
                 <div className="text-2xl mb-2">{v.icon}</div>

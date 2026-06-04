@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 
 const PARTICIPATE_URL = 'https://forms.cloud.microsoft/r/TrUMvCLMTb'
+const INSTAGRAM_URL = 'http://www.instagram.com/indiancaucus'
+const FACEBOOK_URL = 'http://www.facebook.com/indiancaucusofsecaucus'
 
 const NAV = [
   { href: '/about', label: 'About' },
@@ -22,12 +24,6 @@ const InstagramIcon = () => (
 const FacebookIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <path d="M18 2h-3a4 4 0 0 0-4 4v3H8v4h3v8h4v-8h3l1-4h-4V6a1 1 0 0 1 1-1h3V2z"/>
-  </svg>
-)
-const YouTubeIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29.38 29.38 0 0 0 1 12a29.38 29.38 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29.38 29.38 0 0 0 23 12a29.38 29.38 0 0 0-.46-5.58z"/>
-    <path d="M10 15l5-3-5-3v6z" fill="white"/>
   </svg>
 )
 
@@ -62,13 +58,9 @@ export default function Header() {
               className="w-9 h-9 object-contain rounded-md"
               onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextSibling.style.display = 'flex' }}
             />
-            <div
-              className="w-9 h-9 rounded-md bg-brand-orange items-center justify-center text-white font-bold text-sm hidden"
-            >IC</div>
+            <div className="w-9 h-9 rounded-md bg-brand-orange items-center justify-center text-white font-bold text-sm hidden">IC</div>
           </div>
-          <div>
-            <div className="font-bold text-gray-900 leading-tight text-sm">Indian Caucus of Secaucus</div>
-          </div>
+          <div className="font-bold text-gray-900 leading-tight text-sm">Indian Caucus of Secaucus</div>
         </Link>
 
         {/* Desktop nav */}
@@ -88,38 +80,28 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Right side */}
+        {/* Right side — desktop */}
         <div className="hidden md:flex items-center gap-3">
-          {/* Social icons */}
           <div className="flex items-center gap-1 mr-1">
-            {process.env.NEXT_PUBLIC_INSTAGRAM && (
-              <a href={process.env.NEXT_PUBLIC_INSTAGRAM} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="p-1.5 rounded-lg text-gray-500 hover:text-brand-orange hover:bg-orange-50 transition-colors">
-                <InstagramIcon />
-              </a>
-            )}
-            {process.env.NEXT_PUBLIC_FACEBOOK && (
-              <a href={process.env.NEXT_PUBLIC_FACEBOOK} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="p-1.5 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors">
-                <FacebookIcon />
-              </a>
-            )}
-            {process.env.NEXT_PUBLIC_YOUTUBE && (
-              <a href={process.env.NEXT_PUBLIC_YOUTUBE} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="p-1.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors">
-                <YouTubeIcon />
-              </a>
-            )}
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="p-1.5 rounded-lg text-gray-500 hover:text-brand-orange hover:bg-orange-50 transition-colors">
+              <InstagramIcon />
+            </a>
+            <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="p-1.5 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+              <FacebookIcon />
+            </a>
           </div>
           <a href={PARTICIPATE_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary text-sm px-5 py-2.5">
-            🪔 Participate
+            Participate
           </a>
           <Link href="/donate" className="btn-primary text-sm px-5 py-2.5">
             Donate Now
           </Link>
         </div>
 
-        {/* Mobile: donate + hamburger */}
+        {/* Mobile right side */}
         <div className="md:hidden flex items-center gap-2">
           <a href={PARTICIPATE_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary text-xs px-3 py-2">
-            🪔
+            Participate
           </a>
           <Link href="/donate" className="btn-primary text-xs px-3 py-2">
             Donate
@@ -159,16 +141,12 @@ export default function Header() {
             </Link>
           ))}
           <div className="pt-2 border-t border-gray-100 flex items-center gap-3">
-            {process.env.NEXT_PUBLIC_INSTAGRAM && (
-              <a href={process.env.NEXT_PUBLIC_INSTAGRAM} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="p-2 rounded-lg text-gray-500 hover:text-brand-orange transition-colors">
-                <InstagramIcon />
-              </a>
-            )}
-            {process.env.NEXT_PUBLIC_FACEBOOK && (
-              <a href={process.env.NEXT_PUBLIC_FACEBOOK} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="p-2 rounded-lg text-gray-500 hover:text-blue-600 transition-colors">
-                <FacebookIcon />
-              </a>
-            )}
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="p-2 rounded-lg text-gray-500 hover:text-brand-orange transition-colors">
+              <InstagramIcon />
+            </a>
+            <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="p-2 rounded-lg text-gray-500 hover:text-blue-600 transition-colors">
+              <FacebookIcon />
+            </a>
           </div>
         </div>
       )}

@@ -6,7 +6,7 @@ import Footer from '../components/Footer'
 const EVENTS = [
   {
     id: 'holi',
-    emoji: '🎨',
+    emoji: '',
     title: 'Holi — Festival of Colors',
     month: 'Spring',
     colorClass: 'from-pink-500 to-orange-400',
@@ -18,7 +18,7 @@ const EVENTS = [
   },
   {
     id: 'garba',
-    emoji: '💃',
+    emoji: '',
     title: 'Dandiya Dhamaka',
     month: 'Fall (Oct/Nov)',
     colorClass: 'from-purple-600 to-pink-500',
@@ -30,7 +30,7 @@ const EVENTS = [
   },
   {
     id: 'diwali',
-    emoji: '🪔',
+    emoji: '',
     title: 'Diwali Mela',
     month: 'October',
     colorClass: 'from-yellow-400 to-orange-500',
@@ -63,7 +63,7 @@ export default function Events() {
           </p>
           <div className="mt-5">
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full" style={{background:'rgba(66,185,126,0.2)', color:'#5eefaa'}}>
-              🗓 Stay tuned for 2026 event dates!
+               Stay tuned for 2026 event dates!
             </span>
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function Events() {
 
         {/* Past events note */}
         <div className="mt-14 mb-8 rounded-2xl bg-gray-50 border border-gray-100 p-8 text-center">
-          <div className="text-3xl mb-3">📸</div>
+          <div className="text-3xl mb-3"></div>
           <h3 className="font-bold text-gray-900 text-lg">See past event photos</h3>
           <p className="text-gray-500 text-sm mt-2 max-w-md mx-auto">Relive the colors and joy from our previous celebrations in our gallery and on Facebook.</p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">

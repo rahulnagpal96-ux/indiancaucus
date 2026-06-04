@@ -4,12 +4,12 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 
 const VALUES = [
-  { icon: '🌏', title: 'Multicultural Pride', desc: 'India is a mosaic of languages, traditions, and peoples. We celebrate all of it.' },
-  { icon: '🧡', title: 'Community First', desc: 'Every decision we make puts families and neighbors at the center.' },
-  { icon: '🎓', title: 'Generational Impact', desc: 'We invest in children growing up in NJ so they never lose their roots.' },
-  { icon: '🤝', title: 'Open Doors', desc: 'Our events welcome everyone — Indian-American families, neighbors, and anyone curious about our culture.' },
-  { icon: '🎭', title: 'Living Culture', desc: 'Language, dress, ceremony, art — we keep Indian traditions alive and vibrant.' },
-  { icon: '💡', title: 'Awareness & Education', desc: 'We run awareness camps and cultural programs to foster understanding in the wider community.' },
+  { icon: '', title: 'Multicultural Pride', desc: 'India is a mosaic of languages, traditions, and peoples. We celebrate all of it.' },
+  { icon: '', title: 'Community First', desc: 'Every decision we make puts families and neighbors at the center.' },
+  { icon: '', title: 'Generational Impact', desc: 'We invest in children growing up in NJ so they never lose their roots.' },
+  { icon: '', title: 'Open Doors', desc: 'Our events welcome everyone — Indian-American families, neighbors, and anyone curious about our culture.' },
+  { icon: '', title: 'Living Culture', desc: 'Language, dress, ceremony, art — we keep Indian traditions alive and vibrant.' },
+  { icon: '', title: 'Awareness & Education', desc: 'We run awareness camps and cultural programs to foster understanding in the wider community.' },
 ]
 
 export default function About() {
@@ -57,7 +57,7 @@ export default function About() {
           <div className="space-y-4">
             <div className="card bg-orange-50 border-orange-100">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center text-xl flex-shrink-0">📅</div>
+                <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center text-xl flex-shrink-0"></div>
                 <div>
                   <h3 className="font-bold text-gray-900">Founded July 2010</h3>
                   <p className="text-sm text-gray-600 mt-1">Over 15 years of serving the Indian-American community in Secaucus and surrounding towns.</p>
@@ -66,7 +66,7 @@ export default function About() {
             </div>
             <div className="card bg-green-50 border-green-100">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-brand-green/10 flex items-center justify-center text-xl flex-shrink-0">✅</div>
+                <div className="w-10 h-10 rounded-xl bg-brand-green/10 flex items-center justify-center text-xl flex-shrink-0"></div>
                 <div>
                   <h3 className="font-bold text-gray-900">501(c)(3) Nonprofit</h3>
                   <p className="text-sm text-gray-600 mt-1">We are a registered nonprofit. Your donations are fully tax-deductible and go directly to community programming.</p>
@@ -75,7 +75,7 @@ export default function About() {
             </div>
             <div className="card bg-blue-50 border-blue-100">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-xl flex-shrink-0">🎉</div>
+                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-xl flex-shrink-0"></div>
                 <div>
                   <h3 className="font-bold text-gray-900">3 Annual Festivals</h3>
                   <p className="text-sm text-gray-600 mt-1">Holi, Dandiya Dhamaka, and Diwali Mela — all free and open to the full community.</p>

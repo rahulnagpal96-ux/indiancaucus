@@ -10,18 +10,21 @@ const CHECK = ({ color = '#42B97E' }) => (
 )
 
 const DIWALI_AD = [
-  { name: 'Inside Half Page', price: 150, perks: ['Half-page ad in Diwali Mela program book', 'Name listed on event website', 'Social media thank-you post'] },
-  { name: 'Inside Full Page', price: 250, perks: ['Full-page ad in Diwali Mela program book', 'Logo on event website', 'Dedicated social media shoutout'] },
-  { name: 'Inside Back Cover', price: 350, perks: ['Premium inside back cover placement', 'Logo on event website', 'Dedicated social media shoutout', 'Stage mention at event'] },
-  { name: 'Gold Page', price: 500, featured: true, perks: ['Gold-tier full-page ad in program', 'Premium logo on event website', 'Stage announcement at event', 'Feature in email newsletter'] },
-  { name: 'Back Page', price: 500, perks: ['Prime back cover of program book', 'Premium logo on event website', 'Stage announcement at event', 'Feature in email newsletter'] },
+  { name: 'Inside Half Page', price: 150, stripeUrl: 'https://donate.stripe.com/5kAbJO4V9bkJ9wIeV0', soldOut: false, perks: ['Half-page ad in Diwali Mela program book', 'Name listed on event website', 'Social media thank-you post'] },
+  { name: 'Inside Full Page', price: 250, stripeUrl: 'https://donate.stripe.com/3cs15a87lfAZ5gs6ot', soldOut: false, perks: ['Full-page ad in Diwali Mela program book', 'Logo on event website', 'Dedicated social media shoutout'] },
+  { name: 'Inside Back Cover', price: 350, stripeUrl: null, soldOut: true, perks: ['Premium inside back cover placement', 'Logo on event website', 'Dedicated social media shoutout', 'Stage mention at event'] },
+  { name: 'Silver Page', price: 300, stripeUrl: 'https://donate.stripe.com/8wMcNSevJ88xeR26or', soldOut: false, perks: ['Silver-tier full-page ad in program', 'Logo on event website', 'Dedicated social media shoutout', 'Stage mention at event'] },
+  { name: 'Gold Page', price: 500, stripeUrl: 'https://donate.stripe.com/14kaFKevJ4WlbEQ8wy', soldOut: false, featured: true, perks: ['Gold-tier full-page ad in program', 'Premium logo on event website', 'Stage announcement at event', 'Feature in email newsletter'] },
+  { name: 'Back Page', price: 500, stripeUrl: null, soldOut: false, perks: ['Prime back cover of program book', 'Premium logo on event website', 'Stage announcement at event', 'Feature in email newsletter'] },
+  { name: 'Logo in Diwali Flyer', price: null, displayPrice: 'Donation', stripeUrl: 'https://buy.stripe.com/5kQ4gzfHC3XQaOa3zI8bS0n', soldOut: false, perks: ['Your logo featured on the official Diwali Mela event flyer', 'Distributed digitally and in print', 'Community-wide visibility before the event', 'Tax-deductible donation'] },
 ]
 
 const DIWALI_VENDORS = [
   {
     type: 'Food Vendor',
-    emoji: '🍛',
+    emoji: '',
     price: 450,
+    stripeUrl: 'https://donate.stripe.com/28o3dievJ2Od4co9AL',
     perks: [
       'Dedicated food vendor booth space',
       'Listed in event program as food vendor',
@@ -32,8 +35,9 @@ const DIWALI_VENDORS = [
   },
   {
     type: 'Vendor Table',
-    emoji: '🛍️',
+    emoji: '️',
     price: 150,
+    stripeUrl: 'https://donate.stripe.com/14AdR93YUgKC9K6fiq8bS0p',
     perks: [
       '6-foot vendor table with 2 chairs',
       'Listed in event program as vendor',
@@ -42,13 +46,27 @@ const DIWALI_VENDORS = [
       'Setup begins 2 hours before event',
     ],
   },
+  {
+    type: 'Nonprofit Vendor Table',
+    emoji: '️',
+    price: null,
+    stripeUrl: 'https://donate.stripe.com/7sI7ty3R588xdMYcMZ',
+    perks: [
+      'Special rate for registered nonprofits',
+      '6-foot vendor table with 2 chairs',
+      'Valid for Dandiya Dhamaka & Diwali Mela',
+      'Listed in event program as vendor',
+      'Contact us to confirm eligibility',
+    ],
+  },
 ]
 
 const DANDIYA_VENDORS = [
   {
     type: 'Food Vendor',
-    emoji: '🍽️',
+    emoji: '️',
     price: 450,
+    stripeUrl: 'https://donate.stripe.com/cN215afzN4Wl7oAaEX',
     perks: [
       'Dedicated food vendor booth space',
       'Listed in Dandiya Dhamaka program',
@@ -59,8 +77,9 @@ const DANDIYA_VENDORS = [
   },
   {
     type: 'Vendor Table',
-    emoji: '💍',
+    emoji: '',
     price: 150,
+    stripeUrl: 'https://donate.stripe.com/14k4hm3R53ShgZafZg',
     perks: [
       '6-foot vendor table with 2 chairs',
       'Listed in Dandiya Dhamaka program',
@@ -98,10 +117,10 @@ export default function Sponsor() {
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <a href="#diwali-ad" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm transition-all" style={{background:'linear-gradient(135deg,#F26644,#d94e2e)', boxShadow:'0 4px 24px rgba(242,102,68,0.35)'}}>
-                🪔 Diwali Mela Ad Program
+                 Diwali Mela Ad Program
               </a>
               <a href="#diwali-vendor" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm border border-white/20 hover:bg-white/10 transition-all">
-                🛍️ Vendor Spots
+                ️ Vendor Spots
               </a>
             </div>
           </div>
@@ -113,10 +132,10 @@ export default function Sponsor() {
         <div className="container-max px-4 md:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
             {[
-              { icon: '👥', stat: '1,000s', label: 'Community members per event' },
-              { icon: '🎉', stat: '3', label: 'Signature festivals per year' },
-              { icon: '🤝', stat: '100%', label: 'Nonprofit — tax deductible' },
-              { icon: '🌟', stat: '15+', label: 'Years of community trust' },
+              { icon: '', stat: '1,000s', label: 'Community members per event' },
+              { icon: '', stat: '3', label: 'Signature festivals per year' },
+              { icon: '', stat: '100%', label: 'Nonprofit — tax deductible' },
+              { icon: '', stat: '15+', label: 'Years of community trust' },
             ].map((s) => (
               <div key={s.label} className="py-7 px-6 text-center">
                 <div className="text-2xl mb-1">{s.icon}</div>
@@ -132,7 +151,7 @@ export default function Sponsor() {
       <section id="diwali-ad" style={{background: 'linear-gradient(180deg, #fffbeb 0%, #fff8e1 100%)'}}>
         <div className="container-max px-4 md:px-6 py-16 md:py-20">
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl">🪔</span>
+            <span className="text-4xl"></span>
             <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{background:'rgba(245,197,24,0.2)', color:'#b45309'}}>Diwali Mela</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-1">Diwali Mela Ad Program</h2>
@@ -146,39 +165,57 @@ export default function Sponsor() {
                 key={tier.name}
                 className="relative bg-white rounded-2xl p-6 flex flex-col"
                 style={{
-                  border: tier.featured ? '2px solid #F26644' : '1px solid #e5e7eb',
-                  boxShadow: tier.featured
-                    ? '0 8px 32px rgba(242,102,68,0.18)'
-                    : '0 1px 4px rgba(0,0,0,0.07)',
+                  border: tier.featured ? '2px solid #F26644' : tier.soldOut ? '1px solid #e5e7eb' : '1px solid #e5e7eb',
+                  boxShadow: tier.featured ? '0 8px 32px rgba(242,102,68,0.18)' : '0 1px 4px rgba(0,0,0,0.07)',
+                  opacity: tier.soldOut ? 0.7 : 1,
                 }}
               >
-                {tier.featured && (
+                {tier.featured && !tier.soldOut && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                     <span className="text-white text-xs font-bold px-4 py-1 rounded-full shadow" style={{background:'linear-gradient(135deg,#F26644,#d94e2e)'}}>
                       Most Popular
                     </span>
                   </div>
                 )}
+                {tier.soldOut && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                    <span className="text-white text-xs font-bold px-4 py-1 rounded-full shadow" style={{background:'#6b7280'}}>
+                      Sold Out
+                    </span>
+                  </div>
+                )}
                 <div className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-2">{tier.name}</div>
-                <div className="text-4xl font-extrabold text-gray-900">${tier.price}</div>
+                <div className="text-4xl font-extrabold text-gray-900">{tier.displayPrice ? tier.displayPrice : `$${tier.price}`}</div>
                 <ul className="mt-4 space-y-2.5 flex-1">
                   {tier.perks.map((p) => (
                     <li key={p} className="flex items-start gap-2 text-sm text-gray-600">
-                      <CHECK color="#d97706" />
+                      <CHECK color={tier.soldOut ? '#9ca3af' : '#d97706'} />
                       {p}
                     </li>
                   ))}
                 </ul>
-                <Link
-                  href="/contact"
-                  className="mt-6 block text-center text-sm font-semibold py-3 rounded-xl transition-all"
-                  style={tier.featured
-                    ? {background:'linear-gradient(135deg,#F26644,#d94e2e)', color:'#fff', boxShadow:'0 4px 16px rgba(242,102,68,0.3)'}
-                    : {background:'#fffbeb', color:'#b45309', border:'1px solid #fcd34d'}
-                  }
-                >
-                  Reserve Spot →
-                </Link>
+                {tier.soldOut ? (
+                  <div className="mt-6 block text-center text-sm font-semibold py-3 rounded-xl bg-gray-100 text-gray-400">
+                    Sold Out
+                  </div>
+                ) : tier.stripeUrl ? (
+                  <a
+                    href={tier.stripeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-6 block text-center text-sm font-semibold py-3 rounded-xl transition-all"
+                    style={tier.featured
+                      ? {background:'linear-gradient(135deg,#F26644,#d94e2e)', color:'#fff', boxShadow:'0 4px 16px rgba(242,102,68,0.3)'}
+                      : {background:'#fffbeb', color:'#b45309', border:'1px solid #fcd34d'}
+                    }
+                  >
+                    Reserve & Pay Now →
+                  </a>
+                ) : (
+                  <Link href="/contact" className="mt-6 block text-center text-sm font-semibold py-3 rounded-xl" style={{background:'#fffbeb', color:'#b45309', border:'1px solid #fcd34d'}}>
+                    Contact Us →
+                  </Link>
+                )}
               </div>
             ))}
           </div>
@@ -189,7 +226,7 @@ export default function Sponsor() {
       <section id="diwali-vendor" style={{background: 'linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%)'}}>
         <div className="container-max px-4 md:px-6 py-16 md:py-20">
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl">🪔</span>
+            <span className="text-4xl"></span>
             <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{background:'rgba(242,102,68,0.15)', color:'#c2410c'}}>Diwali Mela</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-1">Diwali Mela Vendor Spots</h2>
@@ -211,8 +248,14 @@ export default function Sponsor() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-4xl font-extrabold text-gray-900">${v.price}</div>
-                    <div className="text-xs text-gray-400">per event</div>
+                    {v.price ? (
+                      <>
+                        <div className="text-4xl font-extrabold text-gray-900">${v.price}</div>
+                        <div className="text-xs text-gray-400">per event</div>
+                      </>
+                    ) : (
+                      <div className="text-sm font-bold text-orange-600">Contact for rate</div>
+                    )}
                   </div>
                 </div>
                 <ul className="space-y-2.5 flex-1">
@@ -223,9 +266,9 @@ export default function Sponsor() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/contact" className="mt-6 block text-center text-sm font-semibold py-3 rounded-xl text-white transition-all" style={{background:'linear-gradient(135deg,#F26644,#d94e2e)', boxShadow:'0 4px 16px rgba(242,102,68,0.3)'}}>
-                  Apply for Spot →
-                </Link>
+                <a href={v.stripeUrl} target="_blank" rel="noopener noreferrer" className="mt-6 block text-center text-sm font-semibold py-3 rounded-xl text-white transition-all" style={{background:'linear-gradient(135deg,#F26644,#d94e2e)', boxShadow:'0 4px 16px rgba(242,102,68,0.3)'}}>
+                  Reserve & Pay Now →
+                </a>
               </div>
             ))}
           </div>
@@ -236,7 +279,7 @@ export default function Sponsor() {
       <section id="dandiya-vendor" style={{background: 'linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%)'}}>
         <div className="container-max px-4 md:px-6 py-16 md:py-20">
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl">💃</span>
+            <span className="text-4xl"></span>
             <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{background:'rgba(147,51,234,0.12)', color:'#7e22ce'}}>Dandiya Dhamaka</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-1">Dandiya Dhamaka Vendor Spots</h2>
@@ -270,9 +313,9 @@ export default function Sponsor() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/contact" className="mt-6 block text-center text-sm font-semibold py-3 rounded-xl text-white transition-all" style={{background:'linear-gradient(135deg,#9333ea,#7e22ce)', boxShadow:'0 4px 16px rgba(147,51,234,0.3)'}}>
-                  Apply for Spot →
-                </Link>
+                <a href={v.stripeUrl} target="_blank" rel="noopener noreferrer" className="mt-6 block text-center text-sm font-semibold py-3 rounded-xl text-white transition-all" style={{background:'linear-gradient(135deg,#9333ea,#7e22ce)', boxShadow:'0 4px 16px rgba(147,51,234,0.3)'}}>
+                  Reserve & Pay Now →
+                </a>
               </div>
             ))}
           </div>
@@ -283,7 +326,7 @@ export default function Sponsor() {
       <section className="bg-white">
         <div className="container-max px-4 md:px-6 py-16">
           <div className="rounded-3xl p-10 md:p-14 text-center" style={{background:'linear-gradient(135deg,#0F2044 0%,#1a3a6e 50%,#2e5d4b 100%)', backgroundImage:'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize:'24px 24px'}}>
-            <div className="text-4xl mb-4">🤝</div>
+            <div className="text-4xl mb-4"></div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-white">Questions or custom packages?</h2>
             <p className="mt-3 text-gray-300 max-w-md mx-auto">
               We're happy to work with you on a package that fits your goals. We'll get back to you within 48 hours.
