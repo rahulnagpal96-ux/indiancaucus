@@ -161,7 +161,7 @@ function DonateBox() {
   const handleDonate = () => {
     const n = parseFloat(amount)
     if (!n || n < 1) return
-    window.open(`${STRIPE_DONATE_URL}?amount=${Math.round(n * 100)}`, '_blank', 'noopener,noreferrer')
+    window.open(`${STRIPE_DONATE_URL}?prefilled_amount=${Math.round(n * 100)}`, '_blank', 'noopener,noreferrer')
   }
 
   return (
