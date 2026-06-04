@@ -31,6 +31,7 @@ const EVENTS = [
     bgClass: 'bg-purple-50',
     borderClass: 'border-purple-100',
     confirmed: false,
+    admission: 'Ticketed Event',
     description: 'An electrifying night of Dandiya — traditional Gujarati folk dance performed during the Navratri festival. Come dressed in traditional attire, bring your dandiya sticks, and dance the night away.',
     highlights: ['Live Dandiya Night', 'Local vendors & artisans', 'Cultural performances', 'Traditional food stalls'],
   },
@@ -141,7 +142,9 @@ export default function Events() {
                       </div>
                       <div>
                         <dt className="text-gray-500 text-xs uppercase tracking-wide">Admission</dt>
-                        <dd className="font-semibold mt-0.5" style={{color:'#42B97E'}}>Free & Open to All</dd>
+                        <dd className="font-semibold mt-0.5" style={{color: ev.admission ? '#e85d04' : '#42B97E'}}>
+                          {ev.admission ?? 'Free & Open to All'}
+                        </dd>
                       </div>
                     </dl>
                     <div className="mt-4 border-t border-gray-200 pt-4">
