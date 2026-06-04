@@ -101,12 +101,9 @@ export default function Home() {
             </div>
 
             {/* Subscribe card */}
-            <div className="card bg-white/10 backdrop-blur-md border border-white/20 text-white">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg">️</span>
-                <h3 className="font-semibold text-white">Stay in the loop</h3>
-              </div>
-              <p className="text-sm text-gray-300 mt-1 mb-4">
+            <div className="rounded-2xl p-6 border border-white/10" style={{background:'rgba(15,32,68,0.75)'}}>
+              <h3 className="font-bold text-white text-lg mb-1">Stay in the loop</h3>
+              <p className="text-sm text-gray-300 mb-5">
                 Get event announcements, volunteer opportunities, and community news — straight to your inbox.
               </p>
               <SubscribeForm dark />
