@@ -1,6 +1,19 @@
 import { isAuthenticated } from '../../../lib/auth'
-import { getSubscribers } from '../../../lib/db'
+import { sql } from '../../../lib/db'
 import { syncResendAudience } from '../../../lib/syncSubscriber'
+
+async function processWithConcurrency(items, concurrency, worker) {
+  let index = 0
+  const runners = Array.from({ length: concurrency }, async () => {
+    while (index < items.length) {
+      const currentIndex = index++
+      const item = items[currentIndex]
+      if (!item) continue
+      await worker(item)
+    }
+  })
+  await Promise.all(runners)
+}
 
 export default async function handler(req, res) {
   if (!await isAuthenticated(req, res)) return res.status(401).json({ error: 'Unauthorized' })
@@ -14,32 +27,53 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'RESEND_AUDIENCE_ID or RESEND_SEGMENT_ID is not configured' })
   }
 
+  const limit = Math.min(Math.max(parseInt(req.query.limit || req.body?.limit || '100', 10) || 100, 1), 100)
+  const afterId = Math.max(parseInt(req.query.afterId || req.body?.afterId || '0', 10) || 0, 0)
+
   try {
-    const result = await getSubscribers({ status: 'all' })
+    const result = await sql`
+      SELECT id, email, first_name, last_name, status
+      FROM subscribers
+      WHERE id > ${afterId}
+      ORDER BY id ASC
+      LIMIT ${limit}
+    `
+
     let synced = 0
     let skipped = 0
 
-    for (const subscriber of result.rows) {
+    await processWithConcurrency(result.rows, 10, async (subscriber) => {
       const email = (subscriber.email || '').toLowerCase().trim()
       if (!email) {
         skipped++
-        continue
+        return
       }
 
       try {
-        await syncResendAudience(
+        const ok = await syncResendAudience(
           email,
           subscriber.first_name || '',
           subscriber.last_name || '',
           subscriber.status !== 'active'
         )
-        synced++
+        if (ok) synced++
+        else skipped++
       } catch {
         skipped++
       }
-    }
+    })
 
-    return res.status(200).json({ ok: true, synced, skipped, total: result.rows.length })
+    const nextCursor = result.rows.length ? result.rows[result.rows.length - 1].id : null
+    const hasMore = result.rows.length === limit
+
+    return res.status(200).json({
+      ok: true,
+      synced,
+      skipped,
+      total: result.rows.length,
+      nextCursor,
+      hasMore,
+    })
   } catch (err) {
     console.error('sync-resend error:', err)
     return res.status(500).json({ error: err.message })

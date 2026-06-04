@@ -87,10 +87,35 @@ export default function DashboardHome() {
   async function syncResend() {
     setSyncingResend(true)
     setResendResult(null)
-    const r = await fetch('/api/admin/sync-resend', { method: 'POST' })
-    const d = await r.json()
-    setSyncingResend(false)
-    setResendResult(d)
+    let afterId = 0
+    let synced = 0
+    let skipped = 0
+    let total = 0
+
+    try {
+      while (true) {
+        const params = new URLSearchParams({ afterId: String(afterId), limit: '100' })
+        const r = await fetch(`/api/admin/sync-resend?${params.toString()}`, { method: 'POST' })
+        const d = await r.json()
+        if (d.error) {
+          setResendResult(d)
+          break
+        }
+
+        synced += d.synced || 0
+        skipped += d.skipped || 0
+        total += d.total || 0
+
+        if (!d.hasMore) {
+          setResendResult({ ok: true, synced, skipped, total })
+          break
+        }
+
+        afterId = d.nextCursor || afterId
+      }
+    } finally {
+      setSyncingResend(false)
+    }
   }
 
   return (
