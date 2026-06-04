@@ -37,14 +37,15 @@ function Softphone() {
   const callRef = useRef(null)
   const timerRef = useRef(null)
 
-  const apiKey = process.env.NEXT_PUBLIC_TELNYX_WEBRTC_TOKEN
+  const sipUser = process.env.NEXT_PUBLIC_TELNYX_SIP_USERNAME
+  const sipPass = process.env.NEXT_PUBLIC_TELNYX_SIP_PASSWORD
 
   useEffect(() => {
-    if (!apiKey) return
+    if (!sipUser || !sipPass) return
     setStatus('connecting')
 
     import('@telnyx/webrtc').then(({ TelnyxRTC }) => {
-      const client = new TelnyxRTC({ login_token: apiKey })
+      const client = new TelnyxRTC({ login: sipUser, password: sipPass })
 
       client.on('telnyx.ready', () => setStatus('ready'))
       client.on('telnyx.error', () => setStatus('idle'))
@@ -79,7 +80,7 @@ function Softphone() {
       clearInterval(timerRef.current)
       clientRef.current?.disconnect()
     }
-  }, [apiKey])
+  }, [sipUser, sipPass])
 
   function dial(digit) { setDialInput(v => v + digit) }
 
@@ -132,9 +133,9 @@ function Softphone() {
       </div>
 
       <div className="p-5">
-        {!apiKey ? (
+        {(!sipUser || !sipPass) ? (
           <div className="text-center py-4">
-            <p className="text-gray-400 text-sm">Set <code className="bg-gray-100 px-1 rounded text-xs">NEXT_PUBLIC_TELNYX_WEBRTC_TOKEN</code> to enable calling.</p>
+            <p className="text-gray-400 text-sm">Set <code className="bg-gray-100 px-1 rounded text-xs">NEXT_PUBLIC_TELNYX_SIP_USERNAME</code> and <code className="bg-gray-100 px-1 rounded text-xs">NEXT_PUBLIC_TELNYX_SIP_PASSWORD</code> to enable calling.</p>
           </div>
         ) : (
           <>
