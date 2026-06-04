@@ -95,6 +95,12 @@ body {
   color: #2e9664;
 }
 
+/* Tinted promo sections (e.g. /sponsor) — light gradients with a shared
+   .section-tint hook so dark mode can flip them in one place */
+.section-tint--amber  { background: linear-gradient(180deg, #fffbeb 0%, #fff8e1 100%); }
+.section-tint--orange { background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%); }
+.section-tint--purple { background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%); }
+
 /* ── DARK MODE ── */
 @media (prefers-color-scheme: dark) {
   body {
@@ -152,12 +158,35 @@ body {
   .border-yellow-100 { border-color: #2d2200 !important; }
   .border-purple-100 { border-color: #1e0d3d !important; }
 
-  /* Text — scoped to avoid overriding hero/colored sections */
-  main .text-gray-900, footer .text-gray-900 { color: #e6edf3 !important; }
-  main .text-gray-800, footer .text-gray-800 { color: #c9d1d9 !important; }
-  main .text-gray-700, footer .text-gray-700 { color: #c9d1d9 !important; }
-  main .text-gray-600, footer .text-gray-600 { color: #8d96a0 !important; }
-  main .text-gray-500, footer .text-gray-500 { color: #6e7681 !important; }
+  /* Tinted promo sections flip to the dark page background so the text on
+     them stays readable */
+  .section-tint--amber, .section-tint--orange, .section-tint--purple {
+    background: #0d1117 !important;
+  }
+
+  /* Text — applies inside <main>/<footer> AND inside any surface that flips
+     to a dark background (cards, white sections, tinted sections). Those
+     surfaces are always dark in dark mode, so their text must always be
+     light. This also covers pages with no <main> wrapper, like /sponsor. */
+  main .text-gray-900, footer .text-gray-900,
+  .bg-white .text-gray-900, .card .text-gray-900,
+  .section-tint--amber .text-gray-900, .section-tint--orange .text-gray-900, .section-tint--purple .text-gray-900 { color: #e6edf3 !important; }
+
+  main .text-gray-800, footer .text-gray-800,
+  .bg-white .text-gray-800, .card .text-gray-800,
+  .section-tint--amber .text-gray-800, .section-tint--orange .text-gray-800, .section-tint--purple .text-gray-800 { color: #c9d1d9 !important; }
+
+  main .text-gray-700, footer .text-gray-700,
+  .bg-white .text-gray-700, .card .text-gray-700,
+  .section-tint--amber .text-gray-700, .section-tint--orange .text-gray-700, .section-tint--purple .text-gray-700 { color: #c9d1d9 !important; }
+
+  main .text-gray-600, footer .text-gray-600,
+  .bg-white .text-gray-600, .card .text-gray-600,
+  .section-tint--amber .text-gray-600, .section-tint--orange .text-gray-600, .section-tint--purple .text-gray-600 { color: #8d96a0 !important; }
+
+  main .text-gray-500, footer .text-gray-500,
+  .bg-white .text-gray-500, .card .text-gray-500,
+  .section-tint--amber .text-gray-500, .section-tint--orange .text-gray-500, .section-tint--purple .text-gray-500 { color: #6e7681 !important; }
   /* Do NOT override gray-300/400 — used as readable light text on dark hero backgrounds */
 
   .divide-gray-100 > * + * { border-color: #21262d !important; }

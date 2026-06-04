@@ -168,7 +168,7 @@ export default function Donate() {
             </div>
 
             {/* Sponsor CTA */}
-            <div className="card" style={{background:'#fff7ed', border:'1px solid #fed7aa'}}>
+            <div className="card bg-orange-50 border-orange-100">
               <h3 className="font-bold text-gray-900 mb-1">Business owner?</h3>
               <p className="text-sm text-gray-600 mb-4">Sponsor an event and reach thousands of engaged community members.</p>
               <Link href="/sponsor" className="btn-primary text-sm px-5 py-2.5 block text-center">

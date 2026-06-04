@@ -10,12 +10,12 @@ const CHECK = ({ color = '#42B97E' }) => (
 )
 
 const DIWALI_AD = [
-  { name: 'Inside Half Page', price: 150, stripeUrl: 'https://donate.stripe.com/5kAbJO4V9bkJ9wIeV0', soldOut: false, perks: ['Half-page ad in Diwali Mela program book', 'Name listed on event website', 'Social media thank-you post'] },
-  { name: 'Inside Full Page', price: 250, stripeUrl: 'https://donate.stripe.com/3cs15a87lfAZ5gs6ot', soldOut: false, perks: ['Full-page ad in Diwali Mela program book', 'Logo on event website', 'Dedicated social media shoutout'] },
+  { name: 'Inside Half Page', price: 150, stripeUrl: 'https://donate.stripe.com/5kAbJO4V9bkJ9wIeV0', soldOut: false, perks: ['Half-page ad in Diwali Mela online program book', 'Name listed on event website', 'Social media thank-you post'] },
+  { name: 'Inside Full Page', price: 250, stripeUrl: 'https://donate.stripe.com/3cs15a87lfAZ5gs6ot', soldOut: false, perks: ['Full-page ad in Diwali Mela online program book', 'Logo on event website', 'Dedicated social media shoutout'] },
   { name: 'Inside Back Cover', price: 350, stripeUrl: 'https://donate.stripe.com/fZe29eevJagFbEQ148', soldOut: false, perks: ['Premium inside back cover placement', 'Logo on event website', 'Dedicated social media shoutout', 'Stage mention at event'] },
   { name: 'Silver Page', price: 300, stripeUrl: 'https://donate.stripe.com/8wMcNSevJ88xeR26or', soldOut: false, perks: ['Silver-tier full-page ad in program', 'Logo on event website', 'Dedicated social media shoutout', 'Stage mention at event'] },
   { name: 'Gold Page', price: 500, stripeUrl: 'https://donate.stripe.com/14kaFKevJ4WlbEQ8wy', soldOut: false, featured: true, perks: ['Gold-tier full-page ad in program', 'Premium logo on event website', 'Stage announcement at event', 'Feature in email newsletter'] },
-  { name: 'Back Page', price: 500, stripeUrl: null, soldOut: true, perks: ['Prime back cover of program book', 'Premium logo on event website', 'Stage announcement at event', 'Feature in email newsletter'] },
+  { name: 'Back Page', price: 500, stripeUrl: null, soldOut: true, perks: ['Prime back cover of online program book', 'Premium logo on event website', 'Stage announcement at event', 'Feature in email newsletter'] },
   { name: 'Logo in Diwali Flyer', price: null, displayPrice: 'Donation', stripeUrl: 'https://buy.stripe.com/5kQ4gzfHC3XQaOa3zI8bS0n', soldOut: false, perks: ['Your logo featured on the official Diwali Mela event flyer', 'Distributed digitally and in print', 'Community-wide visibility before the event', 'Tax-deductible donation'] },
 ]
 
@@ -138,7 +138,7 @@ export default function Sponsor() {
       </section>
 
       {/* ── DIWALI MELA AD PROGRAM ── */}
-      <section id="diwali-ad" style={{background: 'linear-gradient(180deg, #fffbeb 0%, #fff8e1 100%)'}}>
+      <section id="diwali-ad" className="section-tint--amber">
         <div className="container-max px-4 md:px-6 py-16 md:py-20">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-4xl"></span>
@@ -146,7 +146,7 @@ export default function Sponsor() {
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-1">Diwali Mela Ad Program</h2>
           <p className="mt-3 text-gray-600 max-w-2xl">
-            Advertise in the official Diwali Mela printed program book — distributed to every attendee. Pick the placement that fits your budget.
+            Advertise in the official Diwali Mela online program book. Every guest scans a QR code at the event to view it, and we blast the link out in our newsletters — so your ad reaches the entire community. Pick the placement that fits your budget.
           </p>
 
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -213,7 +213,7 @@ export default function Sponsor() {
       </section>
 
       {/* ── DIWALI MELA VENDOR SPOTS ── */}
-      <section id="diwali-vendor" style={{background: 'linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%)'}}>
+      <section id="diwali-vendor" className="section-tint--orange">
         <div className="container-max px-4 md:px-6 py-16 md:py-20">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-4xl"></span>
@@ -266,7 +266,7 @@ export default function Sponsor() {
       </section>
 
       {/* ── DANDIYA DHAMAKA VENDOR SPOTS ── */}
-      <section id="dandiya-vendor" style={{background: 'linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%)'}}>
+      <section id="dandiya-vendor" className="section-tint--purple">
         <div className="container-max px-4 md:px-6 py-16 md:py-20">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-4xl"></span>
