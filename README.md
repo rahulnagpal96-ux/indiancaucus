@@ -1,8 +1,19 @@
-# Indian Caucus of Secaucus — indiancaucus.org
+# Indian Caucus of Secaucus
 
-Production website for the Indian Caucus of Secaucus, a 501(c)(3) nonprofit hosting free cultural events (Holi, Dandiya Dhamaka, Diwali Mela) for the Secaucus, NJ community.
+**Stack:** Next.js 14 · Tailwind CSS · Vercel Postgres · Resend · Stripe
 
-**Stack:** Next.js 14 · Tailwind CSS · Vercel Postgres · Resend · NextAuth · Stripe
+## Links
+
+| | URL |
+|---|---|
+| 🌐 Public site | https://indiancaucus.org |
+| 🔒 Dashboard | https://indiancaucus.org/dashboard |
+| 🔑 Dashboard login | https://indiancaucus.org/dashboard/login |
+| 📋 Subscribers | https://indiancaucus.org/dashboard/subscribers |
+| 📣 Campaigns | https://indiancaucus.org/dashboard/campaigns |
+| ☁️ Vercel project | https://vercel.com/rahulnagpal96-ux/indiancaucus |
+| 🗄️ Vercel Postgres | https://vercel.com/rahulnagpal96-ux/indiancaucus/stores |
+| 📧 Resend | https://resend.com |
 
 ## Local Development
 
@@ -13,36 +24,35 @@ npm run dev
 
 Copy `.env.local.example` to `.env.local` and fill in your keys.
 
-## Admin Dashboard
+## Dashboard
 
-The dashboard lives at `/dashboard` and requires authentication.
+Accessible at `/dashboard` — password protected.
 
-- **Login:** `/dashboard/login` — Microsoft O365 (Azure AD) or admin password
-- **Overview:** Stats for subscribers, new sign-ups, phone numbers, campaigns sent
-- **Subscribers:** Search, filter, import CSV, export CSV, manage contacts
+- **Login:** `/dashboard/login` — enter `ADMIN_PASSWORD`
+- **Overview:** Subscriber stats, new sign-ups, phone numbers collected, campaigns sent
+- **Subscribers:** Search, filter, CSV import/export, manage contacts + phone numbers
 - **Campaigns:** Compose and send email campaigns to all active subscribers
 
 ### First-time setup
 
-1. Add a **Vercel Postgres** database in your Vercel project (Storage tab) — env vars are injected automatically
-2. Visit `/dashboard` and click **"Set up database"** to create the tables
-3. Set the required env vars below and redeploy
+1. Add **Vercel Postgres** in your Vercel project → Storage tab (env vars inject automatically)
+2. Visit `/dashboard` → click **"Set up database"** to create tables
+3. Set `ADMIN_PASSWORD` in Vercel env vars → redeploy
 
 ## Environment Variables
 
-See `.env.local.example` for the full reference. Key variables:
+See `.env.local.example` for the full reference.
 
 | Variable | Purpose | Required |
 |---|---|---|
-| `POSTGRES_URL` | Vercel Postgres connection (auto-set by Vercel) | Yes |
-| `RESEND_API_KEY` | Email delivery for welcome emails and campaigns | Yes |
+| `ADMIN_PASSWORD` | Password for `/dashboard/login` | Yes |
+| `POSTGRES_URL` | Vercel Postgres (auto-set by Vercel Storage) | Yes |
+| `RESEND_API_KEY` | Welcome emails + campaign delivery | Yes |
 | `EMAIL_FROM` | Sender address (domain must be verified in Resend) | Yes |
-| `NEXTAUTH_SECRET` | Auth session signing key — `openssl rand -base64 32` | Yes |
-| `NEXTAUTH_URL` | Your deployed URL | Yes |
-| `ADMIN_PASSWORD` | Password for dashboard login | Yes |
 | `STRIPE_SECRET_KEY` | Donation checkout | Yes |
-| `AZURE_AD_CLIENT_ID/SECRET/TENANT_ID` | Microsoft O365 SSO (optional) | No |
-| `FRESHDESK_API_KEY` / `FRESHDESK_DOMAIN` | Contact form tickets (optional) | No |
+| `MAILCHIMP_API_KEY` | Mailchimp sync (remove when switching to Resend) | No |
+| `MAILCHIMP_LIST_ID` | Mailchimp audience ID | No |
+| `FRESHDESK_API_KEY` / `FRESHDESK_DOMAIN` | Contact form → support tickets | No |
 
 ## Integrations
 
@@ -50,7 +60,7 @@ See `.env.local.example` for the full reference. Key variables:
 |---|---|
 | Vercel Postgres (Neon) | Subscriber and campaign database |
 | Resend | Welcome emails, newsletter campaigns |
-| NextAuth v4 | Dashboard authentication (O365 + password) |
+| Mailchimp | Legacy newsletter sync (remove when Resend is live) |
 | Stripe | Donation checkout |
 | Freshdesk | Contact form → support tickets |
 | Outlook / Microsoft 365 | Domain email |
@@ -58,4 +68,4 @@ See `.env.local.example` for the full reference. Key variables:
 
 ## Deployment
 
-Pushes to `main` deploy automatically via Vercel. DNS is managed through Vercel nameservers.
+Pushes to `main` deploy automatically via Vercel. DNS managed through Vercel nameservers.
