@@ -41,7 +41,7 @@ export default async function handler(req, res){
         method: 'POST',
         headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: 'Contact Form <noreply@indiancaucus.vercel.app>',
+          from: process.env.EMAIL_FROM_DONATIONS || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <donate@newsletter.indiancaucus.org>',
           to: notifyEmail,
           reply_to: email,
           subject: ticketSubject,

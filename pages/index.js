@@ -12,7 +12,7 @@ const EVENTS = [
     color: 'from-yellow-500 to-orange-500',
     accent: '#F5C518',
     confirmed: true,
-    description: 'The Festival of Lights at Buchmuller Park — cultural exhibits, live performances, a community marketplace, and fireworks. 12–6 PM.',
+    description: 'The Festival of Lights at Buchmuller Park — cultural exhibits, live performances, and a community marketplace. 12–6 PM.',
   },
   {
     id: 'garba',
@@ -38,7 +38,7 @@ const STATS = [
   { value: '15+', label: 'Years serving the community' },
   { value: '3', label: 'Major festivals per year' },
   { value: '501(c)(3)', label: 'Tax-exempt nonprofit' },
-  { value: 'Free', label: 'Community programming' },
+  { value: 'Open', label: 'Community programming' },
 ]
 
 const IMPACT = [
@@ -79,7 +79,7 @@ export default function Home() {
                 <span className="gradient-text">Build Community.</span>
               </h1>
               <p className="mt-5 text-lg text-gray-300 leading-relaxed max-w-xl">
-                We bring thousands together each year for Holi, Dandiya Dhamaka, and Diwali Mela — free, joyful celebrations of India's rich heritage in the heart of New Jersey.
+                We bring thousands together each year for Holi, Dandiya Dhamaka, and Diwali Mela — joyful celebrations of India's rich heritage in the heart of New Jersey.
               </p>
               <p className="mt-3 text-sm text-gray-400">
                 Your generosity funds every lantern, every performance, every smile.
@@ -133,7 +133,7 @@ export default function Home() {
           <div className="text-center mb-12">
             <span className="section-label">Our Festivals</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2">Three Celebrations. One Community.</h2>
-            <p className="mt-3 text-gray-500 max-w-xl mx-auto">Every event is free and open to all — because culture belongs to everyone.</p>
+            <p className="mt-3 text-gray-500 max-w-xl mx-auto">Every event is open to all — because culture belongs to everyone.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -267,7 +267,7 @@ export default function Home() {
                   Every dollar keeps the celebration alive.
                 </h2>
                 <p className="mt-4 text-gray-300 leading-relaxed max-w-md">
-                  Our events are free for the community because of donors like you. As a 501(c)(3) nonprofit, your gift is tax-deductible — and 100% goes to community programming.
+                  Our events are made possible by donors like you. As a 501(c)(3) nonprofit, your gift is tax-deductible — and 100% goes to community programming.
                 </p>
                 <Link href="/donate" className="mt-7 btn-primary inline-block text-base px-8 py-3.5">
                   Donate Now →

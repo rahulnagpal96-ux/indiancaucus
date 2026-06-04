@@ -5,7 +5,7 @@ async function sendBatchEmails(subscribers, subject, htmlContent) {
   const resendKey = process.env.RESEND_API_KEY
   if (!resendKey) throw new Error('RESEND_API_KEY not configured')
 
-  const fromAddress = process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <newsletter@indiancaucusofsecaucus.org>'
+  const fromAddress = process.env.EMAIL_FROM_EVENTS || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <events@newsletter.indiancaucus.org>'
   const BATCH_SIZE = 100
   let sent = 0
 
