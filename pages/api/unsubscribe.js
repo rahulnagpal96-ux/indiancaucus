@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     // Mark unsubscribed in Postgres — record is kept
     await sql`UPDATE subscribers SET status = 'unsubscribed' WHERE email = ${clean}`
 
-    // Sync unsubscribe to Resend and Mailchimp (non-blocking)
+    // Sync unsubscribe to mailing services (non-blocking)
     syncResendAudience(clean, '', '', true)
     unsubscribeFromMailchimp(clean)
 

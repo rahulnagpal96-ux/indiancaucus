@@ -450,7 +450,7 @@ export default function CampaignsPage() {
           <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4 space-y-2">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Send a test first</p>
             <p className="text-[11px] text-gray-400 leading-relaxed">
-              Test emails also use a temporary Resend broadcast segment so you see the same footer and unsubscribe flow.
+              Test emails use the same broadcast footer and unsubscribe flow you’ll see in the final send.
             </p>
             <div className="flex gap-2">
               <input
