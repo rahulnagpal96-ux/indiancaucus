@@ -2,6 +2,8 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
 
+const STRIPE_DONATE_URL = 'https://donate.stripe.com/eVa29e87l0G5fV6bJ4'
+
 const LINKS = [
   {
     label: 'Participation',
@@ -153,6 +155,41 @@ function ContactModal({ onClose }) {
   )
 }
 
+function DonateBox() {
+  const [amount, setAmount] = useState('')
+
+  const handleDonate = () => {
+    const n = parseFloat(amount)
+    if (!n || n < 1) return
+    window.open(`${STRIPE_DONATE_URL}?amount=${Math.round(n * 100)}`, '_blank', 'noopener,noreferrer')
+  }
+
+  return (
+    <div className="flex gap-2">
+      <div className="flex items-center flex-1 bg-gray-900 border border-gray-700 focus-within:border-orange-400 rounded-xl overflow-hidden transition-colors">
+        <span className="pl-3 text-gray-400 font-semibold">$</span>
+        <input
+          type="number"
+          min="1"
+          placeholder="Amount"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleDonate()}
+          className="flex-1 bg-transparent px-2 py-2.5 text-white text-sm font-semibold placeholder-gray-600 outline-none"
+        />
+      </div>
+      <button
+        onClick={handleDonate}
+        disabled={!amount || parseFloat(amount) < 1}
+        className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ background: 'linear-gradient(135deg, #FF9933, #F26644)' }}
+      >
+        Donate
+      </button>
+    </div>
+  )
+}
+
 function NewsletterBox() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState('')
@@ -231,6 +268,7 @@ export default function Links() {
       {/* Logo / Brand */}
       <div className="mb-8 text-center">
         <Link href="/">
+          <img src="/logo.png" alt="Indian Caucus of Secaucus" className="h-16 w-auto mx-auto mb-3" />
           <span className="text-2xl font-bold text-white tracking-tight">
             Indian Caucus <span className="text-orange-400">of Secaucus</span>
           </span>
@@ -304,6 +342,22 @@ export default function Links() {
             </svg>
           </div>
         </button>
+      </div>
+
+      {/* Donate box */}
+      <div className="w-full max-w-sm mt-4 bg-gray-800 rounded-2xl px-4 py-4">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center text-white">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </div>
+          <div>
+            <div className="font-semibold text-white text-base leading-tight">Donate Now</div>
+            <div className="text-xs text-gray-400 mt-0.5">100% goes to community events · 501(c)(3)</div>
+          </div>
+        </div>
+        <DonateBox />
       </div>
 
       {/* Social Links */}
