@@ -12,12 +12,6 @@ function getCampaignFromAddress() {
 function getBroadcastHtml(htmlContent) {
   return htmlContent
     .replace(/\{\{name\}\}/g, '{{{contact.first_name|Friend}}}')
-    .replace(
-      /<\/body>/i,
-      `<div style="margin:28px 0 0;padding-top:16px;border-top:1px solid #e5e7eb;color:#6b7280;font-size:12px;line-height:1.6;text-align:center;">
-        <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:#6b7280;text-decoration:underline;">Unsubscribe</a>
-      </div></body>`
-    )
 }
 
 function getEligibleRecipientCount(subscribers) {
