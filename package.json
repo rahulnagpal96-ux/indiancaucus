@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@telnyx/webrtc": "^2.27.1",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.4.0",
     "@vercel/postgres": "^0.10.0",
