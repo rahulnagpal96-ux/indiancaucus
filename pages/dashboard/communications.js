@@ -498,29 +498,10 @@ function SMSCampaign() {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function CommunicationsPage() {
-  const [setupMsg, setSetupMsg] = useState('')
-  const [settingUp, setSettingUp] = useState(false)
-
-  async function setupCommsDb() {
-    setSettingUp(true)
-    const r = await fetch('/api/admin/setup-comms-db', { method: 'POST' })
-    const d = await r.json()
-    setSettingUp(false)
-    setSetupMsg(d.ok ? 'Tables created!' : `Error: ${d.error}`)
-  }
-
   return (
     <AdminLayout title="Communications">
-      <div className="mb-5 flex items-center justify-between flex-wrap gap-3">
+      <div className="mb-5">
         <p className="text-gray-500 text-sm">Softphone, SMS inbox, call log, and bulk SMS campaigns via Telnyx.</p>
-        <button
-          onClick={setupCommsDb}
-          disabled={settingUp}
-          className="text-xs font-semibold border border-gray-200 bg-white px-3 py-2 rounded-xl text-gray-600 hover:bg-gray-50 disabled:opacity-50"
-        >
-          {settingUp ? 'Setting up…' : 'Set up comms DB tables'}
-        </button>
-        {setupMsg && <p className="text-green-600 text-xs font-medium w-full">{setupMsg}</p>}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">

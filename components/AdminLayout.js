@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
 const NAV = [
   {
@@ -53,6 +54,19 @@ const NAV = [
     ),
   },
   {
+    href: '/dashboard/activity',
+    label: 'Activity Log',
+    icon: (
+      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
+      </svg>
+    ),
+  },
+  {
     href: '/dashboard/analytics',
     label: 'Analytics',
     icon: (
@@ -73,6 +87,16 @@ export default function AdminLayout({ children, title }) {
   const router = useRouter()
   const { pathname } = router
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { data: session } = useSession()
+
+  // Log page view for audit trail
+  useEffect(() => {
+    fetch('/api/admin/activity-log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'page_view', page: pathname }),
+    }).catch(() => {})
+  }, [pathname])
 
   return (
     <div className="min-h-screen" style={{ background: '#f0f2f8' }}>
@@ -137,13 +161,19 @@ export default function AdminLayout({ children, title }) {
 
         <div className="px-4 pb-6">
           <div className="flex items-center gap-3 mb-3 px-1">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-              style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
-            >A</div>
+            {session?.user?.image ? (
+              <img src={session.user.image} alt="" className="w-8 h-8 rounded-full shrink-0 object-cover" />
+            ) : (
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
+              >
+                {(session?.user?.name?.[0] || 'A').toUpperCase()}
+              </div>
+            )}
             <div className="min-w-0">
-              <p className="text-white text-xs font-medium">Admin</p>
-              <p className="text-blue-400 text-xs">Indian Caucus</p>
+              <p className="text-white text-xs font-medium truncate">{session?.user?.name || 'Admin'}</p>
+              <p className="text-blue-400 text-xs truncate">{session?.user?.email || 'Indian Caucus'}</p>
             </div>
           </div>
           <button

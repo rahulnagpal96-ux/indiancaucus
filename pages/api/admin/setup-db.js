@@ -31,6 +31,22 @@ export default async function handler(req, res) {
       )
     `
 
+    await sql`
+      CREATE TABLE IF NOT EXISTS activity_logs (
+        id          SERIAL PRIMARY KEY,
+        user_email  VARCHAR(255),
+        action      VARCHAR(100),
+        page        VARCHAR(255),
+        detail      TEXT,
+        ip_address  VARCHAR(60),
+        user_agent  TEXT,
+        isp         VARCHAR(255),
+        city        VARCHAR(100),
+        country     VARCHAR(100),
+        created_at  TIMESTAMPTZ DEFAULT NOW()
+      )
+    `
+
     return res.status(200).json({ ok: true, message: 'Tables created (or already exist).' })
   } catch (err) {
     console.error('setup-db error:', err)
