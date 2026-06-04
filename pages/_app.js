@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { SessionProvider } from 'next-auth/react'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
+import posthog from 'posthog-js'
 
 export default function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter()
@@ -12,21 +13,17 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
     const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
     if (!key) return
 
-    // Dynamically import so it never runs server-side
-    import('posthog-js').then(({ default: posthog }) => {
-      if (!posthog.__loaded) {
-        posthog.init(key, {
-          api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
-          capture_pageview: true,
-          persistence: 'localStorage+cookie',
-        })
-      }
-
-      const handleRouteChange = () => posthog.capture('$pageview')
-      router.events.on('routeChangeComplete', handleRouteChange)
-      return () => router.events.off('routeChangeComplete', handleRouteChange)
+    posthog.init(key, {
+      api_host: 'https://us.i.posthog.com',
+      capture_pageview: false,
+      loaded: (ph) => ph.capture('$pageview'),
     })
-  }, [router.events])
+
+    function onRouteChange() { posthog.capture('$pageview') }
+    router.events.on('routeChangeComplete', onRouteChange)
+    return () => router.events.off('routeChangeComplete', onRouteChange)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <SessionProvider session={session}>

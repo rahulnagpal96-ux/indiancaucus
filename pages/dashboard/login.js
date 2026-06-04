@@ -1,5 +1,8 @@
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { signIn } from 'next-auth/react'
+
+const hasMicrosoft = !!process.env.NEXT_PUBLIC_HAS_AZURE
 
 export default function DashboardLogin() {
   const [password, setPassword] = useState('')
@@ -7,7 +10,7 @@ export default function DashboardLogin() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  async function handleSubmit(e) {
+  async function handlePassword(e) {
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -26,6 +29,11 @@ export default function DashboardLogin() {
       setError('Something went wrong. Try again.')
     }
     setLoading(false)
+  }
+
+  async function handleMicrosoft() {
+    setLoading(true)
+    await signIn('azure-ad', { callbackUrl: '/dashboard' })
   }
 
   return (
@@ -51,8 +59,30 @@ export default function DashboardLogin() {
             <p className="text-blue-300 text-sm mt-1">Indian Caucus of Secaucus</p>
           </div>
 
-          <div className="px-8 py-7">
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="px-8 py-7 space-y-4">
+            {/* Microsoft button — always shown, disabled if not configured */}
+            <button
+              onClick={handleMicrosoft}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-2xl px-4 py-3.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all disabled:opacity-50 shadow-sm"
+            >
+              <svg width="18" height="18" viewBox="0 0 21 21" fill="none">
+                <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+                <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+                <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+                <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+              </svg>
+              Sign in with Microsoft O365
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-gray-100" />
+              <span className="text-xs text-gray-400 font-medium">or</span>
+              <div className="flex-1 h-px bg-gray-100" />
+            </div>
+
+            {/* Password fallback */}
+            <form onSubmit={handlePassword} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
                   Admin password
