@@ -74,7 +74,7 @@ export default function EmailPreview({ html }) {
             <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
             <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
           </div>
-          <span className="text-gray-400 text-xs ml-2 font-mono">from: newsletter@newsletters.indiancaucus.org</span>
+          <span className="text-gray-400 text-xs ml-2 font-mono">from: noreply@newsletters.indiancaucus.org</span>
         </div>
         <div className="w-full overflow-auto" dangerouslySetInnerHTML={{ __html: html }} />
       </div>

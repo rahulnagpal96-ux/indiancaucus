@@ -7,7 +7,7 @@ async function sendWelcomeEmail(email, firstName) {
 
   const resendKey = process.env.RESEND_API_KEY
   if (!resendKey) return
-  const fromAddress = process.env.EMAIL_FROM_NEWSLETTER || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <newsletter@newsletters.indiancaucus.org>'
+  const fromAddress = process.env.EMAIL_FROM_NEWSLETTER || process.env.EMAIL_FROM || 'Indian Caucus of Secaucus <noreply@newsletters.indiancaucus.org>'
   try {
     const resp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
