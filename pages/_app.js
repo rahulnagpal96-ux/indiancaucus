@@ -1,5 +1,6 @@
 import '../styles/globals.css'
 import Head from 'next/head'
+import { Analytics } from "@vercel/analytics/next"
 
 export default function MyApp({ Component, pageProps }) {
   return (
@@ -30,6 +31,7 @@ export default function MyApp({ Component, pageProps }) {
         <meta name="twitter:image" content="https://indiancaucus.org/social-card.png" />
       </Head>
       <Component {...pageProps} />
+      <Analytics />
     </>
   )
 }
