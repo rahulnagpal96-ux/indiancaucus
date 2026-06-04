@@ -35,8 +35,7 @@ export default function Footer() {
             <div className="flex items-center gap-3 mb-4">
               <img src="/logo.png" alt="Indian Caucus" className="w-10 h-10 object-contain rounded-md bg-white/10 p-1" onError={(e)=>{e.currentTarget.style.display='none'}} />
               <div>
-                <div className="font-bold text-white leading-tight">Indian Caucus</div>
-                <div className="text-xs text-gray-400 leading-tight">of Secaucus</div>
+                <div className="font-bold text-white leading-tight">Indian Caucus of Secaucus</div>
               </div>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed mb-5">

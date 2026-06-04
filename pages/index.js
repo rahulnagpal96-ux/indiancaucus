@@ -67,8 +67,11 @@ export default function Home() {
         <div className="container-max px-4 md:px-6 py-20 md:py-28 relative">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
+              <p className="text-lg md:text-xl font-bold text-white/90 tracking-wide mb-2">
+                Indian Caucus of Secaucus
+              </p>
               <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-5" style={{background:'rgba(242,102,68,0.2)', color:'#FF9933'}}>
-                🎉 Secaucus, NJ Since 2010
+                🎉 501(c)(3) Nonprofit · Secaucus, NJ · Est. 2010
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
                 Celebrate Culture.<br />

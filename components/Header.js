@@ -65,8 +65,7 @@ export default function Header() {
             >IC</div>
           </div>
           <div>
-            <div className="font-bold text-gray-900 leading-tight text-sm">Indian Caucus</div>
-            <div className="text-xs text-gray-400 leading-tight hidden sm:block">of Secaucus</div>
+            <div className="font-bold text-gray-900 leading-tight text-sm">Indian Caucus of Secaucus</div>
           </div>
         </Link>
 
