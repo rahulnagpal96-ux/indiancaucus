@@ -67,16 +67,7 @@ export default function AdminLayout({ children, title }) {
         {/* Logo */}
         <div className="px-6 pt-7 pb-5 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3" onClick={() => setSidebarOpen(false)}>
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-sm shrink-0"
-              style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
-            >
-              IC
-            </div>
-            <div>
-              <p className="text-white font-bold text-sm leading-tight">Indian Caucus</p>
-              <p className="text-blue-400 text-xs">of Secaucus</p>
-            </div>
+            <img src="/logo.png" alt="Indian Caucus of Secaucus" className="h-9 w-auto shrink-0" />
           </Link>
           {/* Close on mobile */}
           <button
