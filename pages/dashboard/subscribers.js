@@ -6,6 +6,7 @@ function EditModal({ sub, onClose, onSave }) {
   const [form, setForm] = useState({
     email: sub.email || '',
     firstName: sub.first_name || '',
+    lastName: sub.last_name || '',
     phone: sub.phone || '',
     status: sub.status || 'active',
   })
@@ -52,6 +53,10 @@ function EditModal({ sub, onClose, onSave }) {
           <div>
             <label className={labelClass}>First name</label>
             <input type="text" name="firstName" value={form.firstName} onChange={change} placeholder="Optional" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Last name</label>
+            <input type="text" name="lastName" value={form.lastName} onChange={change} placeholder="Optional" className={inputClass} />
           </div>
           <div>
             <label className={labelClass}>Phone</label>
@@ -511,11 +516,15 @@ export default function SubscribersPage() {
                         className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
                         style={{ background: `hsl(${(sub.email.charCodeAt(0) * 37) % 360}, 60%, 45%)` }}
                       >
-                        {(sub.first_name?.[0] ?? sub.email[0]).toUpperCase()}
+                        {(sub.first_name?.[0] ?? sub.last_name?.[0] ?? sub.email[0]).toUpperCase()}
                       </div>
                       <div>
-                        {sub.first_name && <p className="text-gray-900 text-sm font-medium">{sub.first_name}</p>}
-                        <p className={`text-sm ${sub.first_name ? 'text-gray-400' : 'text-gray-900 font-medium'}`}>
+                        {(sub.first_name || sub.last_name) && (
+                          <p className="text-gray-900 text-sm font-medium">
+                            {[sub.first_name, sub.last_name].filter(Boolean).join(' ')}
+                          </p>
+                        )}
+                        <p className={`text-sm ${(sub.first_name || sub.last_name) ? 'text-gray-400' : 'text-gray-900 font-medium'}`}>
                           {sub.email}
                         </p>
                       </div>
