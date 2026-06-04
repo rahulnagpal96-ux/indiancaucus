@@ -46,7 +46,7 @@ async function createAndSendBroadcast(subject, htmlContent, recipientCount) {
       method: 'POST',
       headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        segmentId,
+        segment_id: segmentId,
         from: getCampaignFromAddress(),
         subject,
         html: getBroadcastHtml(htmlContent),

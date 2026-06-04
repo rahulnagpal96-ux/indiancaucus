@@ -63,7 +63,7 @@ async function sendTestBroadcast({ email, subject, html }) {
     const broadcast = await resendRequest('/broadcasts', {
       method: 'POST',
       body: {
-        segmentId: segment.id,
+        segment_id: segment.id,
         from: getCampaignFromAddress(),
         subject,
         html: getBroadcastHtml(html),
