@@ -3,66 +3,104 @@ import Link from 'next/link'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
-const TIERS = [
+const CHECK = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#42B97E" strokeWidth="2.5" className="flex-shrink-0 mt-0.5">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+)
+
+const DIWALI_AD = [
+  { name: 'Bronze', price: 150, perks: ['Quarter-page ad in Diwali Mela program', 'Name on event website', 'Social media thank-you post'] },
+  { name: 'Silver', price: 300, featured: false, perks: ['Half-page ad in Diwali Mela program', 'Logo on event banners', 'Dedicated social media shoutout', '2 complimentary event passes'] },
+  { name: 'Gold', price: 600, featured: true, perks: ['Full-page ad in Diwali Mela program', 'Premium logo placement on banners', 'Stage announcement at event', 'Feature in email newsletter', '4 complimentary event passes'] },
+  { name: 'Platinum', price: 1200, perks: ['Double-page spread in program', 'Title-level logo on all signage', 'Multiple stage announcements', 'Dedicated newsletter feature', '8 complimentary event passes', 'Custom package options available'] },
+]
+
+const DIWALI_VENDORS = [
   {
-    name: 'Community Supporter',
-    amount: 100,
-    color: 'border-gray-200',
-    badge: 'bg-gray-100 text-gray-600',
-    badgeLabel: 'Supporter',
+    type: 'Food Vendor',
+    emoji: '🍛',
+    price: 250,
+    color: 'border-yellow-300',
+    bg: 'bg-yellow-50',
+    accent: '#b45309',
     perks: [
-      'Name listed in event program',
-      'Thank-you shoutout on social media',
-      '2 complimentary event passes',
-      'Certificate of recognition',
+      'Dedicated food vendor booth space',
+      'Listed in event program as food vendor',
+      'Logo on Diwali Mela website listing',
+      'Access to power outlet (limited, first-come)',
+      'Setup begins 2 hours before event',
     ],
-    cta: 'Get Started',
-    featured: false,
   },
   {
-    name: 'Event Sponsor',
-    amount: 500,
-    color: 'border-brand-orange',
-    badge: 'bg-orange-100 text-brand-orange',
-    badgeLabel: 'Most Popular',
+    type: 'Vendor Table',
+    emoji: '🛍️',
+    price: 150,
+    color: 'border-orange-300',
+    bg: 'bg-orange-50',
+    accent: '#c2410c',
     perks: [
-      'Logo on event banners & signage',
-      'Logo on website and social posts',
-      'Dedicated shoutout at the event',
-      '6 complimentary event passes',
-      'Mention in email newsletter',
-      'Certificate of recognition',
+      '6-foot vendor table with 2 chairs',
+      'Listed in event program as vendor',
+      'Logo on Diwali Mela website listing',
+      'Indoor or outdoor placement (TBD)',
+      'Setup begins 2 hours before event',
     ],
-    cta: 'Become a Sponsor',
-    featured: true,
-  },
-  {
-    name: 'Title Sponsor',
-    amount: 2000,
-    color: 'border-brand-gold',
-    badge: 'bg-yellow-100 text-yellow-700',
-    badgeLabel: 'Premium',
-    perks: [
-      'Name/logo in event title',
-      'Premium banner & stage placement',
-      'Full-page listing in program',
-      'Social media campaign inclusion',
-      '15 complimentary event passes',
-      'Dedicated feature in newsletter',
-      'Premium recognition certificate',
-      'Custom sponsorship package available',
-    ],
-    cta: 'Contact Us',
-    featured: false,
   },
 ]
+
+const DANDIYA_VENDORS = [
+  {
+    type: 'Food Vendor',
+    emoji: '🍽️',
+    price: 200,
+    color: 'border-purple-300',
+    bg: 'bg-purple-50',
+    accent: '#7e22ce',
+    perks: [
+      'Dedicated food vendor booth space',
+      'Listed in Dandiya Dhamaka program',
+      'Logo on event website listing',
+      'Access to power outlet (limited)',
+      'Setup begins 2 hours before event',
+    ],
+  },
+  {
+    type: 'Vendor Table',
+    emoji: '💍',
+    price: 125,
+    color: 'border-pink-300',
+    bg: 'bg-pink-50',
+    accent: '#be185d',
+    perks: [
+      '6-foot vendor table with 2 chairs',
+      'Listed in Dandiya Dhamaka program',
+      'Logo on event website listing',
+      'Great visibility during Garba nights',
+      'Setup begins 2 hours before event',
+    ],
+  },
+]
+
+function PerkList({ perks }) {
+  return (
+    <ul className="space-y-2 mt-4">
+      {perks.map((p) => (
+        <li key={p} className="flex items-start gap-2 text-sm text-gray-600">
+          <CHECK />
+          {p}
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 export default function Sponsor() {
   return (
     <div className="min-h-screen">
       <Head>
-        <title>Sponsor — Indian Caucus of Secaucus</title>
-        <meta name="description" content="Sponsor Indian Caucus events and connect your business with thousands of community members at Holi, Dandiya, and Diwali Mela in Secaucus, NJ." />
+        <title>Sponsorship Packages — Indian Caucus of Secaucus</title>
+        <meta name="description" content="Sponsor Indian Caucus of Secaucus events — Diwali Mela ad program, food vendors, and vendor tables for Diwali Mela and Dandiya Dhamaka in Secaucus, NJ." />
       </Head>
       <Header />
 
@@ -75,20 +113,20 @@ export default function Sponsor() {
             <span className="gradient-text">Own the spotlight.</span>
           </h1>
           <p className="mt-4 text-gray-300 max-w-xl text-lg leading-relaxed">
-            Put your brand in front of thousands of engaged, loyal community members across our three signature festivals. A sponsorship is more than a logo — it's a partnership.
+            Put your brand in front of thousands of engaged community members. Choose from advertising packages, food vendor spots, and vendor tables across our signature events.
           </p>
         </div>
       </section>
 
       <main className="container-max px-4 md:px-6">
 
-        {/* Why sponsor */}
-        <section className="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 text-center">
+        {/* Stats */}
+        <section className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-5 text-center">
           {[
-            { icon: '👥', stat: '1,000s', label: 'Community members at each event' },
-            { icon: '📲', stat: '3x', label: 'Annual events with high attendance' },
-            { icon: '🤝', stat: '100%', label: 'Nonprofit — sponsorship is deductible' },
-            { icon: '🌟', stat: '15+', label: 'Years building community trust' },
+            { icon: '👥', stat: '1,000s', label: 'Community members per event' },
+            { icon: '🎉', stat: '3', label: 'Signature festivals per year' },
+            { icon: '🤝', stat: '100%', label: 'Nonprofit — tax deductible' },
+            { icon: '🌟', stat: '15+', label: 'Years of community trust' },
           ].map((s) => (
             <div key={s.label} className="card card-hover text-center">
               <div className="text-3xl mb-2">{s.icon}</div>
@@ -98,62 +136,114 @@ export default function Sponsor() {
           ))}
         </section>
 
-        {/* Tiers */}
-        <section className="mt-16">
-          <div className="text-center mb-10">
-            <span className="section-label">Sponsorship Packages</span>
-            <h2 className="text-3xl font-extrabold text-gray-900 mt-2">Choose your tier</h2>
-            <p className="mt-2 text-gray-500 max-w-lg mx-auto">All sponsors receive public recognition and our sincere gratitude. Contact us to build a custom package.</p>
+        {/* ── SECTION 1: Diwali Mela Ad Program ── */}
+        <section className="mt-20" id="diwali-ad">
+          <div className="mb-10">
+            <span className="section-label">Diwali Mela</span>
+            <h2 className="text-3xl font-extrabold text-gray-900 mt-2">🪔 Diwali Mela Ad Program</h2>
+            <p className="mt-2 text-gray-500 max-w-2xl">
+              Advertise your business in the official Diwali Mela printed event program — distributed to every attendee. Choose the ad size that fits your budget.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TIERS.map((tier) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {DIWALI_AD.map((tier) => (
               <div
                 key={tier.name}
-                className={`card card-hover flex flex-col border-2 ${tier.color} relative ${tier.featured ? 'shadow-cta' : ''}`}
+                className={`card flex flex-col border-2 relative ${tier.featured ? 'border-brand-orange shadow-cta' : 'border-gray-100'}`}
               >
                 {tier.featured && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                     <span className="bg-brand-orange text-white text-xs font-bold px-4 py-1 rounded-full shadow">Most Popular</span>
                   </div>
                 )}
-                <div className="mb-5">
-                  <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-full mb-3 ${tier.badge}`}>{tier.badgeLabel}</span>
-                  <h3 className="font-extrabold text-xl text-gray-900">{tier.name}</h3>
-                  <div className="mt-2">
-                    <span className="text-4xl font-extrabold text-gray-900">${tier.amount.toLocaleString()}</span>
-                    <span className="text-gray-400 text-sm ml-1">/ event</span>
-                  </div>
-                </div>
-
-                <ul className="space-y-2.5 flex-1 mb-6">
-                  {tier.perks.map((p) => (
-                    <li key={p} className="flex items-start gap-2 text-sm text-gray-600">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#42B97E" strokeWidth="2.5" className="flex-shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"/></svg>
-                      {p}
-                    </li>
-                  ))}
-                </ul>
-
-                {tier.amount <= 500 ? (
-                  <Link href="/donate" className={`${tier.featured ? 'btn-primary' : 'btn-secondary'} text-sm py-3 text-center`}>
-                    {tier.cta}
-                  </Link>
-                ) : (
-                  <Link href="/contact" className="btn-outline border-gray-200 text-gray-700 hover:bg-gray-50 text-sm py-3 text-center">
-                    {tier.cta}
-                  </Link>
-                )}
+                <div className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">{tier.name}</div>
+                <div className="text-3xl font-extrabold text-gray-900">${tier.price}</div>
+                <PerkList perks={tier.perks} />
+                <Link
+                  href="/contact"
+                  className={`mt-6 text-sm py-2.5 text-center ${tier.featured ? 'btn-primary' : 'btn-secondary'}`}
+                >
+                  Reserve Spot →
+                </Link>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Custom package CTA */}
-        <section className="mt-16 mb-8 rounded-2xl bg-brand-navy text-white p-10 text-center dot-pattern">
+        {/* ── SECTION 2: Diwali Mela Vendors ── */}
+        <section className="mt-20" id="diwali-vendor">
+          <div className="mb-10">
+            <span className="section-label">Diwali Mela</span>
+            <h2 className="text-3xl font-extrabold text-gray-900 mt-2">🪔 Diwali Mela Vendor Spots</h2>
+            <p className="mt-2 text-gray-500 max-w-2xl">
+              Sell your food or products at Diwali Mela — one of our most attended events of the year. Spots are limited and fill quickly.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {DIWALI_VENDORS.map((v) => (
+              <div key={v.type} className={`card border-2 ${v.color}`}>
+                <div className="flex items-center gap-3 mb-1">
+                  <span className="text-3xl">{v.emoji}</span>
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wider" style={{color: v.accent}}>Diwali Mela</div>
+                    <h3 className="text-xl font-extrabold text-gray-900">{v.type}</h3>
+                  </div>
+                  <div className="ml-auto text-right">
+                    <div className="text-3xl font-extrabold text-gray-900">${v.price}</div>
+                    <div className="text-xs text-gray-400">per event</div>
+                  </div>
+                </div>
+                <PerkList perks={v.perks} />
+                <Link href="/contact" className="mt-6 btn-primary text-sm py-2.5 text-center block">
+                  Apply for Spot →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── SECTION 3: Dandiya Dhamaka Vendors ── */}
+        <section className="mt-20" id="dandiya-vendor">
+          <div className="mb-10">
+            <span className="section-label">Dandiya Dhamaka</span>
+            <h2 className="text-3xl font-extrabold text-gray-900 mt-2">💃 Dandiya Dhamaka Vendor Spots</h2>
+            <p className="mt-2 text-gray-500 max-w-2xl">
+              Reach a vibrant, festive crowd during our Garba & Dandiya nights. Perfect for food vendors, jewelry, clothing, and cultural goods.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {DANDIYA_VENDORS.map((v) => (
+              <div key={v.type} className={`card border-2 ${v.color}`}>
+                <div className="flex items-center gap-3 mb-1">
+                  <span className="text-3xl">{v.emoji}</span>
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wider" style={{color: v.accent}}>Dandiya Dhamaka</div>
+                    <h3 className="text-xl font-extrabold text-gray-900">{v.type}</h3>
+                  </div>
+                  <div className="ml-auto text-right">
+                    <div className="text-3xl font-extrabold text-gray-900">${v.price}</div>
+                    <div className="text-xs text-gray-400">per event</div>
+                  </div>
+                </div>
+                <PerkList perks={v.perks} />
+                <Link href="/contact" className="mt-6 btn-primary text-sm py-2.5 text-center block">
+                  Apply for Spot →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="mt-20 mb-8 rounded-2xl bg-brand-navy text-white p-10 text-center dot-pattern">
           <div className="text-4xl mb-3">🤝</div>
-          <h2 className="text-2xl font-extrabold">Need a custom package?</h2>
-          <p className="mt-3 text-gray-300 max-w-md mx-auto">We're happy to build a sponsorship package that fits your brand, budget, and goals. Reach out and let's talk.</p>
+          <h2 className="text-2xl font-extrabold">Questions or custom packages?</h2>
+          <p className="mt-3 text-gray-300 max-w-md mx-auto">
+            We're happy to work with you on a package that fits your goals. Reach out and we'll get back to you within 48 hours.
+          </p>
           <div className="mt-7 flex flex-wrap justify-center gap-4">
             <Link href="/contact" className="btn-primary text-base px-8 py-3.5">Contact Us</Link>
             <Link href="/donate" className="btn-outline border-white/30 text-white hover:bg-white/10 text-base px-8 py-3.5">Donate Instead</Link>
