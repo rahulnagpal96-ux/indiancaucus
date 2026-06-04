@@ -1,8 +1,10 @@
 import { upsertSubscriber } from '../../lib/db'
-import { buildWelcomeEmail } from '../../lib/welcomeEmail'
+import { buildWelcomeEmail, shouldSendWelcomeEmail } from '../../lib/welcomeEmail'
 import { syncResendAudience, syncMailchimp } from '../../lib/syncSubscriber'
 
 async function sendWelcomeEmail(email, firstName) {
+  if (!shouldSendWelcomeEmail()) return
+
   const resendKey = process.env.RESEND_API_KEY
   if (!resendKey) return
 

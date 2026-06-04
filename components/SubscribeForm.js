@@ -47,7 +47,7 @@ export default function SubscribeForm({ dark = false }) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
           <polyline points="20 6 9 17 4 12" />
         </svg>
-        You're subscribed! Check your inbox for a welcome email.
+        You're subscribed! Check your inbox for a confirmation email.
       </div>
     )
   }

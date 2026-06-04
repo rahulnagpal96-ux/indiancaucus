@@ -283,7 +283,7 @@ function AddModal({ onClose, onAdd }) {
         <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
           <div>
             <h2 className="font-bold text-gray-900">Add subscriber</h2>
-            <p className="text-gray-400 text-xs mt-0.5">They will also receive a welcome email</p>
+            <p className="text-gray-400 text-xs mt-0.5">They will receive a confirmation email</p>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors text-lg leading-none">×</button>
         </div>
