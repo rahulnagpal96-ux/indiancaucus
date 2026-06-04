@@ -53,9 +53,10 @@ export default function SubscribeForm({ dark = false }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-3">
-      {/* Email row — always visible */}
-      <div className="flex gap-2">
+    <form onSubmit={submit} className="space-y-2">
+
+      {/* Email + subscribe — stacked on mobile, inline on sm+ */}
+      <div className="flex flex-col sm:flex-row gap-2">
         <input
           type="email"
           name="email"
@@ -70,31 +71,30 @@ export default function SubscribeForm({ dark = false }) {
           }`}
         />
         <button
-          type="button"
-          onClick={() => setExpanded((v) => !v)}
-          title="Add name & phone"
-          className={`border rounded-xl px-3 py-3 text-sm transition-all ${
-            dark
-              ? 'bg-white/10 border-white/20 text-gray-300 hover:bg-white/20'
-              : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'
-          }`}
-        >
-          {expanded ? '−' : '+'}
-        </button>
-        <button
           type="submit"
           disabled={status === 'loading'}
-          className="btn-primary text-sm px-5 py-3 whitespace-nowrap disabled:opacity-60"
+          className="btn-primary text-sm px-6 py-3 whitespace-nowrap disabled:opacity-60 w-full sm:w-auto"
         >
           {status === 'loading' ? '…' : 'Subscribe'}
         </button>
       </div>
 
+      {/* Optional fields toggle */}
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className={`text-xs underline-offset-2 hover:underline transition-all ${
+          dark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'
+        }`}
+      >
+        {expanded ? '− Less options' : '+ Add name & phone (optional)'}
+      </button>
+
       {/* Optional fields */}
       {expanded && (
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
           <div>
-            <label className={labelClass}>First name (optional)</label>
+            <label className={labelClass}>First name</label>
             <input
               type="text"
               name="firstName"
@@ -105,9 +105,7 @@ export default function SubscribeForm({ dark = false }) {
             />
           </div>
           <div>
-            <label className={labelClass}>
-              Phone for SMS updates (optional)
-            </label>
+            <label className={labelClass}>Phone for SMS updates</label>
             <input
               type="tel"
               name="phone"
