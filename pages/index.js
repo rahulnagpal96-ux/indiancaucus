@@ -167,10 +167,10 @@ export default function Home() {
                     🪔 Diwali Mela 2025
                   </span>
                   <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
-                    Participate in<br />Diwali Mela!
+                    Perform at<br />Diwali Mela!
                   </h2>
                   <p className="mt-4 text-amber-100 leading-relaxed max-w-md">
-                    Want to perform, volunteer, set up a vendor table, or get involved in our biggest event of the year? Fill out our participation form and we'll be in touch.
+                    Are you a dancer, singer, musician, or artist? We'd love to have you perform at our Diwali Mela. Fill out the performer sign-up form and we'll be in touch.
                   </p>
                   <a
                     href="https://forms.cloud.microsoft/r/TrUMvCLMTb"
@@ -179,27 +179,24 @@ export default function Home() {
                     className="mt-7 inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-base transition-all"
                     style={{background:'#fff', color:'#b45309', boxShadow:'0 4px 24px rgba(0,0,0,0.2)'}}
                   >
-                    Fill Out Participation Form →
+                    Performer Sign-Up Form →
                   </a>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-4">
                   {[
-                    { icon: '🎤', label: 'Performers & Artists' },
-                    { icon: '🛍️', label: 'Vendor Table' },
-                    { icon: '🍛', label: 'Food Vendor' },
-                    { icon: '🙋', label: 'Volunteers' },
+                    { icon: '🎤', label: 'Singers & Vocalists' },
+                    { icon: '💃', label: 'Dancers & Dance Groups' },
+                    { icon: '🎶', label: 'Musicians & Bands' },
+                    { icon: '🎭', label: 'Cultural Performers' },
                   ].map((item) => (
-                    <a
+                    <div
                       key={item.label}
-                      href="https://forms.cloud.microsoft/r/TrUMvCLMTb"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 rounded-2xl px-4 py-4 transition-all hover:scale-105"
-                      style={{background:'rgba(255,255,255,0.15)', backdropFilter:'blur(4px)'}}
+                      className="flex items-center gap-3 rounded-2xl px-5 py-3.5"
+                      style={{background:'rgba(255,255,255,0.15)'}}
                     >
                       <span className="text-2xl">{item.icon}</span>
                       <span className="text-sm font-semibold text-white">{item.label}</span>
-                    </a>
+                    </div>
                   ))}
                 </div>
               </div>
