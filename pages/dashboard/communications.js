@@ -115,11 +115,8 @@ function Softphone() {
     const destination = toE164(dialInput)
     clientRef.current.newCall({
       destinationNumber: destination,
-      callerIdNumber: process.env.NEXT_PUBLIC_TELNYX_PHONE_NUMBER || '+15514009427',
-      callerIdName: 'Indian Caucus',
       audio: true,
       video: false,
-      remoteElement: audioRef.current,
     })
   }
 
