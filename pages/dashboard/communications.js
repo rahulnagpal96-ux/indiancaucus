@@ -64,20 +64,34 @@ function Softphone() {
         setStatus('idle'); return
       }
 
+      // Request mic permission before connecting so WebRTC has audio
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        stream.getTracks().forEach(t => t.stop())
+      } catch (e) {
+        console.error('[Telnyx] Microphone permission denied:', e)
+        setStatus('idle')
+        return
+      }
+
       const { TelnyxRTC } = await import('@telnyx/webrtc')
       const client = new TelnyxRTC({
         ...loginConfig,
         ringtoneFile: null,
         ringbackFile: null,
         remoteElement: audioRef.current,
+        iceServers: [
+          { urls: 'stun:stun.telnyx.com:3478' },
+          { urls: 'stun:stun.l.google.com:19302' },
+        ],
       })
 
       client.on('telnyx.ready', () => { console.log('[Telnyx] Ready'); setStatus('ready') })
-      client.on('telnyx.error', (err) => { console.error('[Telnyx] Error:', err); setStatus('idle') })
+      client.on('telnyx.error', (err) => { console.error('[Telnyx] Error:', JSON.stringify(err)); setStatus('idle') })
 
       client.on('telnyx.notification', (notification) => {
-        console.log('[Telnyx] Notification:', notification.type, notification.call?.state, notification.call?.direction)
         const call = notification.call
+        console.log('[Telnyx]', notification.type, call?.state, call?.direction, call?.cause)
         if (!call) return
         callRef.current = call
 
