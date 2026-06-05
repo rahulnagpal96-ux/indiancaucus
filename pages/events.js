@@ -8,7 +8,7 @@ const EVENTS = [
     id: 'diwali',
     title: 'Diwali Mela',
     month: 'October',
-    date: 'October 4, 2025',
+    date: 'October 4, 2026',
     time: '12:00 PM – 6:00 PM',
     location: 'Buchmuller Park, 150 Plaza Center, Secaucus, NJ 07094',
     colorClass: 'from-yellow-400 to-orange-500',
