@@ -98,6 +98,7 @@ export default function Footer() {
             <h3 className="font-semibold text-sm uppercase tracking-wider text-gray-300 mb-4">Legal</h3>
             <ul className="space-y-2.5">
               {[
+                { href: '/terms', label: 'Terms of Service' },
                 { href: '/privacy', label: 'Privacy Policy' },
                 { href: '/refund-policy', label: 'Refund Policy' },
               ].map(({ href, label }) => (

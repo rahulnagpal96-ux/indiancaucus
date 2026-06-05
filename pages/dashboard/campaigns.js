@@ -201,8 +201,10 @@ export default function CampaignsPage() {
   const [editDraft, setEditDraft] = useState(null) // { id, subject, html_content }
   const [scheduleAt, setScheduleAt] = useState('')
   const [deletingId, setDeletingId] = useState(null)
+  const [viewCampaign, setViewCampaign] = useState(null)
 
   const [syncing, setSyncing] = useState(false)
+  const [syncDebug, setSyncDebug] = useState(null)
 
   function fetchCampaigns() {
     setLoading(true)
@@ -214,8 +216,11 @@ export default function CampaignsPage() {
 
   async function syncStats() {
     setSyncing(true)
+    setSyncDebug(null)
     try {
-      await fetch('/api/admin/sync-campaign-stats', { method: 'POST' })
+      const r = await fetch('/api/admin/sync-campaign-stats', { method: 'POST' })
+      const d = await r.json()
+      if (d.debug) setSyncDebug(d.debug)
       await fetchCampaigns()
     } catch {}
     setSyncing(false)
@@ -464,6 +469,39 @@ export default function CampaignsPage() {
   // ── List view ──────────────────────────────────────────────────────────────
   if (step === 'list') return (
     <AdminLayout title="Campaigns">
+
+      {/* View sent campaign modal */}
+      {viewCampaign && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }}>
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col" style={{ maxHeight: '90vh' }}>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <div className="min-w-0">
+                <p className="font-bold text-gray-900 text-sm truncate">{viewCampaign.subject}</p>
+                <p className="text-gray-400 text-xs mt-0.5">
+                  Sent {viewCampaign.sent_at ? new Date(viewCampaign.sent_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
+                  {' · '}{Number(viewCampaign.recipient_count || 0).toLocaleString()} recipients
+                  {' · '}{Number(viewCampaign.opened || 0).toLocaleString()} opens
+                  {' · '}{Number(viewCampaign.clicked || 0).toLocaleString()} clicks
+                </p>
+              </div>
+              <button onClick={() => setViewCampaign(null)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors ml-3 shrink-0 text-lg leading-none">×</button>
+            </div>
+            <div className="flex-1 overflow-hidden rounded-b-3xl">
+              {viewCampaign.html_content ? (
+                <iframe
+                  srcDoc={viewCampaign.html_content}
+                  title="Campaign preview"
+                  style={{ width: '100%', height: '100%', minHeight: 400, border: 'none' }}
+                  sandbox="allow-same-origin"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-40 text-gray-400 text-sm">Loading…</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <p className="text-gray-500 text-sm">{campaigns.length} campaign{campaigns.length !== 1 ? 's' : ''} total</p>
         <div className="flex items-center gap-2">
@@ -516,6 +554,19 @@ export default function CampaignsPage() {
         </div>
       )}
 
+      {syncDebug && (
+        <div className="mb-5 bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Resend sync debug</p>
+          {syncDebug.map((item, i) => (
+            <div key={i} className="text-xs text-gray-500 font-mono mb-1">
+              Campaign {item.id}: opens={item.opens ?? '?'} clicks={item.clicks ?? '?'} status={item.status ?? '?'} {item.error ? `ERROR: ${JSON.stringify(item.error)}` : ''} {item.exception ? `EXCEPTION: ${item.exception}` : ''}
+              {item.metrics ? ` metrics=${JSON.stringify(item.metrics)}` : ''}
+            </div>
+          ))}
+          <button onClick={() => setSyncDebug(null)} className="text-xs text-gray-400 hover:text-gray-600 mt-1">Dismiss</button>
+        </div>
+      )}
+
       {loading ? (
         <div className="flex items-center gap-2 text-gray-300 py-10 justify-center">
           <svg className="animate-spin" width="18" height="18" fill="none" viewBox="0 0 24 24">
@@ -537,7 +588,16 @@ export default function CampaignsPage() {
       ) : (
         <div className="space-y-3">
           {campaigns.map(c => (
-            <div key={c.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
+            <div
+              key={c.id}
+              className={`bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4 ${c.status === 'sent' ? 'cursor-pointer hover:bg-gray-50/60 transition-colors' : ''}`}
+              onClick={c.status === 'sent' ? async () => {
+                setViewCampaign({ ...c, html_content: null })
+                const r = await fetch(`/api/admin/campaigns?id=${c.id}`)
+                const d = await r.json()
+                setViewCampaign({ ...c, html_content: d.campaign?.html_content })
+              } : undefined}
+            >
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0"
                 style={{ background: c.status === 'sent' ? 'linear-gradient(135deg,#e85d04,#f97316)' : c.status === 'scheduled' ? 'linear-gradient(135deg,#1a2744,#2d4a8a)' : 'linear-gradient(135deg,#9ca3af,#d1d5db)' }}
@@ -567,13 +627,13 @@ export default function CampaignsPage() {
                 {(c.status === 'draft' || c.status === 'scheduled') && isAdmin && (
                   <>
                     <button
-                      onClick={() => openDraftEdit(c)}
+                      onClick={e => { e.stopPropagation(); openDraftEdit(c) }}
                       className="text-xs font-semibold border border-gray-200 bg-white text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-all"
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => deleteDraft(c.id)}
+                      onClick={e => { e.stopPropagation(); deleteDraft(c.id) }}
                       disabled={deletingId === c.id}
                       className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
                       title="Delete draft"
