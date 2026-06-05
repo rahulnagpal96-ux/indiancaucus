@@ -40,25 +40,23 @@ function Softphone() {
 
   const sipUser = process.env.NEXT_PUBLIC_TELNYX_SIP_USERNAME
   const sipPass = process.env.NEXT_PUBLIC_TELNYX_SIP_PASSWORD
+  const fromNumber = process.env.NEXT_PUBLIC_TELNYX_PHONE_NUMBER
 
   useEffect(() => {
-    if (!sipUser && !process.env.NEXT_PUBLIC_TELNYX_WEBRTC_CREDENTIAL_ID) return
     setStatus('connecting')
 
     async function init() {
       let loginConfig = {}
 
-      if (process.env.NEXT_PUBLIC_TELNYX_WEBRTC_CREDENTIAL_ID) {
-        // Token-based auth (Telephony Credential)
-        try {
-          const r = await fetch('/api/admin/telnyx-token', { method: 'POST' })
-          const d = await r.json()
-          if (d.token) loginConfig = { login_token: d.token }
-        } catch {}
-      }
+      // Always try token auth first (server-side credential)
+      try {
+        const r = await fetch('/api/admin/telnyx-token', { method: 'POST' })
+        const d = await r.json()
+        if (d.token) loginConfig = { login_token: d.token }
+      } catch {}
 
+      // Fall back to SIP credentials
       if (!loginConfig.login_token && sipUser && sipPass) {
-        // Fallback to SIP credentials
         loginConfig = { login: sipUser, password: sipPass }
       }
 
@@ -137,6 +135,7 @@ function Softphone() {
     const destination = toE164(dialInput)
     clientRef.current.newCall({
       destinationNumber: destination,
+      callerIdNumber: fromNumber || undefined,
       audio: true,
       video: false,
     })
@@ -188,9 +187,9 @@ function Softphone() {
       </div>
 
       <div className="p-5">
-        {(!sipUser || !sipPass) ? (
+        {status === 'idle' ? (
           <div className="text-center py-4">
-            <p className="text-gray-400 text-sm">Set <code className="bg-gray-100 px-1 rounded text-xs">NEXT_PUBLIC_TELNYX_SIP_USERNAME</code> and <code className="bg-gray-100 px-1 rounded text-xs">NEXT_PUBLIC_TELNYX_SIP_PASSWORD</code> to enable calling.</p>
+            <p className="text-gray-400 text-sm">Telnyx not configured. Set <code className="bg-gray-100 px-1 rounded text-xs">TELNYX_WEBRTC_CREDENTIAL_ID</code> or <code className="bg-gray-100 px-1 rounded text-xs">NEXT_PUBLIC_TELNYX_SIP_USERNAME</code> to enable calling.</p>
           </div>
         ) : (
           <>
