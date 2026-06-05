@@ -101,7 +101,6 @@ const QUICK_LINKS = [
   { label: 'Vercel', desc: 'Deployments, env vars, logs', url: 'https://vercel.com', color: '#000', icon: '▲' },
   { label: 'Outlook / O365', desc: 'Email, calendar, teams', url: 'https://outlook.office.com', color: '#0078d4', icon: 'M' },
   { label: 'PostHog', desc: 'Behavior analytics dashboard', url: 'https://us.posthog.com', color: '#f97316', icon: 'P' },
-  { label: 'Mailchimp', desc: 'Legacy email list (while migrating)', url: 'https://mailchimp.com', color: '#ffe01b', icon: '🐒', dark: true },
 ]
 
 export default function AnalyticsPage() {
