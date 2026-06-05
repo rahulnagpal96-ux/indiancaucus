@@ -37,7 +37,7 @@ Login at `/dashboard/login` via **Microsoft O365 SSO** (Azure AD) or fallback ad
 | Terminal | In-person POS — collect card payments via Stripe, iOS "Scan Credit Card" support, receipt emails |
 | Payments | Full Stripe payment history with search |
 | Subscribers | Search, filter, add, edit, CSV import/export, manage contacts + phone numbers |
-| Campaigns | Visual email builder (Event, Newsletter, Donation, Phone Collection templates). Image upload, live preview, test send, Resend broadcast with open/click analytics |
+| Campaigns | Visual email builder (Event, Newsletter, Donation, Phone Collection templates). Image upload, live preview, test send, draft save, schedule future send, Resend broadcast. Open/click analytics via webhook. Click any sent campaign to preview its email. |
 | Communications | Telnyx softphone (WebRTC calls), SMS messaging, call + SMS history |
 | Donors | YTD donor list from Stripe — name, email, amount, type, receipt links, CSV export |
 | Activity Log | Audit trail of all dashboard actions |
@@ -80,6 +80,18 @@ Every sign-up (newsletter form or contact page) is automatically:
 Unsubscribes → `/unsubscribe?e=EMAIL` — marks record as `status = unsubscribed` in Postgres and removes from Resend audience.
 
 Mailchimp → Postgres sync runs automatically **every hour** via Vercel Cron (Pro plan required).
+
+## Campaign analytics
+
+Opens and clicks are tracked via **Resend webhooks** (real-time, not API polling — Resend does not expose historical metrics via REST API).
+
+**Webhook setup** (required once):
+1. Resend dashboard → Webhooks → Add endpoint: `https://indiancaucus.org/api/resend/webhook`
+2. Select events: `email.opened`, `email.clicked`, `email.delivered`
+3. Copy the signing secret → Vercel env var `RESEND_WEBHOOK_SECRET`
+4. Redeploy
+
+Scheduled campaigns are dispatched every 15 minutes via `/api/cron/send-scheduled-campaigns`.
 
 ## Email sending
 
@@ -129,6 +141,7 @@ Welcome email template in `lib/welcomeEmail.js` — sent automatically on every 
 | `NEXT_PUBLIC_POSTHOG_HOST` | PostHog host (default: us.i.posthog.com) | No |
 | `MAILCHIMP_API_KEY` | Mailchimp legacy sync | No |
 | `MAILCHIMP_LIST_ID` | Mailchimp audience ID | No |
+| `RESEND_WEBHOOK_SECRET` | Resend webhook signing secret (for open/click tracking) | Yes |
 | `ADMIN_PASSWORD` | Fallback password login (emergency use) | No |
 
 ## Integrations
@@ -149,4 +162,14 @@ Welcome email template in `lib/welcomeEmail.js` — sent automatically on every 
 
 Pushes to `main` deploy automatically via Vercel. DNS managed through Vercel nameservers.
 
-Vercel Cron runs `/api/cron/sync-mailchimp` every hour (requires Vercel Pro plan).
+Vercel Cron jobs (requires Vercel Pro plan):
+- `/api/cron/sync-mailchimp` — every hour, syncs Mailchimp contacts → Postgres
+- `/api/cron/send-scheduled-campaigns` — every 15 minutes, dispatches scheduled campaigns
+
+## Legal
+
+- Terms of Service: `/terms`
+- Privacy Policy: `/privacy`  
+- Refund Policy: `/refund-policy`
+
+All three pages are linked in the site footer.
