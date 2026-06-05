@@ -101,12 +101,26 @@ body {
 .section-tint--orange { background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%); }
 .section-tint--purple { background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%); }
 
+/* Dashboard shell background (light default; flipped in dark mode below) */
+.dashboard-shell { background: #f0f2f8; }
+
 /* ── DARK MODE ── */
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #0d1117;
     color: #e6edf3;
   }
+
+  /* Dashboard chrome follows the system theme */
+  .dashboard-shell { background: #0d1117; }
+
+  /* Dashboard login: card auto-flips to dark via the .bg-white rule below, so
+     darken the page backdrop and add a border so the card stays distinct */
+  .login-page {
+    background: linear-gradient(135deg, #05070d 0%, #0d1117 60%, #131a26 100%) !important;
+  }
+  .login-card { border: 1px solid #30363d; }
+  .login-card button:hover { background-color: #21262d; }
 
   .card {
     background-color: #161b22;

@@ -90,7 +90,7 @@ export default function AdminLayout({ children, title }) {
   }, [pathname])
 
   return (
-    <div className="min-h-screen" style={{ background: '#f0f2f8' }}>
+    <div className="dashboard-shell min-h-screen">
 
       {/* ── Mobile overlay ── */}
       {sidebarOpen && (
@@ -215,9 +215,9 @@ export default function AdminLayout({ children, title }) {
         </header>
 
         {/* Page content */}
-        <div className="flex-1 px-4 md:px-8 py-5 md:py-7 pb-24 md:pb-7">
+        <main className="flex-1 px-4 md:px-8 py-5 md:py-7 pb-24 md:pb-7">
           {children}
-        </div>
+        </main>
       </div>
 
       {/* ── Bottom tab bar — mobile only (4 core tabs) ── */}
