@@ -233,9 +233,9 @@ export default function DashboardHome() {
         <h3 className="text-gray-700 font-bold text-sm uppercase tracking-wide mb-3">Donations</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {[
-            { label: 'Total raised', value: stripe ? fmtMoney(stripe.totalRaised) : null, sub: 'Last 100 donations', color: 'linear-gradient(135deg,#059669,#10b981)' },
+            { label: 'YTD Raised', value: stripe ? fmtMoney(stripe.totalRaised) : null, sub: `Jan 1 – ${new Date().toLocaleString('default', { month: 'short', day: 'numeric' })}`, color: 'linear-gradient(135deg,#059669,#10b981)' },
             { label: 'This month', value: stripe ? fmtMoney(stripe.thisMonth) : null, sub: new Date().toLocaleString('default', { month: 'long' }), color: 'linear-gradient(135deg,#e85d04,#f97316)' },
-            { label: 'Donors', value: stripe?.donorCount ?? null, sub: 'Unique donors', color: 'linear-gradient(135deg,#1a2744,#2d4a8a)' },
+            { label: 'Donors YTD', value: stripe?.donorCount ?? null, sub: 'Unique donors this year', color: 'linear-gradient(135deg,#1a2744,#2d4a8a)' },
             { label: 'Recurring', value: stripe?.recurring ?? null, sub: 'Monthly supporters', color: 'linear-gradient(135deg,#7c3aed,#a855f7)' },
           ].map(({ label, value, sub, color }) => (
             <Link key={label} href="/dashboard/donors" className="bg-white rounded-2xl border border-gray-100 p-4 md:p-5 shadow-sm hover:shadow-md transition-shadow">
