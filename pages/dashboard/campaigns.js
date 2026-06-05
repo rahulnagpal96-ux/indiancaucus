@@ -192,6 +192,8 @@ export default function CampaignsPage() {
   const [testResult, setTestResult] = useState(null)
   const [showConfirm, setShowConfirm] = useState(false)
 
+  const [syncing, setSyncing] = useState(false)
+
   function fetchCampaigns() {
     setLoading(true)
     fetch('/api/admin/campaigns')
@@ -200,9 +202,22 @@ export default function CampaignsPage() {
       .catch(() => setLoading(false))
   }
 
+  async function syncStats() {
+    setSyncing(true)
+    try {
+      await fetch('/api/admin/sync-campaign-stats', { method: 'POST' })
+      await fetchCampaigns()
+    } catch {}
+    setSyncing(false)
+  }
+
   useEffect(() => {
     fetchCampaigns()
     fetch('/api/admin/stats').then(r => r.json()).then(d => setSubCount(d.total)).catch(() => {})
+    // Auto-sync Resend analytics on load
+    fetch('/api/admin/sync-campaign-stats', { method: 'POST' })
+      .then(() => fetchCampaigns())
+      .catch(() => {})
   }, [])
 
   function buildHtml() {
@@ -276,16 +291,30 @@ export default function CampaignsPage() {
     <AdminLayout title="Campaigns">
       <div className="flex items-center justify-between mb-6">
         <p className="text-gray-500 text-sm">{campaigns.length} campaign{campaigns.length !== 1 ? 's' : ''} total</p>
-        <button
-          onClick={() => setStep('pick')}
-          className="flex items-center gap-2 text-white font-bold text-sm px-5 py-2.5 rounded-2xl shadow-md hover:opacity-90 transition-all"
-          style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
-        >
-          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          New Campaign
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={syncStats}
+            disabled={syncing}
+            title="Sync open & click stats from Resend"
+            className="flex items-center gap-1.5 border border-gray-200 bg-white text-gray-600 text-xs font-semibold px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-all shadow-sm disabled:opacity-50"
+          >
+            <svg width="13" height="13" className={syncing ? 'animate-spin' : ''} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+            </svg>
+            {syncing ? 'Syncing…' : 'Sync stats'}
+          </button>
+          <button
+            onClick={() => setStep('pick')}
+            className="flex items-center gap-2 text-white font-bold text-sm px-5 py-2.5 rounded-2xl shadow-md hover:opacity-90 transition-all"
+            style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
+          >
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            New Campaign
+          </button>
+        </div>
       </div>
 
       {!loading && campaigns.length > 0 && (
