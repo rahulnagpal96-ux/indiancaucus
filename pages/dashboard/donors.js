@@ -62,10 +62,10 @@ export default function DonorsPage() {
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
         {[
-          { label: 'Total raised', value: stats ? fmt(stats.totalRaised) : '—', sub: 'Last 100 donations', color: 'linear-gradient(135deg,#059669,#10b981)' },
+          { label: 'YTD Raised', value: stats ? fmt(stats.totalRaised) : '—', sub: `Jan 1 – ${new Date().toLocaleString('default', { month: 'short', day: 'numeric' })}`, color: 'linear-gradient(135deg,#059669,#10b981)' },
           { label: 'This month', value: stats ? fmt(stats.thisMonth) : '—', sub: new Date().toLocaleString('default', { month: 'long', year: 'numeric' }), color: 'linear-gradient(135deg,#1a2744,#2d4a8a)' },
-          { label: 'Avg donation', value: stats ? fmt(stats.avgDonation) : '—', sub: `${stats?.count ?? 0} donations`, color: 'linear-gradient(135deg,#e85d04,#f97316)' },
-          { label: 'Recurring donors', value: stats?.recurring ?? '—', sub: 'Monthly supporters', color: 'linear-gradient(135deg,#7c3aed,#a855f7)' },
+          { label: 'Avg donation', value: stats ? fmt(stats.avgDonation) : '—', sub: `${stats?.count ?? 0} YTD donations`, color: 'linear-gradient(135deg,#e85d04,#f97316)' },
+          { label: 'Donors YTD', value: stats ? stats.donorCount : '—', sub: 'Unique donors this year', color: 'linear-gradient(135deg,#7c3aed,#a855f7)' },
         ].map(({ label, value, sub, color }) => (
           <div key={label} className="bg-white rounded-2xl border border-gray-100 p-4 md:p-5 shadow-sm">
             <div className="w-8 h-8 rounded-lg mb-3" style={{ background: color }} />

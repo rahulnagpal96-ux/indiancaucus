@@ -11,27 +11,28 @@ export default async function handler(req, res) {
   const stripe = new Stripe(key, { apiVersion: '2023-10-16' })
 
   try {
-    // Fetch up to 100 most recent succeeded payment intents. Exclude in-person
-    // POS charges so "Donations" reflects actual donations (POS revenue is
-    // reported separately from the pos_payments table).
-    const intents = await stripe.paymentIntents.list({ limit: 100, expand: ['data.customer'] })
-    const succeeded = intents.data.filter(p => p.status === 'succeeded' && p.metadata?.source !== 'dashboard-pos')
-
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000
-    const startOfYear = new Date(now.getFullYear(), 0, 1).getTime() / 1000
+    const startOfYear  = new Date(now.getFullYear(), 0, 1).getTime() / 1000
 
-    const totalRaised = succeeded.reduce((s, p) => s + p.amount, 0)
-    const thisMonth = succeeded.filter(p => p.created >= startOfMonth).reduce((s, p) => s + p.amount, 0)
-    const thisYear = succeeded.filter(p => p.created >= startOfYear).reduce((s, p) => s + p.amount, 0)
-    const donorCount = new Set(succeeded.map(p => p.receipt_email || p.customer)).size
-    const avgDonation = succeeded.length ? Math.round(totalRaised / succeeded.length) : 0
-    const recurring = succeeded.filter(p => p.metadata?.type === 'monthly' || p.invoice).length
+    // Fetch all YTD succeeded payment intents (auto-paginate).
+    const ytdIntents = await stripe.paymentIntents.list({
+      limit: 100,
+      created: { gte: Math.floor(startOfYear) },
+    }).autoPagingToArray({ limit: 10000 })
+
+    const succeeded = ytdIntents.filter(p => p.status === 'succeeded' && p.metadata?.source !== 'dashboard-pos')
+
+    const ytdRaised   = succeeded.reduce((s, p) => s + p.amount, 0)
+    const thisMonth   = succeeded.filter(p => p.created >= startOfMonth).reduce((s, p) => s + p.amount, 0)
+    const donorCount  = new Set(succeeded.map(p => p.receipt_email || p.customer)).size
+    const avgDonation = succeeded.length ? Math.round(ytdRaised / succeeded.length) : 0
+    const recurring   = succeeded.filter(p => p.metadata?.type === 'monthly' || p.invoice).length
 
     return res.status(200).json({
-      totalRaised,
+      totalRaised: ytdRaised,
       thisMonth,
-      thisYear,
+      thisYear: ytdRaised,
       donorCount,
       avgDonation,
       recurring,
