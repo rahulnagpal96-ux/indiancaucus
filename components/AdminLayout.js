@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import Head from 'next/head'
 import { useSession } from 'next-auth/react'
+import PushToggle from './PushToggle'
 
 const NAV = [
   {
@@ -102,6 +104,13 @@ export default function AdminLayout({ children, title }) {
   return (
     <div className="dashboard-shell min-h-screen">
 
+      {/* When installed from the dashboard, open straight into the dashboard */}
+      <Head>
+        <link key="manifest" rel="manifest" href="/dashboard-manifest.json" />
+        <meta key="apple-title" name="apple-mobile-web-app-title" content="IC Dashboard" />
+        <meta key="theme-color" name="theme-color" content="#1a2744" />
+      </Head>
+
       {/* ── Mobile overlay ── */}
       {sidebarOpen && (
         <div
@@ -177,6 +186,7 @@ export default function AdminLayout({ children, title }) {
               <p className="text-blue-400 text-xs truncate">{session?.user?.email || 'Indian Caucus'}</p>
             </div>
           </div>
+          <PushToggle />
           <button
             onClick={() => logout(router)}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-blue-300 hover:text-white hover:bg-white/10 transition-all"

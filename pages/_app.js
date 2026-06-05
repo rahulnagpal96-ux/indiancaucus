@@ -9,6 +9,15 @@ import posthog from 'posthog-js'
 export default function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter()
 
+  // Register the service worker (offline shell, installability, web push)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {})
+      })
+    }
+  }, [])
+
   useEffect(() => {
     const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
     if (!key) return
@@ -34,8 +43,13 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
           <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
           <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
           <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-          <link rel="manifest" href="/manifest.json" />
-          <meta name="theme-color" content="#F26644" />
+          <link key="manifest" rel="manifest" href="/manifest.json" />
+          <meta key="theme-color" name="theme-color" content="#F26644" />
+          {/* PWA / Add to Home Screen (iOS) */}
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+          <meta key="apple-title" name="apple-mobile-web-app-title" content="Indian Caucus" />
           <meta name="keywords" content="Indian Caucus Secaucus, Diwali Mela NJ, Dandiya Dhamaka Secaucus, Holi Festival NJ, Indian culture New Jersey, 501c3 nonprofit Secaucus, Indian events Hudson County" />
           <meta name="author" content="Indian Caucus of Secaucus" />
           <meta name="robots" content="index, follow" />

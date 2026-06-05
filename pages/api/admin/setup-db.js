@@ -66,6 +66,17 @@ export default async function handler(req, res) {
       )
     `
 
+    await sql`
+      CREATE TABLE IF NOT EXISTS push_subscriptions (
+        id          SERIAL PRIMARY KEY,
+        endpoint    TEXT UNIQUE NOT NULL,
+        p256dh      TEXT NOT NULL,
+        auth        TEXT NOT NULL,
+        user_email  VARCHAR(255),
+        created_at  TIMESTAMPTZ DEFAULT NOW()
+      )
+    `
+
     return res.status(200).json({ ok: true, message: 'Tables created (or already exist).' })
   } catch (err) {
     console.error('setup-db error:', err)
