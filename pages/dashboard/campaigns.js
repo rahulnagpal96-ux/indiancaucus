@@ -265,13 +265,11 @@ export default function CampaignsPage() {
 
   // ── Completed (sent) campaign stats ──
   const sentCampaigns = campaigns.filter((c) => c.status === 'sent')
-  const totalRecipients = sentCampaigns.reduce((s, c) => s + (c.recipient_count || 0), 0)
-  const avgRecipients = sentCampaigns.length ? Math.round(totalRecipients / sentCampaigns.length) : 0
-  const lastSent = sentCampaigns.reduce((latest, c) => {
-    if (!c.sent_at) return latest
-    const t = new Date(c.sent_at)
-    return !latest || t > latest ? t : latest
-  }, null)
+  const totalRecipients = sentCampaigns.reduce((s, c) => s + Number(c.recipient_count || 0), 0)
+  const totalOpened = sentCampaigns.reduce((s, c) => s + Number(c.opened || 0), 0)
+  const totalClicked = sentCampaigns.reduce((s, c) => s + Number(c.clicked || 0), 0)
+  const openRate = totalRecipients ? Math.round((totalOpened / totalRecipients) * 100) : 0
+  const clickRate = totalRecipients ? Math.round((totalClicked / totalRecipients) * 100) : 0
 
   // ── List view ──────────────────────────────────────────────────────────────
   if (step === 'list') return (
@@ -295,8 +293,8 @@ export default function CampaignsPage() {
           {[
             { label: 'Campaigns sent', value: sentCampaigns.length.toLocaleString() },
             { label: 'Recipients reached', value: totalRecipients.toLocaleString() },
-            { label: 'Avg per campaign', value: avgRecipients.toLocaleString() },
-            { label: 'Last sent', value: lastSent ? lastSent.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—' },
+            { label: 'Open rate', value: `${openRate}%` },
+            { label: 'Click rate', value: `${clickRate}%` },
           ].map(({ label, value }) => (
             <div key={label} className="bg-white rounded-2xl border border-gray-100 p-4 md:p-5 shadow-sm">
               <p className="text-2xl font-black text-gray-900">{value}</p>
@@ -350,9 +348,15 @@ export default function CampaignsPage() {
                     ? `Sent ${new Date(c.sent_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
                     : `Created ${new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`}
                 </p>
+                {c.status === 'sent' && (
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1 text-xs text-gray-400">
+                    <span>{Number(c.recipient_count || 0).toLocaleString()} sent</span>
+                    <span>{Number(c.opened || 0).toLocaleString()} opens{c.recipient_count ? ` (${Math.round((Number(c.opened || 0) / c.recipient_count) * 100)}%)` : ''}</span>
+                    <span>{Number(c.clicked || 0).toLocaleString()} clicks{c.recipient_count ? ` (${Math.round((Number(c.clicked || 0) / c.recipient_count) * 100)}%)` : ''}</span>
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                {c.recipient_count > 0 && <span className="text-gray-400 text-xs">{c.recipient_count.toLocaleString()} sent</span>}
                 <StatusBadge status={c.status} />
               </div>
             </div>

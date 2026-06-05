@@ -85,7 +85,7 @@ export default async function handler(req, res) {
         }
 
         const broadcast = await createAndSendBroadcast(subject, htmlContent, sentCount)
-        await markCampaignSent(campaign.id, sentCount)
+        await markCampaignSent(campaign.id, sentCount, broadcast.broadcastId)
         return res.status(200).json({ ok: true, sent: sentCount, campaignId: campaign.id, broadcastId: broadcast.broadcastId })
       }
 
@@ -118,7 +118,7 @@ export default async function handler(req, res) {
       }
 
       const broadcast = await createAndSendBroadcast(campaign.subject, htmlContent, sentCount)
-      await markCampaignSent(id, sentCount)
+      await markCampaignSent(id, sentCount, broadcast.broadcastId)
 
       return res.status(200).json({ ok: true, sent: sentCount, broadcastId: broadcast.broadcastId })
     } catch (err) {

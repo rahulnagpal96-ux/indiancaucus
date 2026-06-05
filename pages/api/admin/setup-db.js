@@ -35,6 +35,18 @@ export default async function handler(req, res) {
         created_at      TIMESTAMPTZ  DEFAULT NOW()
       )
     `
+    await sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS resend_broadcast_id TEXT`
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS campaign_email_events (
+        id           SERIAL PRIMARY KEY,
+        broadcast_id TEXT NOT NULL,
+        email        TEXT,
+        event_type   VARCHAR(40) NOT NULL,
+        created_at   TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE (broadcast_id, email, event_type)
+      )
+    `
 
     await sql`
       CREATE TABLE IF NOT EXISTS activity_logs (
