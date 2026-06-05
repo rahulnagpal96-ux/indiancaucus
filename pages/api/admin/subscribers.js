@@ -9,6 +9,7 @@ export default async function handler(req, res) {
     const { search = '', status = 'active' } = req.query
     try {
       const result = await getSubscribers({ status, search })
+      res.setHeader('Cache-Control', 'no-store, max-age=0')
       return res.status(200).json({ subscribers: result.rows })
     } catch (err) {
       console.error('subscribers GET error:', err)

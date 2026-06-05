@@ -7,6 +7,7 @@ export default async function handler(req, res) {
 
   try {
     const stats = await getStats()
+    res.setHeader('Cache-Control', 'no-store, max-age=0')
     return res.status(200).json(stats)
   } catch (err) {
     console.error('stats error:', err)

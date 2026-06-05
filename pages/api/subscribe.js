@@ -52,7 +52,9 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ status: 'subscribed' })
   } catch (err) {
+    // Surface storage failures instead of masking them with a fake success —
+    // otherwise the form reports "subscribed" while no data was saved.
     console.error('subscribe error:', err)
-    return res.status(200).json({ status: 'ok' })
+    return res.status(500).json({ error: 'Could not save your details. Please try again.' })
   }
 }
