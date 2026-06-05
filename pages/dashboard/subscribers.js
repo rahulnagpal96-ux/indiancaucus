@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/router'
-import AdminLayout from '../../components/AdminLayout'
+import AdminLayout, { useRole } from '../../components/AdminLayout'
 
 function EditModal({ sub, onClose, onSave }) {
   const [form, setForm] = useState({
@@ -315,6 +315,7 @@ function AddModal({ onClose, onAdd }) {
 
 export default function SubscribersPage() {
   const router = useRouter()
+  const { isAdmin } = useRole()
   const [subscribers, setSubscribers] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -478,7 +479,8 @@ export default function SubscribersPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setAdding(true)}
-            className="flex items-center gap-1.5 text-white text-xs font-bold px-3 py-2.5 rounded-xl shadow-sm transition-all hover:opacity-90"
+            disabled={!isAdmin}
+            className="flex items-center gap-1.5 text-white text-xs font-bold px-3 py-2.5 rounded-xl shadow-sm transition-all hover:opacity-90 disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg,#1a2744,#243660)' }}
           >
             <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -499,7 +501,8 @@ export default function SubscribersPage() {
           </button>
           <button
             onClick={() => setShowImport(true)}
-            className="flex items-center gap-1.5 text-white text-xs font-bold px-3 py-2.5 rounded-xl shadow-sm transition-all hover:opacity-90"
+            disabled={!isAdmin}
+            className="flex items-center gap-1.5 text-white text-xs font-bold px-3 py-2.5 rounded-xl shadow-sm transition-all hover:opacity-90 disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
           >
             <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -601,7 +604,8 @@ export default function SubscribersPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setEditing(sub)}
-                        className="text-gray-300 hover:text-[#1a2744] transition-colors"
+                        disabled={!isAdmin}
+                        className="text-gray-300 hover:text-[#1a2744] transition-colors disabled:opacity-50 disabled:pointer-events-none"
                         title="Edit"
                       >
                         <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -611,8 +615,8 @@ export default function SubscribersPage() {
                       </button>
                       <button
                         onClick={() => { setDelError(''); setConfirmDel(sub) }}
-                        disabled={deleting === sub.id}
-                        className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
+                        disabled={deleting === sub.id || !isAdmin}
+                        className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50 disabled:pointer-events-none"
                         title="Unsubscribe"
                       >
                         <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import AdminLayout from '../../components/AdminLayout'
+import AdminLayout, { useRole } from '../../components/AdminLayout'
 import Link from 'next/link'
 
 function StatCard({ label, value, sub, gradient, icon, loading }) {
@@ -31,6 +31,7 @@ function fmtMoney(cents) {
 }
 
 export default function DashboardHome() {
+  const { isAdmin } = useRole()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [dbError, setDbError] = useState(false)
@@ -144,8 +145,8 @@ export default function DashboardHome() {
           </div>
           <button
             onClick={setupDb}
-            disabled={settingUp}
-            className="shrink-0 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all disabled:opacity-60"
+            disabled={settingUp || !isAdmin}
+            className="shrink-0 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all disabled:opacity-40"
           >
             {settingUp ? 'Setting up…' : 'Set up database'}
           </button>
@@ -153,7 +154,7 @@ export default function DashboardHome() {
       )}
 
       {/* Always-visible DB migration button */}
-      {!dbError && (
+      {!dbError && isAdmin && (
         <div className="mb-5 flex justify-end">
           <button
             onClick={setupDb}
@@ -354,7 +355,7 @@ export default function DashboardHome() {
           </div>
           <button
             onClick={syncMailchimp}
-            disabled={syncing || dbError}
+            disabled={syncing || dbError || !isAdmin}
             className="shrink-0 flex items-center gap-2 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all disabled:opacity-50 hover:opacity-90"
             style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
           >
@@ -396,7 +397,7 @@ export default function DashboardHome() {
           </div>
           <button
             onClick={syncResend}
-            disabled={syncingResend || dbError}
+            disabled={syncingResend || dbError || !isAdmin}
             className="shrink-0 flex items-center gap-2 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all disabled:opacity-50 hover:opacity-90"
             style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}
           >

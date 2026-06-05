@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import AdminLayout from '../../components/AdminLayout'
+import AdminLayout, { useRole } from '../../components/AdminLayout'
 
 function deviceLabel(ua = '') {
   let device = 'Device'
@@ -30,6 +30,7 @@ function Toggle({ on, onChange, disabled }) {
 }
 
 export default function NotificationsPage() {
+  const { isAdmin } = useRole()
   const [prefs, setPrefs] = useState({ sale: true, subscriber: true })
   const [devices, setDevices] = useState([])
   const [loading, setLoading] = useState(true)
@@ -122,7 +123,7 @@ export default function NotificationsPage() {
             </div>
             <button
               onClick={sendTest}
-              disabled={testing || devices.length === 0}
+              disabled={testing || devices.length === 0 || !isAdmin}
               className="text-xs font-semibold border border-gray-200 bg-white px-3 py-2 rounded-xl text-gray-600 hover:bg-gray-50 transition-all disabled:opacity-50"
             >
               {testing ? 'Sending…' : 'Send test'}
@@ -152,7 +153,8 @@ export default function NotificationsPage() {
                   </div>
                   <button
                     onClick={() => removeDevice(d.id)}
-                    className="text-gray-300 hover:text-red-500 transition-colors shrink-0 ml-3"
+                    disabled={!isAdmin}
+                    className="text-gray-300 hover:text-red-500 transition-colors shrink-0 ml-3 disabled:opacity-50 disabled:pointer-events-none"
                     title="Remove device"
                   >
                     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

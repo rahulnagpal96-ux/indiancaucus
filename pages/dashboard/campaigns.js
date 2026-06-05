@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import AdminLayout from '../../components/AdminLayout'
+import AdminLayout, { useRole } from '../../components/AdminLayout'
 import { buildEventEmail, buildNewsletterEmail, buildDonationEmail, buildPhoneCollectionEmail } from '../../lib/emailTemplates'
 
 // ── Template definitions ─────────────────────────────────────────────────────
@@ -175,6 +175,7 @@ function renderPreviewHtml(html) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function CampaignsPage() {
+  const { isAdmin } = useRole()
   const [campaigns, setCampaigns] = useState([])
   const [loading, setLoading] = useState(true)
   const [step, setStep] = useState('list') // list | pick | compose
@@ -294,7 +295,7 @@ export default function CampaignsPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={syncStats}
-            disabled={syncing}
+            disabled={syncing || !isAdmin}
             title="Sync open & click stats from Resend"
             className="flex items-center gap-1.5 border border-gray-200 bg-white text-gray-600 text-xs font-semibold px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-all shadow-sm disabled:opacity-50"
           >
@@ -306,7 +307,8 @@ export default function CampaignsPage() {
           </button>
           <button
             onClick={() => setStep('pick')}
-            className="flex items-center gap-2 text-white font-bold text-sm px-5 py-2.5 rounded-2xl shadow-md hover:opacity-90 transition-all"
+            disabled={!isAdmin}
+            className="flex items-center gap-2 text-white font-bold text-sm px-5 py-2.5 rounded-2xl shadow-md hover:opacity-90 transition-all disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
           >
             <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -522,7 +524,7 @@ export default function CampaignsPage() {
               <button
                 type="button"
                 onClick={sendTest}
-                disabled={testSending || !testEmail || !subject}
+                disabled={testSending || !testEmail || !subject || !isAdmin}
                 className="border border-gray-200 bg-white text-gray-700 text-xs font-semibold px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 whitespace-nowrap"
               >
                 {testSending ? 'Sending…' : 'Send test (broadcast)'}
@@ -542,14 +544,14 @@ export default function CampaignsPage() {
           <div className="flex gap-3">
             <button
               onClick={() => send(true)}
-              disabled={sending || !subject}
+              disabled={sending || !subject || !isAdmin}
               className="border border-gray-200 bg-white text-gray-700 text-sm font-semibold px-5 py-3 rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50"
             >
               Save draft
             </button>
             <button
               onClick={() => setShowConfirm(true)}
-              disabled={sending || !subject}
+              disabled={sending || !subject || !isAdmin}
               className="flex-1 flex items-center justify-center gap-2 text-white text-sm font-bold py-3 rounded-xl shadow-md hover:opacity-90 transition-all disabled:opacity-50"
               style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
             >

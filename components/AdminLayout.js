@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, createContext, useContext } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Head from 'next/head'
 import { useSession, signOut } from 'next-auth/react'
 import PushToggle from './PushToggle'
+
+export const RoleContext = createContext({ isAdmin: true })
+export function useRole() { return useContext(RoleContext) }
 
 const NAV = [
   {
@@ -145,6 +148,7 @@ export default function AdminLayout({ children, title }) {
   }, [pathname])
 
   return (
+    <RoleContext.Provider value={{ isAdmin }}>
     <div className="dashboard-shell min-h-screen">
 
       {/* When installed from the dashboard, open straight into the dashboard */}
@@ -303,5 +307,6 @@ export default function AdminLayout({ children, title }) {
       </nav>
 
     </div>
+    </RoleContext.Provider>
   )
 }
