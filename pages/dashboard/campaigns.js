@@ -81,11 +81,17 @@ const TEMPLATES = {
 // ── Status badge ─────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }) {
-  return status === 'sent' ? (
+  if (status === 'sent') return (
     <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full">
       <span className="w-1.5 h-1.5 rounded-full bg-green-500" />Sent
     </span>
-  ) : (
+  )
+  if (status === 'scheduled') return (
+    <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+      <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />Scheduled
+    </span>
+  )
+  return (
     <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-full">
       <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />Draft
     </span>
@@ -178,7 +184,7 @@ export default function CampaignsPage() {
   const { isAdmin } = useRole()
   const [campaigns, setCampaigns] = useState([])
   const [loading, setLoading] = useState(true)
-  const [step, setStep] = useState('list') // list | pick | compose
+  const [step, setStep] = useState('list') // list | pick | compose | edit-draft
   const [template, setTemplate] = useState(null)
   const [fields, setFields] = useState({})
   const [imageUrl, setImageUrl] = useState('')
@@ -192,6 +198,9 @@ export default function CampaignsPage() {
   const [testSending, setTestSending] = useState(false)
   const [testResult, setTestResult] = useState(null)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [editDraft, setEditDraft] = useState(null) // { id, subject, html_content }
+  const [scheduleAt, setScheduleAt] = useState('')
+  const [deletingId, setDeletingId] = useState(null)
 
   const [syncing, setSyncing] = useState(false)
 
@@ -221,6 +230,66 @@ export default function CampaignsPage() {
     fetch('/api/admin/stats').then(r => r.json()).then(d => setSubCount(d.total)).catch(() => {})
   }, [])
 
+  async function openDraftEdit(c) {
+    const r = await fetch(`/api/admin/campaigns?id=${c.id}`)
+    const d = await r.json()
+    setEditDraft(d.campaign)
+    setScheduleAt('')
+    setSendError('')
+    setSendResult(null)
+    setStep('edit-draft')
+  }
+
+  async function sendDraftNow() {
+    if (!editDraft) return
+    setSending(true)
+    setSendError('')
+    try {
+      const r = await fetch(`/api/admin/campaigns?id=${editDraft.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ send: true, subject: editDraft.subject }),
+      })
+      const d = await r.json()
+      if (!r.ok || d.error) throw new Error(d.error || 'Send failed')
+      setSendResult(`sent:${d.sent}`)
+      await fetchCampaigns()
+      setStep('list')
+    } catch (e) {
+      setSendError(e.message)
+    }
+    setSending(false)
+  }
+
+  async function scheduleDraft() {
+    if (!editDraft || !scheduleAt) return
+    setSending(true)
+    setSendError('')
+    try {
+      const r = await fetch(`/api/admin/campaigns?id=${editDraft.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject: editDraft.subject, scheduledAt: new Date(scheduleAt).toISOString() }),
+      })
+      const d = await r.json()
+      if (!r.ok || d.error) throw new Error(d.error || 'Schedule failed')
+      await fetchCampaigns()
+      setStep('list')
+    } catch (e) {
+      setSendError(e.message)
+    }
+    setSending(false)
+  }
+
+  async function deleteDraft(id) {
+    setDeletingId(id)
+    try {
+      const r = await fetch(`/api/admin/campaigns?id=${id}`, { method: 'DELETE' })
+      if (r.ok) await fetchCampaigns()
+    } catch {}
+    setDeletingId(null)
+  }
+
   function buildHtml() {
     try {
       const data = { ...fields, imageUrl }
@@ -237,6 +306,7 @@ export default function CampaignsPage() {
     setFields({})
     setImageUrl('')
     setSubject('')
+    setScheduleAt('')
     setSendResult(null)
     setSendError('')
     setShowPreview(false)
@@ -257,7 +327,7 @@ export default function CampaignsPage() {
     setTestResult(d.ok ? 'sent' : d.error || 'error')
   }
 
-  async function send(saveOnly = false) {
+  async function send(saveOnly = false, scheduledAt = null) {
     setSending(true)
     setSendError('')
     setSendResult(null)
@@ -266,14 +336,14 @@ export default function CampaignsPage() {
     const r = await fetch('/api/admin/campaigns', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ subject, htmlContent, send: !saveOnly }),
+      body: JSON.stringify({ subject, htmlContent, send: !saveOnly && !scheduledAt, scheduledAt }),
     })
     const d = await r.json()
     setSending(false)
     if (d.error) {
       setSendError(d.error)
     } else {
-      setSendResult(saveOnly ? 'draft' : `sent:${d.sent}`)
+      setSendResult(saveOnly ? 'draft' : scheduledAt ? 'scheduled' : `sent:${d.sent}`)
       fetchCampaigns()
       if (!saveOnly) setTimeout(() => setStep('list'), 1500)
     }
@@ -286,6 +356,110 @@ export default function CampaignsPage() {
   const totalClicked = sentCampaigns.reduce((s, c) => s + Number(c.clicked || 0), 0)
   const openRate = totalRecipients ? Math.round((totalOpened / totalRecipients) * 100) : 0
   const clickRate = totalRecipients ? Math.round((totalClicked / totalRecipients) * 100) : 0
+
+  // ── Edit draft view ────────────────────────────────────────────────────────
+  if (step === 'edit-draft' && editDraft) return (
+    <AdminLayout title="Edit Draft">
+      <div className="flex items-center gap-3 mb-6">
+        <button onClick={() => setStep('list')} className="text-gray-400 hover:text-gray-700 transition-colors">
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
+          </svg>
+        </button>
+        <span className="text-gray-700 font-semibold text-sm">Draft campaign</span>
+      </div>
+
+      <div className="max-w-xl space-y-5">
+        {/* Subject */}
+        <div>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Subject line</label>
+          <input
+            type="text"
+            value={editDraft.subject}
+            onChange={e => setEditDraft(d => ({ ...d, subject: e.target.value }))}
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20 focus:border-[#1a2744] transition-all"
+          />
+        </div>
+
+        {/* Email preview */}
+        <div>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Email preview</label>
+          <div className="border border-gray-200 rounded-xl overflow-hidden" style={{ height: 320 }}>
+            <iframe
+              srcDoc={editDraft.html_content}
+              title="Email preview"
+              style={{ width: '100%', height: '100%', border: 'none' }}
+              sandbox="allow-same-origin"
+            />
+          </div>
+        </div>
+
+        {/* Schedule picker */}
+        <div>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Schedule send (optional)</label>
+          <input
+            type="datetime-local"
+            value={scheduleAt}
+            onChange={e => setScheduleAt(e.target.value)}
+            min={new Date().toISOString().slice(0, 16)}
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20 focus:border-[#1a2744] transition-all"
+          />
+          <p className="text-gray-400 text-xs mt-1">Leave blank to send immediately. Scheduled sends check every 15 minutes.</p>
+        </div>
+
+        {sendError && <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-red-600 text-xs">{sendError}</div>}
+
+        <div className="flex gap-3 pt-1">
+          {scheduleAt ? (
+            <button
+              onClick={scheduleDraft}
+              disabled={sending || !isAdmin}
+              className="flex-1 text-white text-sm font-bold py-3 rounded-xl shadow-md hover:opacity-90 transition-all disabled:opacity-50"
+              style={{ background: 'linear-gradient(135deg, #1a2744, #243660)' }}
+            >
+              {sending ? 'Scheduling…' : `Schedule for ${new Date(scheduleAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`}
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowConfirm(true)}
+              disabled={sending || !editDraft.subject || !isAdmin}
+              className="flex-1 flex items-center justify-center gap-2 text-white text-sm font-bold py-3 rounded-xl shadow-md hover:opacity-90 transition-all disabled:opacity-50"
+              style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
+            >
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+              Send broadcast to {subCount ? subCount.toLocaleString() : 'all'} contacts
+            </button>
+          )}
+        </div>
+
+        {/* Confirm send modal */}
+        {showConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.5)' }}>
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-7">
+              <h3 className="font-bold text-gray-900 text-lg text-center mb-2">Ready to send?</h3>
+              <p className="text-gray-500 text-sm text-center mb-1"><strong>"{editDraft.subject}"</strong></p>
+              <p className="text-gray-400 text-sm text-center mb-6">
+                This will send to <strong>{subCount ? subCount.toLocaleString() : 'all'} audience contacts</strong>. Cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button onClick={() => setShowConfirm(false)} className="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-3 rounded-2xl hover:bg-gray-50 transition-all">Cancel</button>
+                <button
+                  onClick={() => { setShowConfirm(false); sendDraftNow() }}
+                  disabled={sending}
+                  className="flex-1 text-white text-sm font-bold py-3 rounded-2xl shadow-md hover:opacity-90 transition-all disabled:opacity-50"
+                  style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
+                >
+                  {sending ? 'Sending…' : 'Send now'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </AdminLayout>
+  )
 
   // ── List view ──────────────────────────────────────────────────────────────
   if (step === 'list') return (
@@ -363,10 +537,10 @@ export default function CampaignsPage() {
       ) : (
         <div className="space-y-3">
           {campaigns.map(c => (
-            <div key={c.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-4 flex items-center gap-4">
+            <div key={c.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0"
-                style={{ background: c.status === 'sent' ? 'linear-gradient(135deg,#e85d04,#f97316)' : 'linear-gradient(135deg,#9ca3af,#d1d5db)' }}
+                style={{ background: c.status === 'sent' ? 'linear-gradient(135deg,#e85d04,#f97316)' : c.status === 'scheduled' ? 'linear-gradient(135deg,#1a2744,#2d4a8a)' : 'linear-gradient(135deg,#9ca3af,#d1d5db)' }}
               >
                 <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
@@ -375,8 +549,10 @@ export default function CampaignsPage() {
               <div className="flex-1 min-w-0">
                 <p className="text-gray-900 font-semibold text-sm truncate">{c.subject}</p>
                 <p className="text-gray-400 text-xs mt-0.5">
-                  {c.sent_at
+                  {c.status === 'sent' && c.sent_at
                     ? `Sent ${new Date(c.sent_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+                    : c.status === 'scheduled' && c.scheduled_at
+                    ? `Scheduled for ${new Date(c.scheduled_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`
                     : `Created ${new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`}
                 </p>
                 {c.status === 'sent' && (
@@ -387,7 +563,28 @@ export default function CampaignsPage() {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-3 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
+                {(c.status === 'draft' || c.status === 'scheduled') && isAdmin && (
+                  <>
+                    <button
+                      onClick={() => openDraftEdit(c)}
+                      className="text-xs font-semibold border border-gray-200 bg-white text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-all"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteDraft(c.id)}
+                      disabled={deletingId === c.id}
+                      className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-50"
+                      title="Delete draft"
+                    >
+                      {deletingId === c.id
+                        ? <svg className="animate-spin" width="14" height="14" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                        : <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                      }
+                    </button>
+                  </>
+                )}
                 <StatusBadge status={c.status} />
               </div>
             </div>
@@ -537,9 +734,23 @@ export default function CampaignsPage() {
             )}
           </div>
 
+          {/* Schedule (optional) */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Schedule send (optional)</label>
+            <input
+              type="datetime-local"
+              value={scheduleAt}
+              onChange={e => setScheduleAt(e.target.value)}
+              min={new Date().toISOString().slice(0, 16)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20 focus:border-[#1a2744] transition-all bg-white"
+            />
+            <p className="text-gray-400 text-xs mt-1">Leave blank to send now or save as draft. Scheduled sends check every 15 min.</p>
+          </div>
+
           {/* Actions */}
           {sendError && <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-red-600 text-xs">{sendError}</div>}
           {sendResult === 'draft' && <p className="text-green-600 text-sm font-medium">Draft saved.</p>}
+          {sendResult === 'scheduled' && <p className="text-blue-600 text-sm font-medium">Scheduled! Will send at the time you set.</p>}
 
           <div className="flex gap-3">
             <button
@@ -549,17 +760,31 @@ export default function CampaignsPage() {
             >
               Save draft
             </button>
-            <button
-              onClick={() => setShowConfirm(true)}
-              disabled={sending || !subject || !isAdmin}
-              className="flex-1 flex items-center justify-center gap-2 text-white text-sm font-bold py-3 rounded-xl shadow-md hover:opacity-90 transition-all disabled:opacity-50"
-              style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
-            >
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-              </svg>
-              Send broadcast to {subCount ? subCount.toLocaleString() : 'all'} contacts
-            </button>
+            {scheduleAt ? (
+              <button
+                onClick={() => send(false, scheduleAt)}
+                disabled={sending || !subject || !isAdmin}
+                className="flex-1 flex items-center justify-center gap-2 text-white text-sm font-bold py-3 rounded-xl shadow-md hover:opacity-90 transition-all disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg, #1a2744, #243660)' }}
+              >
+                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Schedule for {new Date(scheduleAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowConfirm(true)}
+                disabled={sending || !subject || !isAdmin}
+                className="flex-1 flex items-center justify-center gap-2 text-white text-sm font-bold py-3 rounded-xl shadow-md hover:opacity-90 transition-all disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg, #e85d04, #f97316)' }}
+              >
+                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+                Send broadcast to {subCount ? subCount.toLocaleString() : 'all'} contacts
+              </button>
+            )}
           </div>
 
           {/* Confirm modal */}

@@ -23,18 +23,36 @@ export default async function handler(req, res) {
     if (campaigns.length === 0) return res.status(200).json({ ok: true, synced: 0 })
 
     let synced = 0
+    const debug = []
     for (const c of campaigns) {
       try {
         const r = await fetch(`https://api.resend.com/broadcasts/${c.resend_broadcast_id}`, {
           headers: { Authorization: `Bearer ${key}` },
         })
-        if (!r.ok) continue
         const data = await r.json()
-        console.log('Resend broadcast data keys:', JSON.stringify(Object.keys(data)), 'metrics:', JSON.stringify(data.metrics))
 
-        // Resend returns metrics under different keys depending on API version
-        const opens = data.metrics?.opens_count ?? data.metrics?.opens_unique ?? data.metrics?.opens ?? data.opens ?? 0
-        const clicks = data.metrics?.clicks_count ?? data.metrics?.clicks_unique ?? data.metrics?.clicks ?? data.clicks ?? 0
+        if (!r.ok) {
+          debug.push({ id: c.id, broadcastId: c.resend_broadcast_id, error: data })
+          continue
+        }
+
+        // Try all known Resend metrics field names
+        const opens =
+          data.metrics?.opens_count ??
+          data.metrics?.opens_unique ??
+          data.metrics?.opens ??
+          data.opens ??
+          data.open_count ??
+          0
+        const clicks =
+          data.metrics?.clicks_count ??
+          data.metrics?.clicks_unique ??
+          data.metrics?.clicks ??
+          data.clicks ??
+          data.click_count ??
+          0
+
+        debug.push({ id: c.id, broadcastId: c.resend_broadcast_id, status: data.status, metrics: data.metrics, opens, clicks })
 
         await sql`
           UPDATE campaigns
@@ -42,10 +60,12 @@ export default async function handler(req, res) {
           WHERE id = ${c.id}
         `
         synced++
-      } catch { /* skip individual failures */ }
+      } catch (e) {
+        debug.push({ id: c.id, broadcastId: c.resend_broadcast_id, exception: e.message })
+      }
     }
 
-    return res.status(200).json({ ok: true, synced })
+    return res.status(200).json({ ok: true, synced, debug })
   } catch (err) {
     console.error('sync-campaign-stats error:', err)
     return res.status(500).json({ error: err.message })

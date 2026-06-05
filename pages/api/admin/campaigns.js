@@ -61,6 +61,13 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
+      // Single campaign with HTML content (for draft editing)
+      if (req.query.id) {
+        const { sql } = await import('@vercel/postgres')
+        const result = await sql`SELECT * FROM campaigns WHERE id = ${req.query.id}`
+        if (!result.rows[0]) return res.status(404).json({ error: 'Not found' })
+        return res.status(200).json({ campaign: result.rows[0] })
+      }
       const result = await getCampaigns()
       return res.status(200).json({ campaigns: result.rows })
     } catch (err) {
@@ -69,11 +76,11 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { subject, htmlContent, send = false } = req.body
+    const { subject, htmlContent, send = false, scheduledAt = null } = req.body
     if (!subject || !htmlContent) return res.status(400).json({ error: 'subject and htmlContent required' })
 
     try {
-      const created = await createCampaign({ subject, htmlContent })
+      const created = await createCampaign({ subject, htmlContent, scheduledAt })
       const campaign = created.rows[0]
 
       if (send) {
@@ -96,20 +103,33 @@ export default async function handler(req, res) {
     }
   }
 
-  // Send an existing saved draft
+  // Update or send an existing draft/scheduled campaign
   if (req.method === 'PATCH') {
     const { id } = req.query
     if (!id) return res.status(400).json({ error: 'Campaign ID required' })
 
     try {
-      const allCampaigns = await getCampaigns()
-      const campaign = allCampaigns.rows.find((c) => c.id === parseInt(id))
+      const { sql } = await import('@vercel/postgres')
+      const { send = false, subject: newSubject, scheduledAt = null } = req.body || {}
+
+      const full = await sql`SELECT * FROM campaigns WHERE id = ${id}`
+      const campaign = full.rows[0]
       if (!campaign) return res.status(404).json({ error: 'Campaign not found' })
 
-      // Need full content — fetch from a separate query
-      const { sql } = await import('@vercel/postgres')
-      const full = await sql`SELECT html_content FROM campaigns WHERE id = ${id}`
-      const htmlContent = full.rows[0]?.html_content
+      // If just updating subject / schedule without sending
+      if (!send && (newSubject || scheduledAt !== undefined)) {
+        const updSubject = newSubject || campaign.subject
+        if (scheduledAt) {
+          await sql`UPDATE campaigns SET subject = ${updSubject}, scheduled_at = ${scheduledAt}, status = 'scheduled' WHERE id = ${id}`
+        } else {
+          await sql`UPDATE campaigns SET subject = ${updSubject}, scheduled_at = NULL, status = 'draft' WHERE id = ${id}`
+        }
+        return res.status(200).json({ ok: true })
+      }
+
+      // Send immediately
+      const htmlContent = campaign.html_content
+      const sentSubject = newSubject || campaign.subject
 
       const subsResult = await getSubscribers({ status: 'active' })
       const sentCount = getEligibleRecipientCount(subsResult.rows)
@@ -117,12 +137,26 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'No valid active recipients found in the Resend audience' })
       }
 
-      const broadcast = await createAndSendBroadcast(campaign.subject, htmlContent, sentCount)
+      const broadcast = await createAndSendBroadcast(sentSubject, htmlContent, sentCount)
       await markCampaignSent(id, sentCount, broadcast.broadcastId)
 
       return res.status(200).json({ ok: true, sent: sentCount, broadcastId: broadcast.broadcastId })
     } catch (err) {
       console.error('campaigns PATCH error:', err)
+      return res.status(500).json({ error: err.message })
+    }
+  }
+
+  // Delete a campaign (drafts only — can't delete sent)
+  if (req.method === 'DELETE') {
+    const { id } = req.query
+    if (!id) return res.status(400).json({ error: 'Campaign ID required' })
+    try {
+      const { sql } = await import('@vercel/postgres')
+      const result = await sql`DELETE FROM campaigns WHERE id = ${id} AND status != 'sent' RETURNING id`
+      if (!result.rows[0]) return res.status(404).json({ error: 'Not found or already sent' })
+      return res.status(200).json({ ok: true })
+    } catch (err) {
       return res.status(500).json({ error: err.message })
     }
   }
