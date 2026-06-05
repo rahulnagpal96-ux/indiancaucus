@@ -1,4 +1,4 @@
-import { isAuthenticated } from '../../../lib/auth'
+import { isAuthenticated, getCurrentUser } from '../../../lib/auth'
 import { savePushSubscription } from '../../../lib/db'
 
 export default async function handler(req, res) {
@@ -11,10 +11,12 @@ export default async function handler(req, res) {
   }
 
   try {
+    const me = await getCurrentUser(req, res)
     await savePushSubscription({
       endpoint: sub.endpoint,
       p256dh: sub.keys.p256dh,
       auth: sub.keys.auth,
+      userEmail: me?.email || null,
       userAgent: req.headers['user-agent'] || null,
     })
     return res.status(200).json({ ok: true })

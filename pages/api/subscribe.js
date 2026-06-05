@@ -1,7 +1,7 @@
-import { upsertSubscriber, getNotificationPrefs } from '../../lib/db'
+import { upsertSubscriber } from '../../lib/db'
 import { buildWelcomeEmail, shouldSendWelcomeEmail } from '../../lib/welcomeEmail'
 import { syncResendAudience, syncMailchimp } from '../../lib/syncSubscriber'
-import { sendPushToAll } from '../../lib/push'
+import { sendPushForEvent } from '../../lib/push'
 
 async function sendWelcomeEmail(email, firstName) {
   if (!shouldSendWelcomeEmail()) return
@@ -44,17 +44,16 @@ export default async function handler(req, res) {
     syncMailchimp(email)
     syncResendAudience(email, firstName, lastName)
 
-    // Notify the team about new organic sign-ups (skip admin's manual adds)
+    // Notify users who opted into subscriber alerts about new organic sign-ups
+    // (skip admin's manual adds).
     if (isNew && source !== 'manual') {
-      const prefs = await getNotificationPrefs()
-      if (prefs.subscriber) {
-        const name = [firstName, lastName].filter(Boolean).join(' ')
-        sendPushToAll({
-          title: 'New subscriber',
-          body: name ? `${name} · ${email}` : email,
-          url: '/dashboard/subscribers',
-        })
-      }
+      const name = [firstName, lastName].filter(Boolean).join(' ')
+      sendPushForEvent({
+        kind: 'subscriber',
+        title: 'New subscriber',
+        body: name ? `${name} · ${email}` : email,
+        url: '/dashboard/subscribers',
+      })
     }
 
     // Send welcome email to new subscribers OR anyone signing up via the form

@@ -92,8 +92,8 @@ export default function NotificationsPage() {
         {/* Alert preferences */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100">
-            <h2 className="text-gray-900 font-bold text-sm">Alerts</h2>
-            <p className="text-gray-400 text-xs mt-0.5">Choose which events send a push notification to all devices.</p>
+            <h2 className="text-gray-900 font-bold text-sm">Your alerts</h2>
+            <p className="text-gray-400 text-xs mt-0.5">Choose which alerts you receive on your devices. These settings are yours alone.</p>
           </div>
           <div className="divide-y divide-gray-50">
             <div className="flex items-center justify-between px-5 py-4">
@@ -117,8 +117,8 @@ export default function NotificationsPage() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <div>
-              <h2 className="text-gray-900 font-bold text-sm">Devices</h2>
-              <p className="text-gray-400 text-xs mt-0.5">{devices.length} device{devices.length !== 1 ? 's' : ''} receiving notifications</p>
+              <h2 className="text-gray-900 font-bold text-sm">Your devices</h2>
+              <p className="text-gray-400 text-xs mt-0.5">{devices.length} device{devices.length !== 1 ? 's' : ''} signed in as you</p>
             </div>
             <button
               onClick={sendTest}

@@ -1,17 +1,23 @@
-import { isAuthenticated } from '../../../lib/auth'
+import { isAuthenticated, getCurrentUser } from '../../../lib/auth'
 import {
-  getNotificationPrefs,
-  setNotificationPref,
-  listPushSubscriptions,
+  getUserPrefs,
+  setUserPref,
+  listPushSubscriptionsForUser,
   deletePushSubscriptionById,
 } from '../../../lib/db'
 
 export default async function handler(req, res) {
   if (!await isAuthenticated(req, res)) return res.status(401).json({ error: 'Unauthorized' })
 
+  const me = await getCurrentUser(req, res)
+  if (!me?.email) return res.status(401).json({ error: 'Unauthorized' })
+
   if (req.method === 'GET') {
     try {
-      const [prefs, devices] = await Promise.all([getNotificationPrefs(), listPushSubscriptions()])
+      const [prefs, devices] = await Promise.all([
+        getUserPrefs(me.email),
+        listPushSubscriptionsForUser(me.email),
+      ])
       res.setHeader('Cache-Control', 'no-store')
       return res.status(200).json({ prefs, devices: devices.rows })
     } catch (err) {
@@ -23,9 +29,9 @@ export default async function handler(req, res) {
   if (req.method === 'PUT') {
     const { sale, subscriber } = req.body || {}
     try {
-      if (typeof sale === 'boolean') await setNotificationPref('sale', sale)
-      if (typeof subscriber === 'boolean') await setNotificationPref('subscriber', subscriber)
-      return res.status(200).json({ ok: true, prefs: await getNotificationPrefs() })
+      if (typeof sale === 'boolean') await setUserPref(me.email, 'sale', sale)
+      if (typeof subscriber === 'boolean') await setUserPref(me.email, 'subscriber', subscriber)
+      return res.status(200).json({ ok: true, prefs: await getUserPrefs(me.email) })
     } catch (err) {
       console.error('notifications PUT error:', err)
       return res.status(500).json({ error: err.message })
