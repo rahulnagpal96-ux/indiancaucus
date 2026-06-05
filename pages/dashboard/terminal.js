@@ -1,43 +1,34 @@
 import { useEffect, useRef, useState } from 'react'
 import AdminLayout from '../../components/AdminLayout'
 
-const PK = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-
-// Load Stripe.js from Stripe's CDN (required — Stripe.js must be served from
-// js.stripe.com) and resolve the global Stripe constructor.
-function loadStripe() {
-  return new Promise((resolve, reject) => {
-    if (typeof window === 'undefined') return reject(new Error('no window'))
-    if (window.Stripe) return resolve(window.Stripe)
-    const existing = document.querySelector('script[data-stripe-js]')
-    if (existing) {
-      existing.addEventListener('load', () => resolve(window.Stripe))
-      existing.addEventListener('error', reject)
-      return
-    }
-    const s = document.createElement('script')
-    s.src = 'https://js.stripe.com/v3'
-    s.setAttribute('data-stripe-js', 'true')
-    s.onload = () => resolve(window.Stripe)
-    s.onerror = reject
-    document.head.appendChild(s)
-  })
-}
-
 function fmt(cents) {
   return '$' + (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
+function formatCardNumber(val) {
+  const digits = val.replace(/\D/g, '').slice(0, 16)
+  return digits.replace(/(\d{4})(?=\d)/g, '$1 ')
+}
+
+function formatExpiry(val) {
+  const digits = val.replace(/\D/g, '').slice(0, 4)
+  if (digits.length >= 3) return digits.slice(0, 2) + '/' + digits.slice(2)
+  return digits
+}
+
 export default function TerminalPage() {
   const [step, setStep] = useState('amount') // amount | pay | success
-  const [amountCents, setAmountCents] = useState('') // digits, interpreted as cents
+  const [amountCents, setAmountCents] = useState('')
   const [note, setNote] = useState('')
-  const [clientSecret, setClientSecret] = useState('')
   const [paymentIntentId, setPaymentIntentId] = useState('')
   const [paidCents, setPaidCents] = useState(0)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [cardReady, setCardReady] = useState(false)
+
+  // Card fields
+  const [cardNumber, setCardNumber] = useState('')
+  const [expiry, setExpiry] = useState('')
+  const [cvc, setCvc] = useState('')
 
   // Receipt state
   const [rEmail, setREmail] = useState('')
@@ -45,13 +36,12 @@ export default function TerminalPage() {
   const [receiptMsg, setReceiptMsg] = useState('')
   const [sending, setSending] = useState(false)
 
-  // Sales log (local mirror of POS charges)
+  // Sales log
   const [summary, setSummary] = useState({ todayTotal: 0, todayCount: 0 })
   const [recent, setRecent] = useState([])
 
-  const stripeRef = useRef(null)
-  const elementsRef = useRef(null)
-  const mountRef = useRef(null)
+  const expiryRef = useRef(null)
+  const cvcRef = useRef(null)
 
   const cents = parseInt(amountCents || '0', 10)
   const canCharge = cents >= 50
@@ -81,11 +71,10 @@ export default function TerminalPage() {
   useEffect(() => { fetchSales() }, [])
 
   function setPreset(dollars) { setAmountCents(String(dollars * 100)) }
-
   function pressDigit(d) {
     setAmountCents((c) => {
       const next = (c === '' && d === '0') ? '' : c + d
-      return next.slice(0, 7) // cap at $99,999.99
+      return next.slice(0, 7)
     })
   }
   function backspace() { setAmountCents((c) => c.slice(0, -1)) }
@@ -103,7 +92,6 @@ export default function TerminalPage() {
       })
       const d = await r.json()
       if (!r.ok || d.error) throw new Error(d.error || 'Could not start payment')
-      setClientSecret(d.clientSecret)
       setPaymentIntentId(d.paymentIntentId)
       setPaidCents(cents)
       setStep('pay')
@@ -114,52 +102,32 @@ export default function TerminalPage() {
     }
   }
 
-  // Mount the Stripe Payment Element once we have a client secret.
-  useEffect(() => {
-    if (step !== 'pay' || !clientSecret || !PK) return
-    let cancelled = false
-    let paymentEl
-    setCardReady(false)
-    ;(async () => {
-      try {
-        const StripeCtor = await loadStripe()
-        if (cancelled) return
-        const stripe = StripeCtor(PK)
-        stripeRef.current = stripe
-        const dark = typeof window !== 'undefined' && window.matchMedia &&
-          window.matchMedia('(prefers-color-scheme: dark)').matches
-        const elements = stripe.elements({
-          clientSecret,
-          appearance: {
-            theme: dark ? 'night' : 'stripe',
-            variables: { colorPrimary: '#e85d04', borderRadius: '12px' },
-          },
-        })
-        elementsRef.current = elements
-        paymentEl = elements.create('payment', { layout: 'tabs' })
-        paymentEl.on('ready', () => { if (!cancelled) setCardReady(true) })
-        paymentEl.mount(mountRef.current)
-      } catch (e) {
-        if (!cancelled) setError('Could not load the card form. Check your connection.')
-      }
-    })()
-    return () => { cancelled = true; try { paymentEl && paymentEl.unmount() } catch {} }
-  }, [step, clientSecret])
-
   async function confirmPayment() {
-    if (!stripeRef.current || !elementsRef.current) return
+    const rawCard = cardNumber.replace(/\s/g, '')
+    const [expM, expY] = expiry.split('/')
+    if (rawCard.length < 13 || !expM || !expY || cvc.length < 3) {
+      setError('Please fill in all card details.')
+      return
+    }
     setError('')
     setBusy(true)
     try {
-      const { error: err, paymentIntent } = await stripeRef.current.confirmPayment({
-        elements: elementsRef.current,
-        redirect: 'if_required',
-        confirmParams: { return_url: window.location.href },
+      const r = await fetch('/api/admin/terminal-charge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          paymentIntentId,
+          number: rawCard,
+          exp_month: parseInt(expM, 10),
+          exp_year: parseInt('20' + expY.trim(), 10),
+          cvc,
+        }),
       })
-      if (err) { setError(err.message); return }
-      if (paymentIntent && (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing')) {
+      const d = await r.json()
+      if (!r.ok || d.error) throw new Error(d.error || 'Payment failed')
+      if (d.status === 'succeeded' || d.status === 'processing') {
         setStep('success')
-        recordSale(paymentIntent.id)
+        recordSale(d.id)
       } else {
         setError('Payment was not completed. Please try again.')
       }
@@ -200,35 +168,23 @@ export default function TerminalPage() {
     setStep('amount')
     setAmountCents('')
     setNote('')
-    setClientSecret('')
     setPaymentIntentId('')
     setError('')
+    setCardNumber('')
+    setExpiry('')
+    setCvc('')
     setREmail('')
     setRPhone('')
     setReceiptMsg('')
-    setCardReady(false)
   }
 
-  // ── Not configured ──
-  if (!PK) {
-    return (
-      <AdminLayout title="Terminal">
-        <div className="max-w-md mx-auto bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center">
-          <p className="text-gray-900 font-bold mb-1">Terminal not configured</p>
-          <p className="text-gray-500 text-sm">
-            Add <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY</code> to your
-            environment variables (Stripe → Developers → API keys), then redeploy.
-          </p>
-        </div>
-      </AdminLayout>
-    )
-  }
+  const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-[#e85d04]/30 focus:border-[#e85d04] transition-all bg-white'
 
   return (
     <AdminLayout title="Terminal">
       <div className="max-w-md mx-auto">
 
-        {/* ── Today summary ── */}
+        {/* Today summary */}
         {step === 'amount' && (
           <div className="mb-3 flex items-center justify-between bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-3.5">
             <div>
@@ -239,7 +195,7 @@ export default function TerminalPage() {
           </div>
         )}
 
-        {/* ── AMOUNT ── */}
+        {/* AMOUNT */}
         {step === 'amount' && (
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-6 pt-8 pb-6 text-center">
@@ -270,6 +226,7 @@ export default function TerminalPage() {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="What's this for? (optional)"
+                autoComplete="off"
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-center focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20 focus:border-[#1a2744] transition-all"
               />
             </div>
@@ -302,7 +259,7 @@ export default function TerminalPage() {
           </div>
         )}
 
-        {/* ── Recent sales ── */}
+        {/* Recent sales */}
         {step === 'amount' && recent.length > 0 && (
           <div className="mt-4 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <p className="px-5 pt-3.5 pb-2 text-gray-400 text-[11px] font-semibold uppercase tracking-widest">Recent sales</p>
@@ -329,31 +286,72 @@ export default function TerminalPage() {
           </div>
         )}
 
-        {/* ── PAY ── */}
+        {/* PAY */}
         {step === 'pay' && (
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-            <div className="text-center mb-5">
+            <div className="text-center mb-6">
               <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest">Charging</p>
               <p className="text-gray-900 font-black text-3xl mt-1">{fmt(paidCents)}</p>
               {note && <p className="text-gray-400 text-sm mt-1">{note}</p>}
             </div>
 
-            <div className="border border-gray-200 text-gray-600 text-xs rounded-xl px-3 py-2.5 mb-4 flex items-start gap-2">
-              <svg width="15" height="15" className="shrink-0 mt-0.5 text-[#e85d04]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" />
-              </svg>
-              <span>Tap the card number field — on iPhone choose <strong>Scan Credit Card</strong> to capture it with your camera, or type it in.</span>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5 block">Card number</label>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="cc-number"
+                  placeholder="1234 5678 9012 3456"
+                  value={cardNumber}
+                  onChange={(e) => {
+                    const formatted = formatCardNumber(e.target.value)
+                    setCardNumber(formatted)
+                    if (formatted.replace(/\s/g, '').length === 16) expiryRef.current?.focus()
+                  }}
+                  className={inputClass}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5 block">Expiry</label>
+                  <input
+                    ref={expiryRef}
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="cc-exp"
+                    placeholder="MM/YY"
+                    value={expiry}
+                    onChange={(e) => {
+                      const formatted = formatExpiry(e.target.value)
+                      setExpiry(formatted)
+                      if (formatted.length === 5) cvcRef.current?.focus()
+                    }}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5 block">CVC</label>
+                  <input
+                    ref={cvcRef}
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="cc-csc"
+                    placeholder="123"
+                    value={cvc}
+                    onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    className={inputClass}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div ref={mountRef} className="min-h-[180px]" />
-            {!cardReady && <p className="text-gray-400 text-xs text-center py-3">Loading secure card form…</p>}
-
-            {error && <p className="text-red-500 text-xs text-center mt-3">{error}</p>}
+            {error && <p className="text-red-500 text-xs text-center mt-4">{error}</p>}
 
             <button
               onClick={confirmPayment}
-              disabled={busy || !cardReady}
-              className="w-full text-white font-bold text-base py-4 rounded-2xl shadow-md transition-all disabled:opacity-40 hover:opacity-90 mt-4"
+              disabled={busy}
+              className="w-full text-white font-bold text-base py-4 rounded-2xl shadow-md transition-all disabled:opacity-40 hover:opacity-90 mt-5"
               style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}
             >
               {busy ? 'Processing…' : `Pay ${fmt(paidCents)}`}
@@ -368,7 +366,7 @@ export default function TerminalPage() {
           </div>
         )}
 
-        {/* ── SUCCESS ── */}
+        {/* SUCCESS */}
         {step === 'success' && (
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
             <div className="text-center mb-6">
@@ -389,6 +387,7 @@ export default function TerminalPage() {
                   value={rEmail}
                   onChange={(e) => setREmail(e.target.value)}
                   placeholder="Customer email"
+                  autoComplete="off"
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20 focus:border-[#1a2744] transition-all"
                 />
                 <input
@@ -396,6 +395,7 @@ export default function TerminalPage() {
                   value={rPhone}
                   onChange={(e) => setRPhone(e.target.value)}
                   placeholder="Customer phone (+1…) for text"
+                  autoComplete="off"
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20 focus:border-[#1a2744] transition-all"
                 />
               </div>
