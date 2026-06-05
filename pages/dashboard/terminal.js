@@ -45,12 +45,42 @@ export default function TerminalPage() {
   const [receiptMsg, setReceiptMsg] = useState('')
   const [sending, setSending] = useState(false)
 
+  // Sales log (local mirror of POS charges)
+  const [summary, setSummary] = useState({ todayTotal: 0, todayCount: 0 })
+  const [recent, setRecent] = useState([])
+
   const stripeRef = useRef(null)
   const elementsRef = useRef(null)
   const mountRef = useRef(null)
 
   const cents = parseInt(amountCents || '0', 10)
   const canCharge = cents >= 50
+
+  async function fetchSales() {
+    try {
+      const r = await fetch('/api/admin/pos')
+      const d = await r.json()
+      if (!d.error) {
+        setSummary({ todayTotal: d.todayTotal || 0, todayCount: d.todayCount || 0 })
+        setRecent(d.recent || [])
+      }
+    } catch {}
+  }
+
+  async function recordSale(piId) {
+    try {
+      await fetch('/api/admin/pos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentIntentId: piId }),
+      })
+    } catch {}
+    fetchSales()
+  }
+
+  useEffect(() => { fetchSales() }, [])
+
+  function setPreset(dollars) { setAmountCents(String(dollars * 100)) }
 
   function pressDigit(d) {
     setAmountCents((c) => {
@@ -129,6 +159,7 @@ export default function TerminalPage() {
       if (err) { setError(err.message); return }
       if (paymentIntent && (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing')) {
         setStep('success')
+        recordSale(paymentIntent.id)
       } else {
         setError('Payment was not completed. Please try again.')
       }
@@ -197,6 +228,17 @@ export default function TerminalPage() {
     <AdminLayout title="Terminal">
       <div className="max-w-md mx-auto">
 
+        {/* ── Today summary ── */}
+        {step === 'amount' && (
+          <div className="mb-3 flex items-center justify-between bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-3.5">
+            <div>
+              <p className="text-gray-400 text-[11px] font-semibold uppercase tracking-widest">Today</p>
+              <p className="text-gray-900 font-black text-xl leading-tight">{fmt(summary.todayTotal)}</p>
+            </div>
+            <p className="text-gray-400 text-xs">{summary.todayCount} sale{summary.todayCount !== 1 ? 's' : ''}</p>
+          </div>
+        )}
+
         {/* ── AMOUNT ── */}
         {step === 'amount' && (
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
@@ -207,7 +249,22 @@ export default function TerminalPage() {
               </div>
             </div>
 
-            <div className="px-6">
+            <div className="px-6 space-y-3">
+              <div className="grid grid-cols-3 gap-2">
+                {[25, 50, 100].map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => setPreset(d)}
+                    className={`py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                      cents === d * 100
+                        ? 'border-[#e85d04] text-[#e85d04] bg-[#e85d04]/5'
+                        : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    ${d}
+                  </button>
+                ))}
+              </div>
               <input
                 type="text"
                 value={note}
@@ -241,6 +298,33 @@ export default function TerminalPage() {
                 {busy ? 'Starting…' : canCharge ? `Charge ${fmt(cents)}` : 'Enter an amount'}
               </button>
               <p className="text-gray-400 text-[11px] text-center mt-2">Minimum $0.50 · Card payments via Stripe</p>
+            </div>
+          </div>
+        )}
+
+        {/* ── Recent sales ── */}
+        {step === 'amount' && recent.length > 0 && (
+          <div className="mt-4 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <p className="px-5 pt-3.5 pb-2 text-gray-400 text-[11px] font-semibold uppercase tracking-widest">Recent sales</p>
+            <div className="divide-y divide-gray-50">
+              {recent.slice(0, 8).map((s) => (
+                <div key={s.id} className="flex items-center justify-between px-5 py-2.5">
+                  <div className="min-w-0">
+                    <p className="text-gray-900 text-sm font-bold">{fmt(s.amount)}</p>
+                    <p className="text-gray-400 text-xs truncate">{s.description || 'Payment'}</p>
+                  </div>
+                  <div className="text-right shrink-0 ml-3">
+                    <p className="text-gray-400 text-xs">
+                      {new Date(s.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                    </p>
+                    {s.receipt_url && (
+                      <a href={s.receipt_url} target="_blank" rel="noreferrer" className="text-[#e85d04] text-xs font-semibold">
+                        Receipt
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

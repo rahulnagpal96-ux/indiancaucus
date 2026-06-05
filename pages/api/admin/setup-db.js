@@ -52,6 +52,20 @@ export default async function handler(req, res) {
       )
     `
 
+    await sql`
+      CREATE TABLE IF NOT EXISTS pos_payments (
+        id                SERIAL PRIMARY KEY,
+        payment_intent_id VARCHAR(255) UNIQUE NOT NULL,
+        amount            INT NOT NULL,
+        currency          VARCHAR(10)  DEFAULT 'usd',
+        description       TEXT,
+        status            VARCHAR(30),
+        receipt_email     VARCHAR(255),
+        receipt_url       TEXT,
+        created_at        TIMESTAMPTZ  DEFAULT NOW()
+      )
+    `
+
     return res.status(200).json({ ok: true, message: 'Tables created (or already exist).' })
   } catch (err) {
     console.error('setup-db error:', err)
