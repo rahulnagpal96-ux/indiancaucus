@@ -204,7 +204,6 @@ export default function CampaignsPage() {
   const [viewCampaign, setViewCampaign] = useState(null)
 
   const [syncing, setSyncing] = useState(false)
-  const [syncDebug, setSyncDebug] = useState(null)
 
   function fetchCampaigns() {
     setLoading(true)
@@ -216,11 +215,8 @@ export default function CampaignsPage() {
 
   async function syncStats() {
     setSyncing(true)
-    setSyncDebug(null)
     try {
-      const r = await fetch('/api/admin/sync-campaign-stats', { method: 'POST' })
-      const d = await r.json()
-      if (d.debug) setSyncDebug(d.debug)
+      await fetch('/api/admin/sync-campaign-stats', { method: 'POST' })
       await fetchCampaigns()
     } catch {}
     setSyncing(false)
@@ -554,18 +550,6 @@ export default function CampaignsPage() {
         </div>
       )}
 
-      {syncDebug && (
-        <div className="mb-5 bg-blue-50 border border-blue-200 rounded-2xl px-5 py-4">
-          <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">Broadcast IDs synced</p>
-          <p className="text-xs text-blue-600 mb-2">Opens &amp; clicks are tracked via Resend webhooks — configure the webhook at resend.com → Webhooks → <code className="bg-blue-100 px-1 rounded">https://indiancaucus.org/api/resend/webhook</code></p>
-          {syncDebug.map((item, i) => (
-            <div key={i} className="text-xs text-blue-500 font-mono">
-              Campaign {item.id}: {item.note || item.action || (item.error ? `ERROR: ${JSON.stringify(item.error)}` : item.exception) || '✓'}
-            </div>
-          ))}
-          <button onClick={() => setSyncDebug(null)} className="text-xs text-blue-400 hover:text-blue-600 mt-2">Dismiss</button>
-        </div>
-      )}
 
       {loading ? (
         <div className="flex items-center gap-2 text-gray-300 py-10 justify-center">
