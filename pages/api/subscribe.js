@@ -1,6 +1,7 @@
 import { upsertSubscriber } from '../../lib/db'
 import { buildWelcomeEmail, shouldSendWelcomeEmail } from '../../lib/welcomeEmail'
 import { syncResendAudience, syncMailchimp } from '../../lib/syncSubscriber'
+import { sendPushToAll } from '../../lib/push'
 
 async function sendWelcomeEmail(email, firstName) {
   if (!shouldSendWelcomeEmail()) return
@@ -42,6 +43,15 @@ export default async function handler(req, res) {
     // Sync to Mailchimp and Resend audience (non-blocking)
     syncMailchimp(email)
     syncResendAudience(email, firstName, lastName)
+
+    // Notify the team about new organic sign-ups (skip admin's manual adds)
+    if (isNew && source !== 'manual') {
+      sendPushToAll({
+        title: 'New subscriber',
+        body: [firstName, lastName].filter(Boolean).join(' ') ? `${[firstName, lastName].filter(Boolean).join(' ')} · ${email}` : email,
+        url: '/dashboard/subscribers',
+      })
+    }
 
     // Send welcome email to new subscribers OR anyone signing up via the form
     // (cron-synced contacts from Mailchimp won't have source='newsletter')
