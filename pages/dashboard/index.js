@@ -41,6 +41,7 @@ export default function DashboardHome() {
   const [syncingResend, setSyncingResend] = useState(false)
   const [resendResult, setResendResult] = useState(null)
   const [stripe, setStripe] = useState(null)
+  const [pos, setPos] = useState(null)
 
   useEffect(() => {
     fetch('/api/admin/stats')
@@ -55,6 +56,11 @@ export default function DashboardHome() {
     fetch('/api/admin/stripe-stats')
       .then(r => r.json())
       .then(d => { if (!d.error) setStripe(d) })
+      .catch(() => {})
+
+    fetch('/api/admin/pos-analytics')
+      .then(r => r.json())
+      .then(d => { if (!d.error) setPos(d) })
       .catch(() => {})
   }, [])
 
@@ -237,6 +243,29 @@ export default function DashboardHome() {
               <p className="text-2xl font-black text-gray-900">
                 {loading || (!stripe && !dbError) ? <span className="text-gray-200 text-xl">—</span> : (value ?? '—')}
               </p>
+              <p className="text-gray-500 text-xs font-medium mt-0.5">{label}</p>
+              <p className="text-gray-400 text-xs">{sub}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Point of Sale */}
+      <div className="mb-6 md:mb-8">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-gray-700 font-bold text-sm uppercase tracking-wide">Point of Sale</h3>
+          <Link href="/dashboard/payments" className="text-xs font-semibold text-[#e85d04] hover:underline">View all →</Link>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          {[
+            { label: 'Today', value: pos ? fmtMoney(pos.today) : null, sub: 'In-person sales' },
+            { label: 'This month', value: pos ? fmtMoney(pos.month) : null, sub: new Date().toLocaleString('default', { month: 'long' }) },
+            { label: 'All time', value: pos ? fmtMoney(pos.total) : null, sub: 'Total collected' },
+            { label: 'Payments', value: pos ? (pos.count ?? 0).toLocaleString() : null, sub: 'Card charges' },
+          ].map(({ label, value, sub }) => (
+            <Link key={label} href="/dashboard/payments" className="bg-white rounded-2xl border border-gray-100 p-4 md:p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-7 h-7 rounded-lg mb-3" style={{ background: 'linear-gradient(135deg,#e85d04,#f97316)' }} />
+              <p className="text-2xl font-black text-gray-900">{value ?? '—'}</p>
               <p className="text-gray-500 text-xs font-medium mt-0.5">{label}</p>
               <p className="text-gray-400 text-xs">{sub}</p>
             </Link>

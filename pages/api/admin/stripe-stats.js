@@ -11,9 +11,11 @@ export default async function handler(req, res) {
   const stripe = new Stripe(key, { apiVersion: '2023-10-16' })
 
   try {
-    // Fetch up to 100 most recent succeeded payment intents
+    // Fetch up to 100 most recent succeeded payment intents. Exclude in-person
+    // POS charges so "Donations" reflects actual donations (POS revenue is
+    // reported separately from the pos_payments table).
     const intents = await stripe.paymentIntents.list({ limit: 100, expand: ['data.customer'] })
-    const succeeded = intents.data.filter(p => p.status === 'succeeded')
+    const succeeded = intents.data.filter(p => p.status === 'succeeded' && p.metadata?.source !== 'dashboard-pos')
 
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000

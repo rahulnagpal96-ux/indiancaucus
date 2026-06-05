@@ -1,5 +1,76 @@
+import { useEffect, useState } from 'react'
 import AdminLayout from '../../components/AdminLayout'
 import Link from 'next/link'
+
+function money(cents) {
+  return '$' + ((cents || 0) / 100).toLocaleString('en-US', { maximumFractionDigits: 0 })
+}
+
+// Fill a continuous last-N-days series (US/Eastern) from sparse daily totals.
+function buildSeries(daily, days = 30) {
+  const map = Object.fromEntries((daily || []).map((d) => [d.day, d.total]))
+  const out = []
+  const today = new Date()
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    const key = d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
+    out.push({ day: key, total: map[key] || 0 })
+  }
+  return out
+}
+
+function PosRevenue() {
+  const [pos, setPos] = useState(null)
+
+  useEffect(() => {
+    fetch('/api/admin/pos-analytics')
+      .then((r) => r.json())
+      .then((d) => { if (!d.error) setPos(d) })
+      .catch(() => {})
+  }, [])
+
+  const series = buildSeries(pos?.daily, 30)
+  const max = Math.max(1, ...series.map((s) => s.total))
+
+  return (
+    <div className="mb-8">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-gray-700 font-bold text-sm uppercase tracking-wide">Point of Sale revenue</h2>
+        <Link href="/dashboard/payments" className="text-xs font-semibold text-[#e85d04] hover:underline">All payments →</Link>
+      </div>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-6">
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          {[['Today', pos?.today], ['This month', pos?.month], ['All time', pos?.total]].map(([label, value]) => (
+            <div key={label}>
+              <p className="text-gray-400 text-[11px] font-semibold uppercase tracking-widest">{label}</p>
+              <p className="text-gray-900 font-black text-xl md:text-2xl mt-1">{pos ? money(value) : '—'}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-end gap-1 h-32">
+          {series.map((s, i) => (
+            <div key={i} className="flex-1 flex items-end h-full" title={`${s.day}: ${money(s.total)}`}>
+              <div
+                className="w-full rounded-t transition-all"
+                style={{
+                  height: `${Math.max(2, (s.total / max) * 100)}%`,
+                  background: s.total ? 'linear-gradient(180deg,#f97316,#e85d04)' : '#eef0f4',
+                }}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between mt-2 text-[11px] text-gray-400">
+          <span>{series[0]?.day?.slice(5)}</span>
+          <span>Last 30 days · US/Eastern</span>
+          <span>{series[series.length - 1]?.day?.slice(5)}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const TOOLS = [
   {
@@ -36,6 +107,8 @@ const QUICK_LINKS = [
 export default function AnalyticsPage() {
   return (
     <AdminLayout title="Analytics & Tools">
+
+      <PosRevenue />
 
       {/* Analytics tools */}
       <div className="mb-8">

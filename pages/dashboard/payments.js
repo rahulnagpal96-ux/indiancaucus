@@ -5,8 +5,10 @@ function fmt(cents) {
   return '$' + (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
+const TZ = 'America/New_York'
+
 function ymd(d) {
-  return new Date(d).toLocaleDateString('en-CA') // YYYY-MM-DD in local time
+  return new Date(d).toLocaleDateString('en-CA', { timeZone: TZ }) // YYYY-MM-DD in US/Eastern
 }
 
 const PRESETS = [
@@ -69,8 +71,8 @@ export default function PaymentsPage() {
     const rows = payments.map((p) => {
       const d = new Date(p.created_at)
       return [
-        d.toLocaleDateString('en-US'),
-        d.toLocaleTimeString('en-US'),
+        d.toLocaleDateString('en-US', { timeZone: TZ }),
+        d.toLocaleTimeString('en-US', { timeZone: TZ }),
         (p.amount / 100).toFixed(2),
         p.description || '',
         p.status || '',
@@ -165,8 +167,8 @@ export default function PaymentsPage() {
                 {payments.map((p) => (
                   <tr key={p.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors">
                     <td className="px-5 py-3.5 text-gray-500 text-sm whitespace-nowrap">
-                      {new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      <span className="text-gray-300"> · {new Date(p.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
+                      {new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: TZ })}
+                      <span className="text-gray-300"> · {new Date(p.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: TZ })}</span>
                     </td>
                     <td className="px-5 py-3.5 text-gray-900 text-sm font-bold whitespace-nowrap">{fmt(p.amount)}</td>
                     <td className="px-5 py-3.5 text-gray-500 text-sm max-w-[16rem] truncate">{p.description || '—'}</td>
