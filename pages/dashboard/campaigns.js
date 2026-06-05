@@ -558,9 +558,15 @@ export default function CampaignsPage() {
         <div className="mb-5 bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Resend sync debug</p>
           {syncDebug.map((item, i) => (
-            <div key={i} className="text-xs text-gray-500 font-mono mb-1">
-              Campaign {item.id}: opens={item.opens ?? '?'} clicks={item.clicks ?? '?'} status={item.status ?? '?'} {item.error ? `ERROR: ${JSON.stringify(item.error)}` : ''} {item.exception ? `EXCEPTION: ${item.exception}` : ''}
-              {item.metrics ? ` metrics=${JSON.stringify(item.metrics)}` : ''}
+            <div key={i} className="text-xs text-gray-500 font-mono mb-2 break-all">
+              <span className="font-bold text-gray-700">Campaign {item.id}:</span>{' '}
+              opens={item.opens ?? '?'} clicks={item.clicks ?? '?'} resendStatus={item.resendStatus ?? '?'}{' '}
+              {item.action && <span className="text-blue-500">[{item.action}]</span>}
+              {item.error && <span className="text-red-500"> ERROR: {JSON.stringify(item.error)}</span>}
+              {item.exception && <span className="text-red-500"> EXCEPTION: {item.exception}</span>}
+              {item.rawMetrics !== undefined && (
+                <div className="mt-0.5 text-gray-400">rawMetrics: {JSON.stringify(item.rawMetrics)}</div>
+              )}
             </div>
           ))}
           <button onClick={() => setSyncDebug(null)} className="text-xs text-gray-400 hover:text-gray-600 mt-1">Dismiss</button>
