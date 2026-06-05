@@ -555,21 +555,15 @@ export default function CampaignsPage() {
       )}
 
       {syncDebug && (
-        <div className="mb-5 bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Resend sync debug</p>
+        <div className="mb-5 bg-blue-50 border border-blue-200 rounded-2xl px-5 py-4">
+          <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">Broadcast IDs synced</p>
+          <p className="text-xs text-blue-600 mb-2">Opens &amp; clicks are tracked via Resend webhooks — configure the webhook at resend.com → Webhooks → <code className="bg-blue-100 px-1 rounded">https://indiancaucus.org/api/resend/webhook</code></p>
           {syncDebug.map((item, i) => (
-            <div key={i} className="text-xs text-gray-500 font-mono mb-2 break-all">
-              <span className="font-bold text-gray-700">Campaign {item.id}:</span>{' '}
-              opens={item.opens ?? '?'} clicks={item.clicks ?? '?'} resendStatus={item.resendStatus ?? '?'}{' '}
-              {item.action && <span className="text-blue-500">[{item.action}]</span>}
-              {item.error && <span className="text-red-500"> ERROR: {JSON.stringify(item.error)}</span>}
-              {item.exception && <span className="text-red-500"> EXCEPTION: {item.exception}</span>}
-              {item.rawMetrics !== undefined && (
-                <div className="mt-0.5 text-gray-400">rawMetrics: {JSON.stringify(item.rawMetrics)}</div>
-              )}
+            <div key={i} className="text-xs text-blue-500 font-mono">
+              Campaign {item.id}: {item.note || item.action || (item.error ? `ERROR: ${JSON.stringify(item.error)}` : item.exception) || '✓'}
             </div>
           ))}
-          <button onClick={() => setSyncDebug(null)} className="text-xs text-gray-400 hover:text-gray-600 mt-1">Dismiss</button>
+          <button onClick={() => setSyncDebug(null)} className="text-xs text-blue-400 hover:text-blue-600 mt-2">Dismiss</button>
         </div>
       )}
 

@@ -70,31 +70,10 @@ export default async function handler(req, res) {
           continue
         }
 
-        const r = await fetch(`https://api.resend.com/broadcasts/${broadcastId}`, {
-          headers: { Authorization: `Bearer ${key}` },
-        })
-        const data = await r.json()
-
-        if (!r.ok) {
-          debug.push({ id: c.id, broadcastId, error: data })
-          continue
-        }
-
-        const { opens, clicks } = extractStats(data)
-        debug.push({
-          id: c.id,
-          broadcastId,
-          resendStatus: data.status,
-          rawMetrics: data.metrics ?? '(no metrics field)',
-          opens,
-          clicks,
-        })
-
-        await sql`
-          UPDATE campaigns
-          SET resend_opens = ${opens}, resend_clicks = ${clicks}
-          WHERE id = ${c.id}
-        `
+        // Resend GET /broadcasts/{id} does not return metrics — opens/clicks
+        // come through webhooks only (api/resend/webhook.js → campaign_email_events).
+        // This step just ensures the broadcast_id is linked so webhook events match.
+        debug.push({ id: c.id, broadcastId, note: 'broadcast linked — opens/clicks tracked via webhook' })
         synced++
       } catch (e) {
         debug.push({ id: c.id, exception: e.message })
