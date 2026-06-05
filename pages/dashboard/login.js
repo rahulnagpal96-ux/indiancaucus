@@ -20,7 +20,7 @@ export default function DashboardLogin() {
       </div>
 
       <div className="relative w-full max-w-sm">
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div className="rounded-3xl shadow-2xl overflow-hidden" style={{ backgroundColor: '#ffffff' }}>
           <div className="px-8 py-7 text-center" style={{ background: 'linear-gradient(135deg, #1a2744, #243660)' }}>
             <img src="/logo.png" alt="Indian Caucus of Secaucus" className="h-14 w-auto mx-auto mb-4" />
             <h1 className="text-white font-bold text-xl tracking-tight">Dashboard Login</h1>
