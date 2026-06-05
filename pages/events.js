@@ -23,7 +23,7 @@ const EVENTS = [
     id: 'garba',
     title: 'Dandiya Dhamaka',
     month: 'October',
-    date: 'October 24, 2025',
+    date: 'October 24, 2026',
     time: null,
     location: 'Secaucus Recreation Center, 1200 Koelle Blvd, Secaucus, NJ 07094',
     colorClass: 'from-purple-600 to-pink-500',
