@@ -221,11 +221,19 @@ function Softphone() {
               </div>
             )}
 
-            {/* Display */}
-            <div className="bg-gray-50 rounded-xl px-4 py-3 mb-4 flex items-center justify-between">
-              <span className="text-gray-800 font-mono text-lg tracking-widest">{dialInput || <span className="text-gray-300">Enter number</span>}</span>
+            {/* Display — editable so keyboard typing and paste work */}
+            <div className="bg-gray-50 rounded-xl px-4 py-3 mb-4 flex items-center gap-2">
+              <input
+                type="text"
+                inputMode="tel"
+                value={dialInput}
+                onChange={e => setDialInput(e.target.value.replace(/[^\d+\-() ]/g, ''))}
+                placeholder="Enter number"
+                autoComplete="off"
+                className="flex-1 bg-transparent font-mono text-lg tracking-widest text-gray-800 placeholder-gray-300 focus:outline-none min-w-0"
+              />
               {dialInput && (
-                <button onClick={() => setDialInput(v => v.slice(0, -1))} className="text-gray-400 hover:text-gray-700">
+                <button onClick={() => setDialInput(v => v.slice(0, -1))} className="text-gray-400 hover:text-gray-700 shrink-0">
                   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
                 </button>
               )}
@@ -278,6 +286,8 @@ function SMSInbox() {
   const [composing, setComposing] = useState(false)
   const bottomRef = useRef(null)
 
+  const showPane = activeThread || composing
+
   useEffect(() => {
     fetch('/api/admin/conversations')
       .then(r => r.json())
@@ -292,6 +302,14 @@ function SMSInbox() {
     const d = await r.json()
     setMessages(d.messages ?? [])
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 100)
+  }
+
+  function goBack() {
+    setActiveThread(null)
+    setComposing(false)
+    setMessages([])
+    setReply('')
+    setNewTo('')
   }
 
   async function sendReply(e) {
@@ -313,78 +331,99 @@ function SMSInbox() {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col" style={{ minHeight: 480 }}>
       {/* Header */}
-      <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="px-4 py-3.5 border-b border-gray-100 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
+          {/* Back button — mobile only, shown when a thread is open */}
+          {showPane && (
+            <button
+              onClick={goBack}
+              className="md:hidden -ml-1 mr-1 p-1 text-gray-500 hover:text-gray-800 active:text-gray-900"
+              aria-label="Back"
+            >
+              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+          )}
           <svg width="16" height="16" className="text-gray-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
-          <span className="font-semibold text-gray-800 text-sm">SMS Conversations</span>
+          <span className="font-semibold text-gray-800 text-sm">
+            {showPane && activeThread ? fmtPhone(activeThread) : 'SMS Conversations'}
+          </span>
         </div>
-        <button
-          onClick={() => { setComposing(true); setActiveThread(null); setMessages([]) }}
-          className="flex items-center gap-1 text-xs font-bold text-white px-3 py-1.5 rounded-lg"
-          style={{ background: 'linear-gradient(135deg,#1a2744,#243660)' }}
-        >
-          <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New
-        </button>
+        {!showPane && (
+          <button
+            onClick={() => { setComposing(true); setActiveThread(null); setMessages([]) }}
+            className="flex items-center gap-1 text-xs font-bold text-white px-3 py-1.5 rounded-lg"
+            style={{ background: 'linear-gradient(135deg,#1a2744,#243660)' }}
+          >
+            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New
+          </button>
+        )}
       </div>
 
       <div className="flex flex-1 min-h-0" style={{ minHeight: 400 }}>
-        {/* Thread list */}
-        <div className="w-48 border-r border-gray-100 overflow-y-auto shrink-0">
+        {/* Thread list — full-width on mobile when no pane open, sidebar on desktop */}
+        <div className={`${showPane ? 'hidden md:flex md:flex-col' : 'flex flex-col'} md:w-48 w-full border-r border-gray-100 overflow-y-auto shrink-0`}>
           {threads.length === 0 ? (
             <p className="text-gray-300 text-xs text-center py-8 px-3">No messages yet</p>
           ) : threads.map(t => (
             <button
               key={t.contact_number}
               onClick={() => openThread(t.contact_number)}
-              className={`w-full text-left px-3 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors ${activeThread === t.contact_number ? 'bg-blue-50' : ''}`}
+              className={`w-full text-left px-4 py-3.5 border-b border-gray-50 hover:bg-gray-50 active:bg-gray-100 transition-colors ${activeThread === t.contact_number ? 'bg-blue-50' : ''}`}
             >
-              <div className="flex items-center gap-2 mb-0.5">
-                <div className="w-7 h-7 rounded-full bg-[#1a2744] flex items-center justify-center text-white text-xs font-bold shrink-0">
+              <div className="flex items-center gap-3 mb-0.5">
+                <div className="w-9 h-9 rounded-full bg-[#1a2744] flex items-center justify-center text-white text-xs font-bold shrink-0">
                   {(t.contact_number || '?')[1]}
                 </div>
-                <p className="text-gray-800 text-xs font-semibold truncate">{fmtPhone(t.contact_number)}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-gray-800 text-sm font-semibold truncate">{fmtPhone(t.contact_number)}</p>
+                  <p className="text-gray-400 text-xs truncate">{t.body}</p>
+                </div>
+                <p className="text-gray-300 text-xs shrink-0">{fmtTime(t.created_at)}</p>
               </div>
-              <p className="text-gray-400 text-xs truncate pl-9">{t.body}</p>
-              <p className="text-gray-300 text-xs pl-9">{fmtTime(t.created_at)}</p>
             </button>
           ))}
         </div>
 
-        {/* Message thread */}
-        <div className="flex-1 flex flex-col min-w-0">
+        {/* Message thread — full-width on mobile when open, hidden when thread list showing */}
+        <div className={`${showPane ? 'flex' : 'hidden md:flex'} flex-1 flex-col min-w-0`}>
           {composing ? (
-            <div className="flex-1 p-4 flex flex-col justify-end gap-3">
+            <div className="flex-1 p-4 flex flex-col gap-3">
               <input
-                type="tel"
+                type="text"
+                inputMode="tel"
                 value={newTo}
                 onChange={e => setNewTo(e.target.value)}
                 placeholder="Phone number (+1...)"
-                className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20"
+                autoComplete="off"
+                className="border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20"
               />
               <form onSubmit={sendReply} className="flex gap-2">
                 <input
                   value={reply}
                   onChange={e => setReply(e.target.value)}
                   placeholder="Type a message…"
-                  className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20"
+                  autoComplete="off"
+                  className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20"
                 />
-                <button type="submit" disabled={sending || !reply || !newTo} className="bg-[#1a2744] text-white px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50">
+                <button type="submit" disabled={sending || !reply || !newTo} className="bg-[#1a2744] text-white px-4 py-3 rounded-xl text-sm font-bold disabled:opacity-50">
                   Send
                 </button>
               </form>
             </div>
           ) : activeThread ? (
             <>
-              <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+              <div className="hidden md:block px-4 py-3 border-b border-gray-100 bg-gray-50 shrink-0">
                 <p className="font-semibold text-gray-800 text-sm">{fmtPhone(activeThread)}</p>
               </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-2">
                 {messages.map(m => (
                   <div key={m.id} className={`flex ${m.direction === 'outbound' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-xs px-4 py-2.5 rounded-2xl text-sm ${
+                    <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${
                       m.direction === 'outbound'
                         ? 'bg-[#1a2744] text-white rounded-br-sm'
                         : 'bg-gray-100 text-gray-800 rounded-bl-sm'
@@ -398,14 +437,15 @@ function SMSInbox() {
                 ))}
                 <div ref={bottomRef} />
               </div>
-              <form onSubmit={sendReply} className="p-3 border-t border-gray-100 flex gap-2">
+              <form onSubmit={sendReply} className="p-3 border-t border-gray-100 flex gap-2 shrink-0" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
                 <input
                   value={reply}
                   onChange={e => setReply(e.target.value)}
                   placeholder="Reply…"
-                  className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20"
+                  autoComplete="off"
+                  className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20"
                 />
-                <button type="submit" disabled={sending || !reply} className="bg-[#1a2744] text-white px-4 py-2 rounded-xl text-sm font-bold disabled:opacity-50">
+                <button type="submit" disabled={sending || !reply} className="bg-[#1a2744] text-white px-4 rounded-xl text-sm font-bold disabled:opacity-50 active:opacity-70">
                   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
                   </svg>
