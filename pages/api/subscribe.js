@@ -40,9 +40,13 @@ export default async function handler(req, res) {
     const result = await upsertSubscriber({ email, firstName, lastName, phone, source })
     const isNew = result.rows[0]?.inserted === true
 
-    // Sync to Mailchimp and Resend audience (non-blocking)
+    // Mailchimp (legacy list) — fire and forget.
     syncMailchimp(email)
-    syncResendAudience(email, firstName, lastName)
+
+    // Add the subscriber to the Resend broadcast audience that campaigns are
+    // sent to. Awaited so it reliably completes on serverless (un-awaited work
+    // can be dropped after the response). The helper never throws.
+    await syncResendAudience(email, firstName, lastName, false)
 
     // Notify users who opted into subscriber alerts about new organic sign-ups
     // (skip admin's manual adds).
@@ -56,11 +60,10 @@ export default async function handler(req, res) {
       })
     }
 
-    // Send welcome email to new subscribers OR anyone signing up via the form
-    // (cron-synced contacts from Mailchimp won't have source='newsletter')
-    const isFormSignup = !source || source === 'newsletter'
-    if (isNew || isFormSignup) {
-      sendWelcomeEmail(email, firstName)
+    // Send the welcome email only to brand-new subscribers — never on a
+    // re-subscribe or update. Awaited so it reliably sends on serverless.
+    if (isNew) {
+      await sendWelcomeEmail(email, firstName)
     }
 
     return res.status(200).json({ status: 'subscribed' })

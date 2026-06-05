@@ -263,6 +263,16 @@ export default function CampaignsPage() {
     }
   }
 
+  // ── Completed (sent) campaign stats ──
+  const sentCampaigns = campaigns.filter((c) => c.status === 'sent')
+  const totalRecipients = sentCampaigns.reduce((s, c) => s + (c.recipient_count || 0), 0)
+  const avgRecipients = sentCampaigns.length ? Math.round(totalRecipients / sentCampaigns.length) : 0
+  const lastSent = sentCampaigns.reduce((latest, c) => {
+    if (!c.sent_at) return latest
+    const t = new Date(c.sent_at)
+    return !latest || t > latest ? t : latest
+  }, null)
+
   // ── List view ──────────────────────────────────────────────────────────────
   if (step === 'list') return (
     <AdminLayout title="Campaigns">
@@ -279,6 +289,22 @@ export default function CampaignsPage() {
           New Campaign
         </button>
       </div>
+
+      {!loading && campaigns.length > 0 && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+          {[
+            { label: 'Campaigns sent', value: sentCampaigns.length.toLocaleString() },
+            { label: 'Recipients reached', value: totalRecipients.toLocaleString() },
+            { label: 'Avg per campaign', value: avgRecipients.toLocaleString() },
+            { label: 'Last sent', value: lastSent ? lastSent.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—' },
+          ].map(({ label, value }) => (
+            <div key={label} className="bg-white rounded-2xl border border-gray-100 p-4 md:p-5 shadow-sm">
+              <p className="text-2xl font-black text-gray-900">{value}</p>
+              <p className="text-gray-500 text-xs font-medium mt-0.5">{label}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {sendResult?.startsWith('sent:') && (
         <div className="mb-5 flex items-center gap-3 bg-green-50 border border-green-200 rounded-2xl px-5 py-4">
