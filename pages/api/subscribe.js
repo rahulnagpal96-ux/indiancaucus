@@ -1,6 +1,6 @@
 import { upsertSubscriber } from '../../lib/db'
 import { buildWelcomeEmail, shouldSendWelcomeEmail } from '../../lib/welcomeEmail'
-import { syncResendAudience, syncMailchimp } from '../../lib/syncSubscriber'
+import { syncResendAudience } from '../../lib/syncSubscriber'
 import { sendPushForEvent } from '../../lib/push'
 
 async function sendWelcomeEmail(email, firstName) {
@@ -39,9 +39,6 @@ export default async function handler(req, res) {
   try {
     const result = await upsertSubscriber({ email, firstName, lastName, phone, source })
     const isNew = result.rows[0]?.inserted === true
-
-    // Mailchimp (legacy list) — fire and forget.
-    syncMailchimp(email)
 
     // Add the subscriber to the Resend broadcast audience that campaigns are
     // sent to. Awaited so it reliably completes on serverless (un-awaited work
