@@ -15,6 +15,16 @@ const NAV = [
     ),
   },
   {
+    href: '/dashboard/terminal',
+    label: 'Terminal',
+    icon: (
+      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" />
+        <line x1="6" y1="15" x2="10" y2="15" />
+      </svg>
+    ),
+  },
+  {
     href: '/dashboard/subscribers',
     label: 'Subscribers',
     icon: (
