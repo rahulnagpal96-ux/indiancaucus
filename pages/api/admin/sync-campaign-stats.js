@@ -30,10 +30,11 @@ export default async function handler(req, res) {
         })
         if (!r.ok) continue
         const data = await r.json()
+        console.log('Resend broadcast data keys:', JSON.stringify(Object.keys(data)), 'metrics:', JSON.stringify(data.metrics))
 
         // Resend returns metrics under different keys depending on API version
-        const opens = data.metrics?.opens_unique ?? data.metrics?.opens ?? data.opens ?? 0
-        const clicks = data.metrics?.clicks_unique ?? data.metrics?.clicks ?? data.clicks ?? 0
+        const opens = data.metrics?.opens_count ?? data.metrics?.opens_unique ?? data.metrics?.opens ?? data.opens ?? 0
+        const clicks = data.metrics?.clicks_count ?? data.metrics?.clicks_unique ?? data.metrics?.clicks ?? data.clicks ?? 0
 
         await sql`
           UPDATE campaigns

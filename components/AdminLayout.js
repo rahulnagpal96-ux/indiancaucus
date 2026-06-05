@@ -134,24 +134,44 @@ export default function AdminLayout({ children, title }) {
   const router = useRouter()
   const { pathname } = router
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const isAdmin = session?.user?.role === 'admin'
   const visibleNav = NAV.filter((item) => !item.adminOnly || isAdmin)
 
+  // Redirect unauthenticated users to login
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.replace('/dashboard/login')
+    }
+  }, [status, router])
+
   // Log page view for audit trail
   useEffect(() => {
+    if (status !== 'authenticated') return
     fetch('/api/admin/activity-log', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'page_view', page: pathname }),
     }).catch(() => {})
-  }, [pathname])
+  }, [pathname, status])
+
+  if (status === 'loading' || status === 'unauthenticated') {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5" style={{ background: 'linear-gradient(180deg, #1a2744 0%, #111d35 100%)' }}>
+        <img src="/logo.png" alt="Indian Caucus of Secaucus" className="h-16 w-auto" />
+        <svg className="animate-spin text-orange-400" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+      </div>
+    )
+  }
 
   return (
     <RoleContext.Provider value={{ isAdmin }}>
     <div className="dashboard-shell min-h-screen">
 
-      {/* When installed from the dashboard, open straight into the dashboard */}
+{/* When installed from the dashboard, open straight into the dashboard */}
       <Head>
         <link key="manifest" rel="manifest" href="/dashboard-manifest.json" />
         <meta key="apple-title" name="apple-mobile-web-app-title" content="IC Dashboard" />

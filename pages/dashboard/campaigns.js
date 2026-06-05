@@ -197,7 +197,7 @@ export default function CampaignsPage() {
 
   function fetchCampaigns() {
     setLoading(true)
-    fetch('/api/admin/campaigns')
+    return fetch('/api/admin/campaigns')
       .then(r => r.json())
       .then(d => { setCampaigns(d.campaigns ?? []); setLoading(false) })
       .catch(() => setLoading(false))
@@ -213,12 +213,12 @@ export default function CampaignsPage() {
   }
 
   useEffect(() => {
+    // Load campaigns first, then sync stats so analytics update appears on load
     fetchCampaigns()
-    fetch('/api/admin/stats').then(r => r.json()).then(d => setSubCount(d.total)).catch(() => {})
-    // Auto-sync Resend analytics on load
-    fetch('/api/admin/sync-campaign-stats', { method: 'POST' })
+      .then(() => fetch('/api/admin/sync-campaign-stats', { method: 'POST' }))
       .then(() => fetchCampaigns())
       .catch(() => {})
+    fetch('/api/admin/stats').then(r => r.json()).then(d => setSubCount(d.total)).catch(() => {})
   }, [])
 
   function buildHtml() {
