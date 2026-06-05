@@ -128,7 +128,7 @@ export default function DashboardHome() {
   return (
     <AdminLayout title="Overview">
       {/* DB setup banner */}
-      {dbError && (
+      {dbError && isAdmin && (
         <div className="mb-6 flex items-center gap-4 bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4">
           <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
             <svg width="18" height="18" className="text-amber-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
