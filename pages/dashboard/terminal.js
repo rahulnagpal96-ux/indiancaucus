@@ -299,9 +299,12 @@ export default function TerminalPage() {
               <div>
                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5 block">Card number</label>
                 <input
-                  type="tel"
+                  type="text"
                   inputMode="numeric"
                   autoComplete="cc-number"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
                   placeholder="1234 5678 9012 3456"
                   value={cardNumber}
                   onChange={(e) => {
@@ -317,9 +320,9 @@ export default function TerminalPage() {
                   <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5 block">Expiry</label>
                   <input
                     ref={expiryRef}
-                    type="tel"
+                    type="text"
                     inputMode="numeric"
-                    autoComplete="cc-exp"
+                    autoComplete="off"
                     placeholder="MM/YY"
                     value={expiry}
                     onChange={(e) => {
@@ -334,9 +337,9 @@ export default function TerminalPage() {
                   <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5 block">CVC</label>
                   <input
                     ref={cvcRef}
-                    type="tel"
+                    type="text"
                     inputMode="numeric"
-                    autoComplete="cc-csc"
+                    autoComplete="off"
                     placeholder="123"
                     value={cvc}
                     onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').slice(0, 4))}
