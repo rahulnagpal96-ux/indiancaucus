@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Head from 'next/head'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import PushToggle from './PushToggle'
 
 const NAV = [
@@ -89,11 +89,23 @@ const NAV = [
       </svg>
     ),
   },
+  {
+    href: '/dashboard/users',
+    label: 'Users',
+    adminOnly: true,
+    icon: (
+      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
+  },
 ]
 
-async function logout(router) {
-  await fetch('/api/auth/logout', { method: 'POST' })
-  router.push('/dashboard/login')
+async function logout() {
+  try { await fetch('/api/auth/logout', { method: 'POST' }) } catch { /* ignore */ }
+  // Clears both the NextAuth session and redirects to the login page.
+  await signOut({ callbackUrl: '/dashboard/login' })
 }
 
 export default function AdminLayout({ children, title }) {
@@ -101,6 +113,8 @@ export default function AdminLayout({ children, title }) {
   const { pathname } = router
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { data: session } = useSession()
+  const isAdmin = session?.user?.role === 'admin'
+  const visibleNav = NAV.filter((item) => !item.adminOnly || isAdmin)
 
   // Log page view for audit trail
   useEffect(() => {
@@ -157,7 +171,7 @@ export default function AdminLayout({ children, title }) {
         </div>
 
         <nav className="flex-1 px-3 space-y-0.5">
-          {NAV.map(({ href, label, icon }) => {
+          {visibleNav.map(({ href, label, icon }) => {
             const active = pathname === href
             return (
               <Link
@@ -198,7 +212,7 @@ export default function AdminLayout({ children, title }) {
           </div>
           <PushToggle />
           <button
-            onClick={() => logout(router)}
+            onClick={() => logout()}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-blue-300 hover:text-white hover:bg-white/10 transition-all"
           >
             <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -232,7 +246,7 @@ export default function AdminLayout({ children, title }) {
           </div>
           {/* Mobile sign out */}
           <button
-            onClick={() => logout(router)}
+            onClick={() => logout()}
             className="sm:hidden text-gray-400 hover:text-gray-700 p-1"
             title="Sign out"
           >
@@ -252,7 +266,7 @@ export default function AdminLayout({ children, title }) {
 
       {/* ── Bottom tab bar — mobile only (4 core tabs) ── */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-gray-200 flex shadow-lg">
-        {NAV.slice(0, 4).map(({ href, label, icon }) => {
+        {visibleNav.slice(0, 4).map(({ href, label, icon }) => {
           const active = pathname === href
           return (
             <Link

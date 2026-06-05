@@ -1,12 +1,30 @@
 import { useState } from 'react'
+import { useRouter } from 'next/router'
 import { signIn } from 'next-auth/react'
 
 export default function DashboardLogin() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [showBreakGlass, setShowBreakGlass] = useState(false)
+  const [password, setPassword] = useState('')
+  const [pwLoading, setPwLoading] = useState(false)
+  const [pwError, setPwError] = useState('')
+
+  const accessDenied = router.query.error === 'AccessDenied'
 
   async function handleMicrosoft() {
     setLoading(true)
     await signIn('azure-ad', { callbackUrl: '/dashboard' })
+  }
+
+  async function handlePassword(e) {
+    e.preventDefault()
+    setPwLoading(true)
+    setPwError('')
+    const res = await signIn('credentials', { password, redirect: false, callbackUrl: '/dashboard' })
+    setPwLoading(false)
+    if (res?.error) { setPwError('Incorrect password'); return }
+    router.push(res?.url || '/dashboard')
   }
 
   return (
@@ -28,6 +46,12 @@ export default function DashboardLogin() {
           </div>
 
           <div className="px-8 py-7 space-y-4">
+            {accessDenied && (
+              <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-red-600 text-xs">
+                Your Microsoft account doesn’t have access yet. Ask an admin to add your email.
+              </div>
+            )}
+
             <button
               onClick={handleMicrosoft}
               disabled={loading}
@@ -41,6 +65,35 @@ export default function DashboardLogin() {
               </svg>
               {loading ? 'Signing in…' : 'Sign in with Microsoft O365'}
             </button>
+
+            {showBreakGlass ? (
+              <form onSubmit={handlePassword} className="space-y-2 pt-1">
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Admin password"
+                  autoFocus
+                  className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20 focus:border-[#1a2744] transition-all"
+                />
+                {pwError && <p className="text-red-500 text-xs">{pwError}</p>}
+                <button
+                  type="submit"
+                  disabled={pwLoading}
+                  className="w-full text-white text-sm font-bold py-3 rounded-2xl shadow-md hover:opacity-90 transition-all disabled:opacity-50"
+                  style={{ background: 'linear-gradient(135deg,#1a2744,#243660)' }}
+                >
+                  {pwLoading ? 'Signing in…' : 'Sign in'}
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setShowBreakGlass(true)}
+                className="w-full text-center text-gray-400 text-xs hover:text-gray-600 transition-colors"
+              >
+                Use admin password instead
+              </button>
+            )}
           </div>
         </div>
 
