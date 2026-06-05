@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/cron/sync-mailchimp",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 * * * *"
     }
   ]
 }
