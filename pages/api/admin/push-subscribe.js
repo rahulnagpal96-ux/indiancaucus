@@ -11,7 +11,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    await savePushSubscription({ endpoint: sub.endpoint, p256dh: sub.keys.p256dh, auth: sub.keys.auth })
+    await savePushSubscription({
+      endpoint: sub.endpoint,
+      p256dh: sub.keys.p256dh,
+      auth: sub.keys.auth,
+      userAgent: req.headers['user-agent'] || null,
+    })
     return res.status(200).json({ ok: true })
   } catch (err) {
     console.error('push-subscribe error:', err)

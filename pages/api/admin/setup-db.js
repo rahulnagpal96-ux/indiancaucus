@@ -73,7 +73,17 @@ export default async function handler(req, res) {
         p256dh      TEXT NOT NULL,
         auth        TEXT NOT NULL,
         user_email  VARCHAR(255),
+        user_agent  TEXT,
         created_at  TIMESTAMPTZ DEFAULT NOW()
+      )
+    `
+    await sql`ALTER TABLE push_subscriptions ADD COLUMN IF NOT EXISTS user_agent TEXT`
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS app_settings (
+        key        VARCHAR(100) PRIMARY KEY,
+        value      TEXT,
+        updated_at TIMESTAMPTZ DEFAULT NOW()
       )
     `
 

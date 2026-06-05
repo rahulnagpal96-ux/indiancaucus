@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 import { isAuthenticated } from '../../../lib/auth'
-import { recordPosPayment, getPosRecent, getPosSummary } from '../../../lib/db'
+import { recordPosPayment, getPosRecent, getPosSummary, getNotificationPrefs } from '../../../lib/db'
 import { sendPushToAll } from '../../../lib/push'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
@@ -43,12 +43,15 @@ export default async function handler(req, res) {
 
       // Notify the team only on the first time we record this sale.
       if (result.rows[0]?.inserted !== false) {
-        const amountStr = '$' + (pi.amount / 100).toFixed(2)
-        await sendPushToAll({
-          title: 'New sale',
-          body: `${amountStr} received${pi.description ? ' · ' + pi.description : ''}`,
-          url: '/dashboard/terminal',
-        })
+        const prefs = await getNotificationPrefs()
+        if (prefs.sale) {
+          const amountStr = '$' + (pi.amount / 100).toFixed(2)
+          await sendPushToAll({
+            title: 'New sale',
+            body: `${amountStr} received${pi.description ? ' · ' + pi.description : ''}`,
+            url: '/dashboard/terminal',
+          })
+        }
       }
 
       return res.status(200).json({ ok: true, payment: result.rows[0] })
