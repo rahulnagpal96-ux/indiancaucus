@@ -209,8 +209,10 @@ function DonateBox() {
 }
 
 function NewsletterBox() {
-  const [email, setEmail] = useState('')
+  const [form, setForm] = useState({ firstName: '', email: '', phone: '' })
   const [status, setStatus] = useState('')
+
+  function set(field) { return (e) => setForm(f => ({ ...f, [field]: e.target.value })) }
 
   async function submit(e) {
     e.preventDefault()
@@ -219,9 +221,14 @@ function NewsletterBox() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email: form.email,
+          firstName: form.firstName || undefined,
+          phone: form.phone || undefined,
+          source: 'links',
+        }),
       })
-      if (res.ok) { setStatus('success'); setEmail('') }
+      if (res.ok) { setStatus('success') }
       else setStatus('error')
     } catch {
       setStatus('error')
@@ -230,7 +237,7 @@ function NewsletterBox() {
 
   return (
     <div className="w-full max-w-sm bg-gray-800 rounded-2xl px-4 py-4">
-      <div className="flex items-center gap-3 mb-3">
+      <div className="flex items-center gap-3 mb-4">
         <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center text-white">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -238,36 +245,77 @@ function NewsletterBox() {
           </svg>
         </div>
         <div>
-          <div className="font-semibold text-white text-base leading-tight">Newsletter Signup</div>
-          <div className="text-xs text-gray-400 mt-0.5">Stay updated on events and announcements</div>
+          <div className="font-semibold text-white text-base leading-tight">Stay Connected</div>
+          <div className="text-xs text-gray-400 mt-0.5">Events, announcements &amp; community news</div>
         </div>
       </div>
 
       {status === 'success' ? (
-        <div className="flex items-center gap-2 text-sm text-green-400 py-1">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          You're subscribed!
+        <div className="flex items-center gap-3 py-3">
+          <div className="w-9 h-9 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <p className="text-green-400 text-sm font-semibold">You're in!</p>
+            <p className="text-gray-400 text-xs mt-0.5">Welcome to the Indian Caucus community.</p>
+          </div>
         </div>
       ) : (
-        <form onSubmit={submit} className="flex gap-2">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
-            required
-            className="flex-1 bg-gray-900 border border-gray-700 focus:border-green-500 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-500 outline-none transition-colors"
-          />
+        <form onSubmit={submit} className="space-y-2.5">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">First name</label>
+              <input
+                type="text"
+                value={form.firstName}
+                onChange={set('firstName')}
+                placeholder="Priya"
+                autoComplete="given-name"
+                className="w-full bg-gray-900 border border-gray-700 focus:border-green-500 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 outline-none transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Email *</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={set('email')}
+                placeholder="you@email.com"
+                required
+                autoComplete="email"
+                className="w-full bg-gray-900 border border-gray-700 focus:border-green-500 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 outline-none transition-colors"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+              Phone <span className="normal-case font-normal text-gray-500">— SMS event reminders</span>
+            </label>
+            <input
+              type="text"
+              inputMode="tel"
+              value={form.phone}
+              onChange={set('phone')}
+              placeholder="(201) 555-0100"
+              autoComplete="tel"
+              className="w-full bg-gray-900 border border-gray-700 focus:border-green-500 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 outline-none transition-colors"
+            />
+          </div>
+
+          {status === 'error' && <p className="text-xs text-red-400">Something went wrong. Try again.</p>}
+
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-teal-500 active:scale-95 transition-all disabled:opacity-50"
+            className="w-full py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-green-500 to-teal-500 active:scale-95 transition-all disabled:opacity-50"
           >
-            {status === 'loading' ? '…' : 'Join'}
+            {status === 'loading' ? 'Joining…' : 'Join the Community →'}
           </button>
+
+          <p className="text-center text-xs text-gray-600">Free · No spam · Unsubscribe anytime</p>
         </form>
       )}
-      {status === 'error' && <p className="mt-1.5 text-xs text-red-400">Something went wrong. Try again.</p>}
     </div>
   )
 }
