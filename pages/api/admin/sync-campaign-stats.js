@@ -1,6 +1,24 @@
 import { sql } from '@vercel/postgres'
 import { isAuthenticated } from '../../../lib/auth'
 
+function extractStats(data) {
+  const opens =
+    data.metrics?.opens_count ??
+    data.metrics?.opens_unique ??
+    data.metrics?.opens ??
+    data.opens ??
+    data.open_count ??
+    0
+  const clicks =
+    data.metrics?.clicks_count ??
+    data.metrics?.clicks_unique ??
+    data.metrics?.clicks ??
+    data.clicks ??
+    data.click_count ??
+    0
+  return { opens: Number(opens) || 0, clicks: Number(clicks) || 0 }
+}
+
 export default async function handler(req, res) {
   if (!await isAuthenticated(req, res)) return res.status(401).json({ error: 'Unauthorized' })
   if (req.method !== 'POST') return res.status(405).end()
@@ -13,46 +31,64 @@ export default async function handler(req, res) {
     await sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS resend_opens  INT DEFAULT 0`
     await sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS resend_clicks INT DEFAULT 0`
 
-    // Get all sent campaigns that have a broadcast ID
+    // Step 1: fetch all broadcasts from Resend so we can match any that are missing IDs
+    const listResp = await fetch('https://api.resend.com/broadcasts', {
+      headers: { Authorization: `Bearer ${key}` },
+    })
+    const listData = await listResp.json()
+    const resendBroadcasts = listData.data ?? listData.broadcasts ?? []
+
+    // Step 2: get all sent campaigns (with or without broadcast ID)
     const { rows: campaigns } = await sql`
-      SELECT id, resend_broadcast_id
+      SELECT id, subject, sent_at, resend_broadcast_id
       FROM campaigns
-      WHERE status = 'sent' AND resend_broadcast_id IS NOT NULL
+      WHERE status = 'sent'
     `
 
-    if (campaigns.length === 0) return res.status(200).json({ ok: true, synced: 0 })
-
-    let synced = 0
     const debug = []
+    let synced = 0
+
     for (const c of campaigns) {
       try {
-        const r = await fetch(`https://api.resend.com/broadcasts/${c.resend_broadcast_id}`, {
+        let broadcastId = c.resend_broadcast_id
+
+        // If no broadcast ID saved, try to match by subject from the Resend list
+        if (!broadcastId && resendBroadcasts.length > 0) {
+          const match = resendBroadcasts.find(b =>
+            b.name === c.subject || b.subject === c.subject
+          )
+          if (match) {
+            broadcastId = match.id
+            // Save the matched broadcast ID back to DB
+            await sql`UPDATE campaigns SET resend_broadcast_id = ${broadcastId} WHERE id = ${c.id}`
+            debug.push({ id: c.id, action: 'matched broadcast by subject', broadcastId })
+          }
+        }
+
+        if (!broadcastId) {
+          debug.push({ id: c.id, subject: c.subject, action: 'no broadcast ID found in Resend' })
+          continue
+        }
+
+        const r = await fetch(`https://api.resend.com/broadcasts/${broadcastId}`, {
           headers: { Authorization: `Bearer ${key}` },
         })
         const data = await r.json()
 
         if (!r.ok) {
-          debug.push({ id: c.id, broadcastId: c.resend_broadcast_id, error: data })
+          debug.push({ id: c.id, broadcastId, error: data })
           continue
         }
 
-        // Try all known Resend metrics field names
-        const opens =
-          data.metrics?.opens_count ??
-          data.metrics?.opens_unique ??
-          data.metrics?.opens ??
-          data.opens ??
-          data.open_count ??
-          0
-        const clicks =
-          data.metrics?.clicks_count ??
-          data.metrics?.clicks_unique ??
-          data.metrics?.clicks ??
-          data.clicks ??
-          data.click_count ??
-          0
-
-        debug.push({ id: c.id, broadcastId: c.resend_broadcast_id, status: data.status, metrics: data.metrics, opens, clicks })
+        const { opens, clicks } = extractStats(data)
+        debug.push({
+          id: c.id,
+          broadcastId,
+          resendStatus: data.status,
+          rawMetrics: data.metrics ?? '(no metrics field)',
+          opens,
+          clicks,
+        })
 
         await sql`
           UPDATE campaigns
@@ -61,11 +97,16 @@ export default async function handler(req, res) {
         `
         synced++
       } catch (e) {
-        debug.push({ id: c.id, broadcastId: c.resend_broadcast_id, exception: e.message })
+        debug.push({ id: c.id, exception: e.message })
       }
     }
 
-    return res.status(200).json({ ok: true, synced, debug })
+    return res.status(200).json({
+      ok: true,
+      synced,
+      totalBroadcastsFromResend: resendBroadcasts.length,
+      debug,
+    })
   } catch (err) {
     console.error('sync-campaign-stats error:', err)
     return res.status(500).json({ error: err.message })

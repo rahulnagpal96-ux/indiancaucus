@@ -69,6 +69,7 @@ export default async function handler(req, res) {
         return res.status(200).json({ campaign: result.rows[0] })
       }
       const result = await getCampaigns()
+      res.setHeader('Cache-Control', 'no-store')
       return res.status(200).json({ campaigns: result.rows })
     } catch (err) {
       return res.status(500).json({ error: err.message })
