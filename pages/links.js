@@ -32,6 +32,11 @@ const LINKS = [
   },
 ]
 
+// Shared styles that adapt to the device's light/dark preference (Tailwind
+// darkMode: 'media'). Light is the base; `dark:` restores the dark look.
+const cardClass = 'w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/60 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all rounded-2xl px-4 py-3.5 flex items-center shadow-sm dark:shadow-none'
+const inputClass = 'w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 outline-none transition-colors'
+
 function ContactModal({ onClose }) {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
   const [status, setStatus] = useState('')
@@ -56,18 +61,18 @@ function ContactModal({ onClose }) {
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-0 sm:px-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
       <div
-        className="relative w-full sm:max-w-md bg-gray-900 rounded-t-3xl sm:rounded-2xl p-6 max-h-[90vh] overflow-y-auto"
+        className="relative w-full sm:max-w-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-t-3xl sm:rounded-2xl p-6 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Handle */}
-        <div className="w-10 h-1 bg-gray-600 rounded-full mx-auto mb-5 sm:hidden" />
+        <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-5 sm:hidden" />
 
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="text-lg font-bold text-white">Contact Us</h2>
-            <p className="text-xs text-gray-400 mt-0.5">We respond within 48 hours</p>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Contact Us</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">We respond within 48 hours</p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -75,19 +80,19 @@ function ContactModal({ onClose }) {
         {status === 'success' ? (
           <div className="text-center py-8">
             <div className="w-14 h-14 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <h3 className="text-white font-bold text-lg">Message sent!</h3>
-            <p className="text-gray-400 text-sm mt-1">We'll get back to you soon.</p>
-            <button onClick={onClose} className="mt-5 px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-gray-700 hover:bg-gray-600 transition-colors">Close</button>
+            <h3 className="text-gray-900 dark:text-white font-bold text-lg">Message sent!</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">We'll get back to you soon.</p>
+            <button onClick={onClose} className="mt-5 px-6 py-2.5 rounded-xl text-sm font-semibold text-gray-700 dark:text-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">Close</button>
           </div>
         ) : (
           <form onSubmit={submit} className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Name *</label>
+                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Name *</label>
                 <input
-                  className="w-full bg-gray-800 border border-gray-700 focus:border-blue-500 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-500 outline-none transition-colors"
+                  className={`${inputClass} focus:border-blue-500`}
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   required
@@ -95,10 +100,10 @@ function ContactModal({ onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Email *</label>
+                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Email *</label>
                 <input
                   type="email"
-                  className="w-full bg-gray-800 border border-gray-700 focus:border-blue-500 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-500 outline-none transition-colors"
+                  className={`${inputClass} focus:border-blue-500`}
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   required
@@ -108,9 +113,9 @@ function ContactModal({ onClose }) {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Subject</label>
+              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Subject</label>
               <select
-                className="w-full bg-gray-800 border border-gray-700 focus:border-blue-500 rounded-xl px-3 py-2.5 text-sm text-white outline-none transition-colors"
+                className={`${inputClass} focus:border-blue-500`}
                 value={form.subject}
                 onChange={(e) => setForm({ ...form, subject: e.target.value })}
               >
@@ -125,9 +130,9 @@ function ContactModal({ onClose }) {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Message *</label>
+              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Message *</label>
               <textarea
-                className="w-full bg-gray-800 border border-gray-700 focus:border-blue-500 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-500 outline-none transition-colors resize-none"
+                className={`${inputClass} resize-none focus:border-blue-500`}
                 rows={4}
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
@@ -136,7 +141,7 @@ function ContactModal({ onClose }) {
               />
             </div>
 
-            {status === 'error' && <p className="text-xs text-red-400">Failed to send. Please try again.</p>}
+            {status === 'error' && <p className="text-xs text-red-500 dark:text-red-400">Failed to send. Please try again.</p>}
 
             <button
               type="submit"
@@ -182,7 +187,7 @@ function DonateBox() {
   return (
     <>
     <div className="flex gap-2">
-      <div className="flex items-center flex-1 bg-gray-900 border border-gray-700 focus-within:border-orange-400 rounded-xl overflow-hidden transition-colors">
+      <div className="flex items-center flex-1 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus-within:border-orange-400 rounded-xl overflow-hidden transition-colors">
         <span className="pl-3 text-gray-400 font-semibold">$</span>
         <input
           type="number"
@@ -191,7 +196,7 @@ function DonateBox() {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleDonate()}
-          className="flex-1 bg-transparent px-2 py-2.5 text-white text-sm font-semibold placeholder-gray-600 outline-none"
+          className="flex-1 bg-transparent px-2 py-2.5 text-gray-900 dark:text-white text-sm font-semibold placeholder-gray-400 dark:placeholder-gray-600 outline-none"
         />
       </div>
       <button
@@ -203,7 +208,7 @@ function DonateBox() {
         {loading ? '…' : 'Donate'}
       </button>
     </div>
-    {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
+    {error && <p className="mt-2 text-xs text-red-500 dark:text-red-400">{error}</p>}
     </>
   )
 }
@@ -236,7 +241,7 @@ function NewsletterBox() {
   }
 
   return (
-    <div className="w-full max-w-sm bg-gray-800 rounded-2xl px-4 py-4">
+    <div className="w-full max-w-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-transparent rounded-2xl px-4 py-4 shadow-sm dark:shadow-none">
       <div className="flex items-center gap-3 mb-4">
         <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center text-white">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -245,37 +250,37 @@ function NewsletterBox() {
           </svg>
         </div>
         <div>
-          <div className="font-semibold text-white text-base leading-tight">Stay Connected</div>
-          <div className="text-xs text-gray-400 mt-0.5">Events, announcements &amp; community news</div>
+          <div className="font-semibold text-gray-900 dark:text-white text-base leading-tight">Stay Connected</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Events, announcements &amp; community news</div>
         </div>
       </div>
 
       {status === 'success' ? (
         <div className="flex items-center gap-3 py-3">
           <div className="w-9 h-9 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <div>
-            <p className="text-green-400 text-sm font-semibold">You're in!</p>
-            <p className="text-gray-400 text-xs mt-0.5">Welcome to the Indian Caucus community.</p>
+            <p className="text-green-600 dark:text-green-400 text-sm font-semibold">You're in!</p>
+            <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">Welcome to the Indian Caucus community.</p>
           </div>
         </div>
       ) : (
         <form onSubmit={submit} className="space-y-2.5">
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">First name</label>
+              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">First name</label>
               <input
                 type="text"
                 value={form.firstName}
                 onChange={set('firstName')}
                 placeholder="Priya"
                 autoComplete="given-name"
-                className="w-full bg-gray-900 border border-gray-700 focus:border-green-500 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 outline-none transition-colors"
+                className={`${inputClass} focus:border-green-500`}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Email *</label>
+              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Email *</label>
               <input
                 type="email"
                 value={form.email}
@@ -283,14 +288,14 @@ function NewsletterBox() {
                 placeholder="you@email.com"
                 required
                 autoComplete="email"
-                className="w-full bg-gray-900 border border-gray-700 focus:border-green-500 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 outline-none transition-colors"
+                className={`${inputClass} focus:border-green-500`}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
-              Phone <span className="normal-case font-normal text-gray-500">— optional, for SMS event reminders</span>
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+              Phone <span className="normal-case font-normal text-gray-400 dark:text-gray-500">— optional, for SMS event reminders</span>
             </label>
             <input
               type="text"
@@ -299,11 +304,11 @@ function NewsletterBox() {
               onChange={set('phone')}
               placeholder="(201) 555-0100"
               autoComplete="tel"
-              className="w-full bg-gray-900 border border-gray-700 focus:border-green-500 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 outline-none transition-colors"
+              className={`${inputClass} focus:border-green-500`}
             />
           </div>
 
-          {status === 'error' && <p className="text-xs text-red-400">Something went wrong. Try again.</p>}
+          {status === 'error' && <p className="text-xs text-red-500 dark:text-red-400">Something went wrong. Try again.</p>}
 
           <button
             type="submit"
@@ -313,7 +318,7 @@ function NewsletterBox() {
             {status === 'loading' ? 'Joining…' : 'Join the Community →'}
           </button>
 
-          <p className="text-center text-xs text-gray-600">Free · No spam · Unsubscribe anytime</p>
+          <p className="text-center text-xs text-gray-400 dark:text-gray-600">Free · No spam · Unsubscribe anytime</p>
         </form>
       )}
     </div>
@@ -324,22 +329,23 @@ export default function Links() {
   const [contactOpen, setContactOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center px-5 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center px-5 py-12">
       {contactOpen && <ContactModal onClose={() => setContactOpen(false)} />}
       <Head>
         <title>Indian Caucus of Secaucus — Links</title>
         <meta name="description" content="Connect with Indian Caucus of Secaucus — participate, sponsor, subscribe, or contact us." />
+        <meta name="color-scheme" content="light dark" />
       </Head>
 
       {/* Logo / Brand */}
       <div className="mb-8 text-center">
         <Link href="/">
           <img src="/logo.png" alt="Indian Caucus of Secaucus" className="h-16 w-auto mx-auto mb-3" />
-          <span className="text-2xl font-bold text-white tracking-tight">
-            Indian Caucus <span className="text-orange-400">of Secaucus</span>
+          <span className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
+            Indian Caucus <span className="text-orange-500 dark:text-orange-400">of Secaucus</span>
           </span>
         </Link>
-        <p className="mt-1 text-sm text-gray-400">Celebrating Indian Culture in NJ</p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Celebrating Indian Culture in NJ</p>
       </div>
 
       {/* Link Buttons */}
@@ -351,10 +357,10 @@ export default function Links() {
                 {icon}
               </div>
               <div className="text-left">
-                <div className="font-semibold text-white text-base leading-tight">{label}</div>
-                <div className="text-xs text-gray-400 mt-0.5 leading-snug">{description}</div>
+                <div className="font-semibold text-gray-900 dark:text-white text-base leading-tight">{label}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-snug">{description}</div>
               </div>
-              <svg className="ml-auto flex-shrink-0 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="ml-auto flex-shrink-0 text-gray-400 dark:text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
             </div>
@@ -366,7 +372,7 @@ export default function Links() {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full bg-gray-800 hover:bg-gray-700 active:scale-95 transition-all rounded-2xl px-4 py-3.5 flex items-center"
+              className={cardClass}
             >
               {inner}
             </a>
@@ -374,7 +380,7 @@ export default function Links() {
             <Link
               key={label}
               href={href}
-              className="w-full bg-gray-800 hover:bg-gray-700 active:scale-95 transition-all rounded-2xl px-4 py-3.5 flex items-center"
+              className={cardClass}
             >
               {inner}
             </Link>
@@ -391,7 +397,7 @@ export default function Links() {
       <div className="w-full max-w-sm mt-4">
         <button
           onClick={() => setContactOpen(true)}
-          className="w-full bg-gray-800 hover:bg-gray-700 active:scale-95 transition-all rounded-2xl px-4 py-3.5 flex items-center"
+          className={cardClass}
         >
           <div className="flex items-center gap-4 w-full">
             <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white">
@@ -400,10 +406,10 @@ export default function Links() {
               </svg>
             </div>
             <div className="text-left">
-              <div className="font-semibold text-white text-base leading-tight">Contact</div>
-              <div className="text-xs text-gray-400 mt-0.5">Get in touch with us directly</div>
+              <div className="font-semibold text-gray-900 dark:text-white text-base leading-tight">Contact</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Get in touch with us directly</div>
             </div>
-            <svg className="ml-auto flex-shrink-0 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="ml-auto flex-shrink-0 text-gray-400 dark:text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 18 15 12 9 6"/>
             </svg>
           </div>
@@ -411,7 +417,7 @@ export default function Links() {
       </div>
 
       {/* Donate box */}
-      <div className="w-full max-w-sm mt-4 bg-gray-800 rounded-2xl px-4 py-4">
+      <div className="w-full max-w-sm mt-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-transparent rounded-2xl px-4 py-4 shadow-sm dark:shadow-none">
         <div className="flex items-center gap-3 mb-3">
           <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center text-white">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -419,8 +425,8 @@ export default function Links() {
             </svg>
           </div>
           <div>
-            <div className="font-semibold text-white text-base leading-tight">Donate Now</div>
-            <div className="text-xs text-gray-400 mt-0.5">100% goes to community events · 501(c)(3)</div>
+            <div className="font-semibold text-gray-900 dark:text-white text-base leading-tight">Donate Now</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">100% goes to community events · 501(c)(3)</div>
           </div>
         </div>
         <DonateBox />
@@ -432,7 +438,7 @@ export default function Links() {
           href="http://www.instagram.com/indiancaucus"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-11 h-11 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-95 transition-all flex items-center justify-center text-gray-300"
+          className="w-11 h-11 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-transparent hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all flex items-center justify-center text-gray-600 dark:text-gray-300 shadow-sm dark:shadow-none"
           aria-label="Instagram"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -445,7 +451,7 @@ export default function Links() {
           href="http://www.facebook.com/indiancaucusofsecaucus"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-11 h-11 rounded-full bg-gray-800 hover:bg-gray-700 active:scale-95 transition-all flex items-center justify-center text-gray-300"
+          className="w-11 h-11 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-transparent hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all flex items-center justify-center text-gray-600 dark:text-gray-300 shadow-sm dark:shadow-none"
           aria-label="Facebook"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -455,7 +461,7 @@ export default function Links() {
       </div>
 
       {/* Footer */}
-      <p className="mt-6 text-xs text-gray-600">© {new Date().getFullYear()} Indian Caucus of Secaucus · 501(c)(3)</p>
+      <p className="mt-6 text-xs text-gray-400 dark:text-gray-600">© {new Date().getFullYear()} Indian Caucus of Secaucus · 501(c)(3)</p>
     </div>
   )
 }
