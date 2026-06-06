@@ -8,7 +8,7 @@ const EVENTS = [
   {
     id: 'diwali',
     title: 'Diwali Mela',
-    month: 'October 4, 2025',
+    month: 'October 4, 2026',
     color: 'from-yellow-500 to-orange-500',
     accent: '#F5C518',
     confirmed: true,
@@ -17,7 +17,7 @@ const EVENTS = [
   {
     id: 'garba',
     title: 'Dandiya Dhamaka',
-    month: 'October 24, 2025',
+    month: 'October 24, 2026',
     color: 'from-purple-600 to-pink-500',
     accent: '#9333ea',
     confirmed: true,
@@ -162,7 +162,7 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div>
                   <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-4" style={{background:'rgba(255,255,255,0.2)', color:'#fef3c7'}}>
-                     Diwali Mela 2025
+                     Diwali Mela 2026
                   </span>
                   <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
                     Perform at<br />Diwali Mela!
