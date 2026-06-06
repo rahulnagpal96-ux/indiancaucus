@@ -25,10 +25,62 @@ async function sendWelcomeEmail(email, firstName) {
   }
 }
 
+// ─── Lightweight spam protection ────────────────────────────────────────────
+// In-memory, per-IP rate limiter. State lives per warm serverless instance, so
+// it isn't a hard guarantee, but it absorbs bursts from a single source without
+// any external dependency. Paired with the honeypot + timing trap below it stops
+// the overwhelming majority of automated contact-form spam.
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000 // 10 minutes
+const RATE_LIMIT_MAX = 5 // max submissions per IP per window
+const MIN_FILL_MS = 3000 // forms submitted faster than this are almost always bots
+const rateLimitHits = new Map() // ip -> number[] (timestamps)
+
+function getClientIp(req){
+  const xff = req.headers['x-forwarded-for']
+  if(typeof xff === 'string' && xff.length) return xff.split(',')[0].trim()
+  return req.socket?.remoteAddress || 'unknown'
+}
+
+function isRateLimited(ip){
+  const now = Date.now()
+  const hits = (rateLimitHits.get(ip) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS)
+  hits.push(now)
+  rateLimitHits.set(ip, hits)
+  // Opportunistically drop stale entries so the map doesn't grow unbounded.
+  if(rateLimitHits.size > 5000){
+    for(const [k, v] of rateLimitHits){
+      if(v.every((t) => now - t >= RATE_LIMIT_WINDOW_MS)) rateLimitHits.delete(k)
+    }
+  }
+  return hits.length > RATE_LIMIT_MAX
+}
+
 export default async function handler(req, res){
   if(req.method !== 'POST') return res.status(405).end()
-  const { name, email, subject, message } = req.body
+  const { name, email, subject, message, website, elapsed } = req.body
   if(!name || !email || !message) return res.status(400).json({ error: 'Missing fields' })
+
+  // 1) Honeypot — a hidden field real users never fill. If it has any value the
+  // submission is a bot. Return a success-looking response so bots don't learn
+  // they were filtered, but skip all delivery/storage.
+  if(website){
+    console.warn('Contact form honeypot triggered — dropping submission')
+    return res.status(200).json({ status: 'ok' })
+  }
+
+  // 2) Timing trap — humans take at least a few seconds to fill the form; bots
+  // post almost instantly. Treat implausibly fast submissions as spam.
+  if(typeof elapsed === 'number' && elapsed >= 0 && elapsed < MIN_FILL_MS){
+    console.warn('Contact form submitted too fast — dropping submission', { elapsed })
+    return res.status(200).json({ status: 'ok' })
+  }
+
+  // 3) Rate limit per IP to blunt repeated automated submissions.
+  const ip = getClientIp(req)
+  if(isRateLimited(ip)){
+    console.warn('Contact form rate limit exceeded for', ip)
+    return res.status(429).json({ error: 'Too many messages. Please try again later.' })
+  }
 
   // Auto-subscribe contact form submitters (non-blocking)
   const [firstName, ...rest] = name.trim().split(/\s+/)

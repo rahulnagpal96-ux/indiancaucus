@@ -7,6 +7,12 @@ import { useState } from 'react'
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
   const [status, setStatus] = useState('')
+  // Honeypot field — bots fill it, real users never see it. Kept out of `form`
+  // so a normal reset doesn't touch it.
+  const [website, setWebsite] = useState('')
+  // Timestamp the form was rendered, used as a timing trap against bots that
+  // submit instantly. Set once on first render.
+  const [loadedAt] = useState(() => Date.now())
 
   async function submit(e) {
     e.preventDefault()
@@ -15,7 +21,7 @@ export default function Contact() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, website, elapsed: Date.now() - loadedAt }),
       })
       if (res.ok) { setStatus('success'); setForm({ name: '', email: '', subject: '', message: '' }) }
       else setStatus('error')
@@ -64,6 +70,21 @@ export default function Contact() {
                 </div>
               ) : (
                 <form onSubmit={submit} className="space-y-4">
+                  {/* Honeypot — hidden from real users; bots that auto-fill
+                      every field will populate this and get silently dropped. */}
+                  <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', top: 'auto', width: '1px', height: '1px', overflow: 'hidden' }}>
+                    <label htmlFor="website">Website</label>
+                    <input
+                      type="text"
+                      id="website"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                    />
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Name *</label>
