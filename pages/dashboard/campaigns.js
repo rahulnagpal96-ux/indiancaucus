@@ -22,8 +22,7 @@ const TEMPLATES = {
       { key: 'date', label: 'Date & time', placeholder: 'Saturday, October 4 · 12 PM – 6 PM', type: 'text' },
       { key: 'location', label: 'Location', placeholder: 'Buchmuller Park, Secaucus NJ', type: 'text' },
       { key: 'description', label: 'Description', placeholder: 'Tell people what to expect…', type: 'textarea', required: true },
-      { key: 'ctaText', label: 'Button text', placeholder: 'RSVP Now', type: 'text' },
-      { key: 'ctaUrl', label: 'Button link', placeholder: 'https://indiancaucus.org/events', type: 'url' },
+      { key: 'buttons', label: 'Buttons', type: 'buttons', addLabel: 'Add button', defaultText: 'RSVP Now', defaultUrl: 'https://indiancaucus.org/events' },
     ],
   },
   newsletter: {
@@ -41,8 +40,7 @@ const TEMPLATES = {
     fields: [
       { key: 'headline', label: 'Headline', placeholder: 'Community Update — October 2025', type: 'text', required: true },
       { key: 'body', label: 'Message', placeholder: 'Write your update here…', type: 'textarea', required: true },
-      { key: 'ctaText', label: 'Button text (optional)', placeholder: 'Learn More', type: 'text' },
-      { key: 'ctaUrl', label: 'Button link (optional)', placeholder: 'https://indiancaucus.org', type: 'url' },
+      { key: 'buttons', label: 'Buttons (optional)', type: 'buttons', addLabel: 'Add button', defaultText: 'Learn More', defaultUrl: 'https://indiancaucus.org' },
     ],
   },
   donation: {
@@ -59,7 +57,8 @@ const TEMPLATES = {
     fields: [
       { key: 'headline', label: 'Headline', placeholder: 'Help us bring the community together', type: 'text', required: true },
       { key: 'body', label: 'Appeal message', placeholder: 'Explain why you need support and what donations will fund…', type: 'textarea', required: true },
-      { key: 'ctaText', label: 'Button text', placeholder: 'Donate Now', type: 'text' },
+      { key: 'ctaText', label: 'Donate button text', placeholder: 'Donate Now', type: 'text' },
+      { key: 'buttons', label: 'Extra buttons (optional)', type: 'buttons', addLabel: 'Add button', defaultText: '', defaultUrl: '' },
     ],
   },
   phone: {
@@ -168,6 +167,68 @@ function ImageUploader({ value, onChange }) {
         </div>
       )}
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+    </div>
+  )
+}
+
+// ── Buttons editor (repeatable CTA buttons) ──────────────────────────────────
+
+function ButtonsEditor({ value, onChange, field }) {
+  const buttons = Array.isArray(value) ? value : []
+
+  function update(i, key, val) {
+    onChange(buttons.map((b, idx) => (idx === i ? { ...b, [key]: val } : b)))
+  }
+  function add() {
+    onChange([...buttons, { text: field?.defaultText || '', url: field?.defaultUrl || '' }])
+  }
+  function remove(i) {
+    onChange(buttons.filter((_, idx) => idx !== i))
+  }
+
+  return (
+    <div className="space-y-2.5">
+      {buttons.map((b, i) => (
+        <div key={i} className="rounded-xl border border-gray-200 bg-gray-50/60 p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Button {i + 1}</span>
+            <button
+              type="button"
+              onClick={() => remove(i)}
+              className="text-gray-300 hover:text-red-500 transition-colors"
+              title="Remove button"
+            >
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <input
+            type="text"
+            value={b.text || ''}
+            onChange={e => update(i, 'text', e.target.value)}
+            placeholder={field?.defaultText ? `Button text (e.g. ${field.defaultText})` : 'Button text'}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20 focus:border-[#1a2744] transition-all bg-white"
+          />
+          <input
+            type="url"
+            value={b.url || ''}
+            onChange={e => update(i, 'url', e.target.value)}
+            placeholder={field?.defaultUrl || 'https://indiancaucus.org'}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2744]/20 focus:border-[#1a2744] transition-all bg-white"
+          />
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={add}
+        className="flex items-center gap-1.5 text-[#e85d04] text-sm font-semibold hover:opacity-80 transition-opacity"
+      >
+        <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        {field?.addLabel || 'Add button'}
+      </button>
     </div>
   )
 }
@@ -336,7 +397,9 @@ export default function CampaignsPage() {
 
   function pickTemplate(t) {
     setTemplate(t)
-    setFields({})
+    // Seed the event template with one empty button row so the field is visible;
+    // other templates start with no buttons (they're optional / have a default).
+    setFields(t.id === 'event' ? { buttons: [{ text: '', url: '' }] } : {})
     setImageUrl('')
     setSubject('')
     setScheduleAt('')
@@ -821,7 +884,13 @@ export default function CampaignsPage() {
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
                   {f.label} {f.required && <span className="text-red-400">*</span>}
                 </label>
-                {f.type === 'textarea' ? (
+                {f.type === 'buttons' ? (
+                  <ButtonsEditor
+                    field={f}
+                    value={fields[f.key] || []}
+                    onChange={val => setFields(p => ({ ...p, [f.key]: val }))}
+                  />
+                ) : f.type === 'textarea' ? (
                   <textarea
                     value={fields[f.key] || ''}
                     onChange={e => setFields(p => ({ ...p, [f.key]: e.target.value }))}
