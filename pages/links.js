@@ -5,7 +5,7 @@ import { useState } from 'react'
 const LINKS = [
   {
     label: 'Participation',
-    description: 'Sign up to volunteer or participate in our events',
+    description: 'Sign up to volunteer or participate in our Diwali Mela',
     href: 'https://forms.cloud.microsoft/r/TrUMvCLMTb',
     external: true,
     color: 'from-orange-500 to-red-500',
@@ -290,7 +290,7 @@ function NewsletterBox() {
 
           <div>
             <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
-              Phone <span className="normal-case font-normal text-gray-500">— SMS event reminders</span>
+              Phone <span className="normal-case font-normal text-gray-500">— optional, for SMS event reminders</span>
             </label>
             <input
               type="text"
