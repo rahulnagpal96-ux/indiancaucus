@@ -172,6 +172,26 @@ function ImageUploader({ value, onChange }) {
   )
 }
 
+// ── Welcome email per-recipient status badge ──────────────────────────────────
+
+function WelcomeStatusBadge({ status }) {
+  const map = {
+    clicked: ['bg-violet-100', 'text-violet-700', 'bg-violet-500', 'Clicked'],
+    opened: ['bg-green-100', 'text-green-700', 'bg-green-500', 'Opened'],
+    delivered: ['bg-blue-100', 'text-blue-700', 'bg-blue-500', 'Delivered'],
+    sent: ['bg-gray-100', 'text-gray-600', 'bg-gray-400', 'Sent'],
+    bounced: ['bg-red-100', 'text-red-700', 'bg-red-500', 'Bounced'],
+    complained: ['bg-red-100', 'text-red-700', 'bg-red-500', 'Complained'],
+    failed: ['bg-red-100', 'text-red-700', 'bg-red-500', 'Failed'],
+  }
+  const [bg, text, dot, label] = map[status] || map.sent
+  return (
+    <span className={`inline-flex items-center gap-1 ${bg} ${text} text-xs font-semibold px-2.5 py-1 rounded-full`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />{label}
+    </span>
+  )
+}
+
 function renderPreviewHtml(html) {
   return html
     .replace(/\{\{\{contact\.email\}\}\}/g, 'preview@example.com')
@@ -205,6 +225,17 @@ export default function CampaignsPage() {
 
   const [syncing, setSyncing] = useState(false)
 
+  const [welcomeStats, setWelcomeStats] = useState(null)
+  const [welcomeEmails, setWelcomeEmails] = useState([])
+  const [showWelcome, setShowWelcome] = useState(false)
+
+  function fetchWelcomeEmails() {
+    return fetch('/api/admin/welcome-emails')
+      .then(r => r.json())
+      .then(d => { setWelcomeStats(d.stats || null); setWelcomeEmails(d.welcomeEmails || []) })
+      .catch(() => {})
+  }
+
   function fetchCampaigns() {
     setLoading(true)
     return fetch('/api/admin/campaigns')
@@ -229,6 +260,7 @@ export default function CampaignsPage() {
       .then(() => fetchCampaigns())
       .catch(() => {})
     fetch('/api/admin/stats').then(r => r.json()).then(d => setSubCount(d.total)).catch(() => {})
+    fetchWelcomeEmails()
   }, [])
 
   async function openDraftEdit(c) {
@@ -540,6 +572,68 @@ export default function CampaignsPage() {
               <p className="text-gray-500 text-xs font-medium mt-0.5">{label}</p>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* ── Welcome emails (automated) ── */}
+      {welcomeStats && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6 overflow-hidden">
+          <button
+            onClick={() => setShowWelcome(v => !v)}
+            className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-gray-50/60 transition-colors"
+          >
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0" style={{ background: 'linear-gradient(135deg,#1a2744,#2d4a8a)' }}>
+              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-gray-900 font-semibold text-sm">Welcome Emails</p>
+              <p className="text-gray-400 text-xs mt-0.5">Automatically sent to every new subscriber</p>
+            </div>
+            <div className="hidden sm:flex items-center gap-5 mr-2 text-center">
+              <div><p className="text-lg font-black text-gray-900 leading-none">{welcomeStats.sent.toLocaleString()}</p><p className="text-gray-400 text-[11px] mt-1">Sent</p></div>
+              <div><p className="text-lg font-black text-gray-900 leading-none">{welcomeStats.delivered.toLocaleString()}</p><p className="text-gray-400 text-[11px] mt-1">Delivered</p></div>
+              <div><p className="text-lg font-black text-gray-900 leading-none">{welcomeStats.opened.toLocaleString()}</p><p className="text-gray-400 text-[11px] mt-1">Opened</p></div>
+              {(welcomeStats.bounced + welcomeStats.failed) > 0 && (
+                <div><p className="text-lg font-black text-red-500 leading-none">{(welcomeStats.bounced + welcomeStats.failed).toLocaleString()}</p><p className="text-gray-400 text-[11px] mt-1">Failed</p></div>
+              )}
+            </div>
+            <svg width="18" height="18" className={`text-gray-300 shrink-0 transition-transform ${showWelcome ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+
+          {/* Mobile stat row */}
+          <div className="sm:hidden grid grid-cols-3 gap-2 px-5 pb-4 text-center">
+            <div><p className="text-base font-black text-gray-900">{welcomeStats.sent.toLocaleString()}</p><p className="text-gray-400 text-[11px]">Sent</p></div>
+            <div><p className="text-base font-black text-gray-900">{welcomeStats.delivered.toLocaleString()}</p><p className="text-gray-400 text-[11px]">Delivered</p></div>
+            <div><p className="text-base font-black text-gray-900">{welcomeStats.opened.toLocaleString()}</p><p className="text-gray-400 text-[11px]">Opened</p></div>
+          </div>
+
+          {showWelcome && (
+            <div className="border-t border-gray-100">
+              {welcomeEmails.length === 0 ? (
+                <p className="text-gray-400 text-sm text-center py-8">No welcome emails sent yet.</p>
+              ) : (
+                <div className="max-h-96 overflow-auto divide-y divide-gray-50">
+                  {welcomeEmails.map(w => (
+                    <div key={w.id} className="flex items-center gap-3 px-5 py-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-gray-900 text-sm font-medium truncate">{w.first_name ? `${w.first_name} · ` : ''}{w.email}</p>
+                        <p className="text-gray-400 text-xs mt-0.5">
+                          {w.sent_at ? new Date(w.sent_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''}
+                          {w.error ? ` · ${w.error}` : ''}
+                        </p>
+                      </div>
+                      <WelcomeStatusBadge status={w.status} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

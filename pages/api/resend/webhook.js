@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { recordCampaignEvent } from '../../../lib/db'
+import { recordCampaignEvent, recordWelcomeEmailEvent } from '../../../lib/db'
 
 // Resend delivers signed webhooks (Svix). We read the raw body to verify.
 export const config = { api: { bodyParser: false } }
@@ -48,14 +48,23 @@ export default async function handler(req, res) {
   const eventType = EVENT_MAP[event?.type]
   const data = event?.data || {}
   const broadcastId = data.broadcast_id
+  const emailId = data.email_id
   const email = Array.isArray(data.to) ? data.to[0] : (data.to || data.email)
 
-  // Only broadcast (campaign) emails carry a broadcast_id — tally those.
   if (eventType && broadcastId) {
+    // Broadcast (campaign) emails carry a broadcast_id — tally those.
     try {
       await recordCampaignEvent(broadcastId, email, eventType)
     } catch (err) {
       console.error('resend webhook record error:', err)
+    }
+  } else if (eventType && emailId) {
+    // Transactional emails (e.g. welcome emails) carry an email_id but no
+    // broadcast_id — advance the matching welcome email's delivery status.
+    try {
+      await recordWelcomeEmailEvent(emailId, eventType)
+    } catch (err) {
+      console.error('resend webhook welcome record error:', err)
     }
   }
 

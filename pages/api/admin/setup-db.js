@@ -49,6 +49,22 @@ export default async function handler(req, res) {
     `
 
     await sql`
+      CREATE TABLE IF NOT EXISTS welcome_emails (
+        id              SERIAL PRIMARY KEY,
+        email           TEXT NOT NULL,
+        first_name      TEXT,
+        resend_email_id TEXT,
+        status          VARCHAR(30) DEFAULT 'sent',
+        error           TEXT,
+        sent_at         TIMESTAMPTZ DEFAULT NOW(),
+        delivered_at    TIMESTAMPTZ,
+        opened_at       TIMESTAMPTZ,
+        clicked_at      TIMESTAMPTZ
+      )
+    `
+    await sql`CREATE INDEX IF NOT EXISTS welcome_emails_resend_id_idx ON welcome_emails (resend_email_id)`
+
+    await sql`
       CREATE TABLE IF NOT EXISTS activity_logs (
         id          SERIAL PRIMARY KEY,
         user_email  VARCHAR(255),

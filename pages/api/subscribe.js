@@ -1,4 +1,4 @@
-import { upsertSubscriber } from '../../lib/db'
+import { upsertSubscriber, recordWelcomeEmailSend } from '../../lib/db'
 import { buildWelcomeEmail, shouldSendWelcomeEmail } from '../../lib/welcomeEmail'
 import { syncResendAudience } from '../../lib/syncSubscriber'
 import { sendPushForEvent } from '../../lib/push'
@@ -23,9 +23,22 @@ async function sendWelcomeEmail(email, firstName) {
         html,
       }),
     })
-    if (!resp.ok) console.error('Welcome email error:', await resp.text())
+    if (!resp.ok) {
+      const errText = await resp.text()
+      console.error('Welcome email error:', errText)
+      await recordWelcomeEmailSend({ email, firstName, status: 'failed', error: errText.slice(0, 500) })
+      return
+    }
+    const data = await resp.json().catch(() => ({}))
+    // Record the send so the dashboard can show whether the welcome email went
+    // out. Resend's email id lets the webhook track delivery/opens/clicks later.
+    await recordWelcomeEmailSend({ email, firstName, resendEmailId: data?.id || null, status: 'sent' })
   } catch (err) {
     console.error('Welcome email exception:', err.message)
+    // Best-effort failure record — never let tracking break the send path.
+    try {
+      await recordWelcomeEmailSend({ email, firstName, status: 'failed', error: err.message })
+    } catch {}
   }
 }
 
