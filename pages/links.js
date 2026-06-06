@@ -5,7 +5,7 @@ import { useState } from 'react'
 const LINKS = [
   {
     label: 'Participation',
-    description: 'Sign up to volunteer or participate in our Diwali Mela',
+    description: 'Sign up to participate in our Diwali Mela',
     href: 'https://forms.cloud.microsoft/r/TrUMvCLMTb',
     external: true,
     color: 'from-orange-500 to-red-500',
